@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using DataAccess.Entities;
+using DataAccess;
+using DataAccess.Models.LoginUser;
 using DataAccess.Models.Role;
 
 namespace Business.Utils
@@ -13,6 +14,8 @@ namespace Business.Utils
                 cfg.CreateMap<Role, RoleDTO>().ReverseMap();
                 cfg.CreateMap<Role, InsertRoleDTO>().ReverseMap();
                 cfg.CreateMap<Role, UpdateRoleDTO>().ReverseMap();
+                cfg.CreateMap<User, LoginUserDTO>().ReverseMap();
+                cfg.CreateMap<User, InsertUserDTO>().ReverseMap();
             });
             return configuration.CreateMapper();
         }

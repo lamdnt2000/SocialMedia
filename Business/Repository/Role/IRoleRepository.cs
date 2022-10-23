@@ -1,5 +1,5 @@
 ﻿using Business.Repository.GenericRepo;
-using DataAccess.Entities;
+using DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;

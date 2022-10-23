@@ -1,0 +1,153 @@
+﻿{
+   "CodeGenerationMode": 0,
+   "ContextClassName": "SocialMediaContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": null,
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "DataAccess",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[dbo].[category]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[channel]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[channel_crawl]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[channel_detail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ChannelManagement]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[comment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[criteria]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[gateway]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[hashtag]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[hashtag_group]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[hashtag_post]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[location]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[media_item]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[media_type]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[order]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[platform]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[post_crawl]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[post_detail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[posts]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[rank]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[rank_type]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[reaction]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[reaction_type]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[role]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[target]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[target_type]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[transaction_deposit]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[wallet]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "SE140089\\MSSQLSERVER19.SocialMedia",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false,
+   "UseT4": false
+}

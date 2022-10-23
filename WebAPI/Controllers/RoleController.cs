@@ -3,16 +3,20 @@ using Business.Utils;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
-using WebAPI.Constant;
+
 using static Business.Utils.ResponseFormat;
 using DataAccess.Models.Role;
 using Business.Pagination.Model;
-using DataAccess.Entities;
+using DataAccess;
+using WebAPI.Constant;
+using Business.Config;
+using Business.Constants;
 
 namespace WebAPI.Controllers
 {
     [Route(ApiPath.ROLE_PATH)]
     [ApiController]
+    [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;

@@ -15,6 +15,12 @@ namespace DataAccess.Enum
             BOT = 3,
         }
 
+        public enum UserStatus
+        {
+            NEW = 1,
+            VERIFY = 2,
+            BAN = 3
+        }
         
     }
 }

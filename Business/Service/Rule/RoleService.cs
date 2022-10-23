@@ -1,6 +1,6 @@
 ﻿using Business.Repository.RoleRepo;
 using Business.Utils;
-using DataAccess.Entities;
+using DataAccess;
 using DataAccess.Models.Role;
 using System;
 using System.Collections.Generic;

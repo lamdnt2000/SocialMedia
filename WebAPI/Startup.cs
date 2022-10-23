@@ -1,4 +1,5 @@
 using API;
+using Business.Config;
 using DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -72,7 +73,13 @@ namespace WebAPI
 
             app.UseRouting();
 
+            //configure auth
             app.UseAuthentication();
+            app.UseAuthorization();
+
+            //custom jwt auth middleware
+            app.UseMiddleware<JWTMiddlewareConfig>();
+
 
             app.UseEndpoints(endpoints =>
             {
