@@ -28,7 +28,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp(InsertUserDTO dto)
+        public async Task<IActionResult> SignUp([FromForm] InsertUserDTO dto)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserDTO loginUser)
+        public async Task<IActionResult> Login([FromForm] LoginUserDTO loginUser)
         {
             try
             {
@@ -73,8 +73,103 @@ namespace WebAPI.Controllers
 
         }
 
+        [HttpPost]
+        [Route("loginGoogle")]
+        public async Task<IActionResult> LoginGoogle([FromForm] GoogleLoginDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
 
+            try
+            {
+
+                var user = await _userService.GoogleSignIn(dto);
+                _authService.SetCurrentUser(user);
+                return JsonResponse(200, "Success", new { Token = _authService.CreateToken()});
+
+            }
+            catch (Exception e)
+            {
+                return JsonResponse(403, "Not authenticate", e.Message);
+            }
+
+        }
+
+        [HttpPost]
+        [Route("loginFacebook")]
+        public async Task<IActionResult> LoginFacebook([FromForm] FacebookLoginDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+
+                var user = await _userService.FacebookSignIn(dto);
+                _authService.SetCurrentUser(user);
+                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() });
+
+            }
+            catch (Exception e)
+            {
+                return JsonResponse(403, "Not authenticate", e.Message);
+            }
+
+        }
+
+        [HttpPost]
+        [Route("signupGoogle")]
+        public async Task<IActionResult> SignUpGoogle([FromForm] GoogleSignUpDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            try
+            {
+
+                var user = await _userService.GoogleSignUp(dto);
+                _authService.SetCurrentUser(user);
+                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() });
+
+            }
+            catch (Exception e)
+            {
+                return JsonResponse(403, "Not authenticate", e.Message);
+            }
+
+        }
+
+        [HttpPost]
+        [Route("signupFacebook")]
+        public async Task<IActionResult> SignUpFacebook([FromForm] FacebookSignUpDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+
+                var user = await _userService.FacebookSignUp(dto);
+                _authService.SetCurrentUser(user);
+                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() });
+
+            }
+            catch (Exception e)
+            {
+                return JsonResponse(403, "Not authenticate", e.Message);
+            }
+
+        }
 
     }
 }

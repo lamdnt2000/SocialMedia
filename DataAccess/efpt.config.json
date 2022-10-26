@@ -7,7 +7,7 @@
    "IncludeConnectionString": false,
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": null,
+   "OutputPath": "Entities",
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "DataAccess",
    "Schemas": null,

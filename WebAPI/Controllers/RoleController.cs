@@ -7,10 +7,10 @@ using System;
 using static Business.Utils.ResponseFormat;
 using DataAccess.Models.Role;
 using Business.Pagination.Model;
-using DataAccess;
 using WebAPI.Constant;
 using Business.Config;
 using Business.Constants;
+using DataAccess.Entities;
 
 namespace WebAPI.Controllers
 {

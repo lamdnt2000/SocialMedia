@@ -1,6 +1,7 @@
 using API;
 using Business.Config;
 using DataAccess;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ namespace WebAPI
             services.AddConfigureDependency();
 
             services.AddAuthentication();
+
             services.ConfigureJWT(Configuration);
             services.ConfigureFirebase(Configuration);
 

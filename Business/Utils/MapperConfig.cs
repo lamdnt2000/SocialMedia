@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DataAccess;
+using DataAccess.Entities;
 using DataAccess.Models.LoginUser;
 using DataAccess.Models.Role;
 
@@ -16,6 +16,10 @@ namespace Business.Utils
                 cfg.CreateMap<Role, UpdateRoleDTO>().ReverseMap();
                 cfg.CreateMap<User, LoginUserDTO>().ReverseMap();
                 cfg.CreateMap<User, InsertUserDTO>().ReverseMap();
+                cfg.CreateMap<User, FacebookLoginDto>().ReverseMap();
+                cfg.CreateMap<User, GoogleLoginDto>().ReverseMap();
+                cfg.CreateMap<User, GoogleSignUpDto>().ReverseMap();
+                cfg.CreateMap<User, FacebookSignUpDto>().ReverseMap();
             });
             return configuration.CreateMapper();
         }

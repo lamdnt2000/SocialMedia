@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.LoginUser
 {
-    public class LoginUserDTO
+    public class FacebookSignUpDto:FacebookLoginDto
     {
         [Required]
         public string Email { get; set; }
         [Required]
-        public string Password { get; set; }
+        public string FirstName { get; set; }
         [Required]
-        public string TokenId { get; set; }
+        public string LastName { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess
+namespace DataAccess.Entities
 {
     [Table("posts")]
     public partial class Post

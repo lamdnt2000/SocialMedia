@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess
+namespace DataAccess.Entities
 {
     [Table("hashtag_group")]
     public partial class HashtagGroup

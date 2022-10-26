@@ -1,5 +1,4 @@
-﻿using DataAccess;
-using DataAccess.Models.LoginUser;
+﻿using DataAccess.Entities;
 using System.Threading.Tasks;
 
 

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Business.Repository.UserRepo;
-using DataAccess;
+using DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
 using static DataAccess.Enum.EnumConst;
 

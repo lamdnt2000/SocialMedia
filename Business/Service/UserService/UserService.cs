@@ -5,9 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataAccess.Enum;
-using User = DataAccess.User;
+using User = DataAccess.Entities.User;
 using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Http;
+using System.Security.Cryptography;
 
 namespace Business.Service.UserService
 {
@@ -50,6 +51,7 @@ namespace Business.Service.UserService
                             user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
                             user.Status = (int)EnumConst.UserStatus.NEW;
                             user.CreatedDate = DateTime.Now;
+                            user.Provider = userRecord.ProviderId;
                             return await _userRepository.Insert(user);
                         }
                         else
@@ -84,7 +86,11 @@ namespace Business.Service.UserService
                 {
                     throw new Exception("User Not Found");
                 }
-                else if (user.Status == (int)EnumConst.UserStatus.NEW)
+                if (!user.Provider.Equals("email"){
+                    throw new Exception("Your auth not support");
+                }
+
+                if (user.Status == (int)EnumConst.UserStatus.NEW)
                 {
                     UserRecord userRecord = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(userDTO.Email);
                     if (userRecord != null && userRecord.EmailVerified)
@@ -115,5 +121,110 @@ namespace Business.Service.UserService
             return null;
         }
 
+        public async Task<User> GoogleSignIn(InsertUserDTO dto)
+        {
+            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.TokenId);
+            var claims = firebaseToken.Claims;
+            string email = (string)claims.GetValueOrDefault("email");
+            User user = await FindByEmail(email);
+            if (user == null)
+            {
+                user = MapperConfig.GetMapper().Map<User>(dto);
+                user.Email = email;
+                user.CreatedDate = DateTime.Now;
+                user.Firstname = dto.Firstname;
+                user.Lastname = dto.Lastname;
+                user.Status = (int)EnumConst.UserStatus.VERIFY;
+                user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
+                user.Provider = "google.com";
+                await _userRepository.Insert(user);
+            }
+            return user;
+        }
+
+        public async Task<User> FacebookSignIn(FacebookLoginDto dto)
+        {
+            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.TokenId);
+            var claims = firebaseToken.Claims;
+            string email = (string)claims.GetValueOrDefault("email");
+            if (email == null)
+            {
+                throw new Exception("User not found");
+            }
+            else
+            {
+                User user = await FindByEmail(email);
+                if (user != null)
+                {
+                    user = MapperConfig.GetMapper().Map<User>(dto);
+                    user.AccessToken = dto.AccessToken;
+                    user.UpdateDate = DateTime.Now;
+                    await _userRepository.Update(user);
+                    return user;
+                }
+                else
+                {
+                    throw new Exception("User not found");
+                }
+            }
+            
+            
+        }
+
+        public async Task<User> GoogleSignUp(GoogleSignUpDto dto)
+        {
+            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.TokenId);
+            var claims = firebaseToken.Claims;
+            string email = (string)claims.GetValueOrDefault("email");
+            User user = await FindByEmail(email);
+            if (user == null)
+            {
+                user = MapperConfig.GetMapper().Map<User>(dto);
+                user.Email = email;
+                user.CreatedDate = DateTime.Now;
+                user.Status = (int)EnumConst.UserStatus.VERIFY;
+                user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
+                user.Provider = "google.com";
+                await _userRepository.Insert(user);
+            }
+            return user;
+        }
+
+        public async Task<User> FacebookSignUp(FacebookSignUpDto dto)
+        {
+            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.TokenId);
+            User user = await FindByEmail(dto.Email);
+            if (user == null)
+            {
+                user = MapperConfig.GetMapper().Map<User>(dto);
+                user.CreatedDate = DateTime.Now;
+                user.Status = (int)EnumConst.UserStatus.VERIFY;
+                user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
+                user.Provider = "facebook.com";
+                await _userRepository.Insert(user);
+                var userRecords = new UserRecordArgs
+                {
+                    Email = dto.Email,
+                    EmailVerified = true,
+                    DisplayName = dto.FirstName + " " + dto.LastName,
+                    Uid = firebaseToken.Uid
+                };
+                await FirebaseAuth.DefaultInstance.UpdateUserAsync(userRecords);
+            }
+            return user;
+        }
+
+        public async Task<User> GoogleSignIn(GoogleLoginDto dto)
+        {
+            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.TokenId);
+            var claims = firebaseToken.Claims;
+            string email = (string)claims.GetValueOrDefault("email");
+            User user = await FindByEmail(email);
+            if (user == null)
+            {
+                throw new Exception("Your user not found !");
+            }
+            return user;
+        }
     }
 }

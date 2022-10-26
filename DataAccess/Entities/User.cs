@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess
+namespace DataAccess.Entities
 {
     [Table("user")]
     public partial class User
@@ -22,7 +22,6 @@ namespace DataAccess
         [Key]
         [Column("id")]
         public int Id { get; set; }
-        [Required]
         [Column("username")]
         [StringLength(30)]
         public string Username { get; set; }
@@ -55,11 +54,16 @@ namespace DataAccess
         public DateTime? UpdateDate { get; set; }
         [Column("role_id")]
         public int RoleId { get; set; }
-        [Column("wallet_id")]
-        public int WalletId { get; set; }
         [Column("fcm_token")]
-        [MaxLength(255)]
-        public byte[] FcmToken { get; set; }
+        [StringLength(255)]
+        public string FcmToken { get; set; }
+        [Column("access_token")]
+        [StringLength(255)]
+        public string AccessToken { get; set; }
+        [Required]
+        [Column("provider")]
+        [StringLength(15)]
+        public string Provider { get; set; }
 
         [ForeignKey(nameof(RoleId))]
         [InverseProperty("Users")]
