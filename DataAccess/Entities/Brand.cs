@@ -8,14 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities
 {
-    [Table("media_type")]
-    public partial class MediaType
+    [Table("brand")]
+    public partial class Brand
     {
-        public MediaType()
-        {
-            MediaItems = new HashSet<MediaItem>();
-        }
-
         [Key]
         [Column("id")]
         public int Id { get; set; }
@@ -23,8 +18,15 @@ namespace DataAccess.Entities
         [Column("name")]
         [StringLength(50)]
         public string Name { get; set; }
+        [Required]
+        [Column("description")]
+        [StringLength(255)]
+        public string Description { get; set; }
+        [Column("organization_id")]
+        public int OrganizationId { get; set; }
 
-        [InverseProperty(nameof(MediaItem.MediaType))]
-        public virtual ICollection<MediaItem> MediaItems { get; set; }
+        [ForeignKey(nameof(OrganizationId))]
+        [InverseProperty("Brands")]
+        public virtual Organization Organization { get; set; }
     }
 }

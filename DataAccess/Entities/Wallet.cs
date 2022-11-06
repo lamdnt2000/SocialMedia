@@ -29,12 +29,12 @@ namespace DataAccess.Entities
         [Column("currency")]
         [StringLength(10)]
         public string Currency { get; set; }
-        [Column("member_id")]
-        public int MemberId { get; set; }
+        [Column("userr_id")]
+        public int UserrId { get; set; }
 
-        [ForeignKey(nameof(MemberId))]
+        [ForeignKey(nameof(UserrId))]
         [InverseProperty(nameof(User.Wallets))]
-        public virtual User Member { get; set; }
+        public virtual User Userr { get; set; }
         [InverseProperty(nameof(TransactionDeposit.Wallet))]
         public virtual ICollection<TransactionDeposit> TransactionDeposits { get; set; }
     }

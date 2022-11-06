@@ -10,6 +10,7 @@ using DataAccess.Models;
 using Microsoft.Extensions.Options;
 using Business.Config;
 using Role = Business.Constants.RoleAuthorize;
+using Business.Constants;
 
 namespace WebAPI.Controllers
 {
@@ -68,7 +69,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception e)
             {
-                return JsonResponse(403, "Not authenticate", e.Message);
+                return JsonResponse(401, "Not authenticate", e.Message);
             }
 
         }
@@ -88,12 +89,12 @@ namespace WebAPI.Controllers
 
                 var user = await _userService.GoogleSignIn(dto);
                 _authService.SetCurrentUser(user);
-                return JsonResponse(200, "Success", new { Token = _authService.CreateToken()});
+                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() });
 
             }
             catch (Exception e)
             {
-                return JsonResponse(403, "Not authenticate", e.Message);
+                return JsonResponse(401, "Not authenticate", e.Message);
             }
 
         }
@@ -117,7 +118,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception e)
             {
-                return JsonResponse(403, "Not authenticate", e.Message);
+                return JsonResponse(401, "Not authenticate", e.Message);
             }
 
         }
@@ -142,7 +143,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception e)
             {
-                return JsonResponse(403, "Not authenticate", e.Message);
+                return JsonResponse(401, "Not authenticate", e.Message);
             }
 
         }
@@ -166,10 +167,82 @@ namespace WebAPI.Controllers
             }
             catch (Exception e)
             {
-                return JsonResponse(403, "Not authenticate", e.Message);
+                return JsonResponse(401, "Not authenticate", e.Message);
             }
 
         }
 
+        [HttpGet]
+        [Route("me")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> GetUserProfile()
+        {
+            try
+            {
+
+                var user = await _userService.GetCurrentUserProfile();
+         
+                return JsonResponse(200, "Success",user);
+
+            }
+            catch (Exception e)
+            {
+                return JsonResponse(401, "Not authenticate", e.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("profile")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> UpdateUserProfile([FromForm] UpdateUserDto dto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var result = await _userService.UpdateUserInformation(dto);
+
+                return JsonResponse(200, "Success", "");
+
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("Duplicated"))
+                {
+                    return JsonResponse(400, e.Message,"");
+                }
+                return JsonResponse(401, "Not authenticate", e.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("password")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> UpdateUserPassword([FromForm] UpdateUserPassworDto dto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var result = await _userService.UpdateUserPassword(dto);
+
+                return JsonResponse(200, "Success", "");
+
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("password"))
+                {
+                    return JsonResponse(400, "Bad request", e.Message);
+                }
+                return JsonResponse(401, "Not authenticate", e.Message);
+            }
+        }
     }
 }

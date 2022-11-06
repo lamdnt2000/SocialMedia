@@ -20,32 +20,23 @@ namespace DataAccess
         {
         }
 
+        public virtual DbSet<Brand> Brands { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Channel> Channels { get; set; }
         public virtual DbSet<ChannelCrawl> ChannelCrawls { get; set; }
-        public virtual DbSet<ChannelDetail> ChannelDetails { get; set; }
-        public virtual DbSet<ChannelManagement> ChannelManagements { get; set; }
-        public virtual DbSet<Comment> Comments { get; set; }
-        public virtual DbSet<Criterion> Criteria { get; set; }
+        public virtual DbSet<ChannelRecord> ChannelRecords { get; set; }
         public virtual DbSet<Gateway> Gateways { get; set; }
         public virtual DbSet<Hashtag> Hashtags { get; set; }
-        public virtual DbSet<HashtagGroup> HashtagGroups { get; set; }
-        public virtual DbSet<HashtagPost> HashtagPosts { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
-        public virtual DbSet<MediaItem> MediaItems { get; set; }
-        public virtual DbSet<MediaType> MediaTypes { get; set; }
-        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<Offer> Offers { get; set; }
+        public virtual DbSet<Organization> Organizations { get; set; }
+        public virtual DbSet<Package> Packages { get; set; }
         public virtual DbSet<Platform> Platforms { get; set; }
-        public virtual DbSet<Post> Posts { get; set; }
         public virtual DbSet<PostCrawl> PostCrawls { get; set; }
-        public virtual DbSet<PostDetail> PostDetails { get; set; }
-        public virtual DbSet<Rank> Ranks { get; set; }
-        public virtual DbSet<RankType> RankTypes { get; set; }
+        public virtual DbSet<PostHashtag> PostHashtags { get; set; }
         public virtual DbSet<Reaction> Reactions { get; set; }
-        public virtual DbSet<ReactionType> ReactionTypes { get; set; }
+        public virtual DbSet<Reactiontype> Reactiontypes { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
-        public virtual DbSet<Target> Targets { get; set; }
-        public virtual DbSet<TargetType> TargetTypes { get; set; }
+        public virtual DbSet<Subscription> Subscriptions { get; set; }
         public virtual DbSet<TransactionDeposit> TransactionDeposits { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Wallet> Wallets { get; set; }
@@ -53,6 +44,15 @@ namespace DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+
+            modelBuilder.Entity<Brand>(entity =>
+            {
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Brands)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_brand_organization");
+            });
 
             modelBuilder.Entity<Category>(entity =>
             {
@@ -62,97 +62,40 @@ namespace DataAccess
                     .HasConstraintName("FK_category_platform");
             });
 
-            modelBuilder.Entity<Channel>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-                entity.Property(e => e.Address).IsUnicode(false);
-
-                entity.Property(e => e.Avatar).IsUnicode(false);
-
-                entity.Property(e => e.Banner).IsUnicode(false);
-
-                entity.Property(e => e.Cid).IsUnicode(false);
-
-                entity.Property(e => e.Name).IsUnicode(false);
-
-                entity.Property(e => e.Nickname).IsUnicode(false);
-
-                entity.Property(e => e.OrganizationName).IsUnicode(false);
-
-                entity.Property(e => e.Phone).IsUnicode(false);
-
-                entity.Property(e => e.Url).IsUnicode(false);
-
-                entity.HasOne(d => d.Criteria)
-                    .WithMany(p => p.Channels)
-                    .HasForeignKey(d => d.CriteriaId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_channel_criteria");
-
-                entity.HasOne(d => d.IdNavigation)
-                    .WithOne(p => p.Channel)
-                    .HasForeignKey<Channel>(d => d.Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_channel_channel_crawl");
-
-                entity.HasOne(d => d.Id1)
-                    .WithOne(p => p.Channel)
-                    .HasForeignKey<Channel>(d => d.Id)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_channel_ChannelManagement");
-
-                entity.HasOne(d => d.Location)
-                    .WithMany(p => p.Channels)
-                    .HasForeignKey(d => d.LocationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_channel_location");
-
-                entity.HasOne(d => d.Member)
-                    .WithMany(p => p.Channels)
-                    .HasForeignKey(d => d.MemberId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_channel_user");
-
-                entity.HasOne(d => d.Platform)
-                    .WithMany(p => p.Channels)
-                    .HasForeignKey(d => d.PlatformId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_channel_platform");
-            });
-
             modelBuilder.Entity<ChannelCrawl>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.ChannelCrawls)
+                    .HasForeignKey(d => d.CategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_channel_crawl_category");
+
+                entity.HasOne(d => d.Location)
+                    .WithMany(p => p.ChannelCrawls)
+                    .HasForeignKey(d => d.LocationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_channel_crawl_location");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.ChannelCrawls)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_channel_crawl_organization");
+
+                entity.HasOne(d => d.Platform)
+                    .WithMany(p => p.ChannelCrawls)
+                    .HasForeignKey(d => d.PlatformId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_channel_crawl_platform");
             });
 
-            modelBuilder.Entity<ChannelDetail>(entity =>
+            modelBuilder.Entity<ChannelRecord>(entity =>
             {
                 entity.HasOne(d => d.Channel)
-                    .WithMany(p => p.ChannelDetails)
+                    .WithMany(p => p.ChannelRecords)
                     .HasForeignKey(d => d.ChannelId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_channel_detail_channel");
-            });
-
-            modelBuilder.Entity<ChannelManagement>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.HasOne(d => d.Target)
-                    .WithMany(p => p.ChannelManagements)
-                    .HasForeignKey(d => d.TargetId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ChannelManagement_target");
-            });
-
-            modelBuilder.Entity<Comment>(entity =>
-            {
-                entity.HasOne(d => d.Post)
-                    .WithMany(p => p.Comments)
-                    .HasForeignKey(d => d.PostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_comment_post_crawl");
+                    .HasConstraintName("FK_channel_record_channel_crawl");
             });
 
             modelBuilder.Entity<Gateway>(entity =>
@@ -168,119 +111,39 @@ namespace DataAccess
                 entity.Property(e => e.Type).IsFixedLength(true);
             });
 
-            modelBuilder.Entity<HashtagGroup>(entity =>
-            {
-                entity.HasOne(d => d.Member)
-                    .WithMany(p => p.HashtagGroups)
-                    .HasForeignKey(d => d.MemberId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_hashtag_group_user");
-            });
-
-            modelBuilder.Entity<HashtagPost>(entity =>
-            {
-                entity.HasOne(d => d.Tag)
-                    .WithMany(p => p.HashtagPosts)
-                    .HasForeignKey(d => d.TagId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_hashtag_post_hashtag_group");
-            });
-
             modelBuilder.Entity<Location>(entity =>
             {
                 entity.Property(e => e.Code).IsUnicode(false);
             });
 
-            modelBuilder.Entity<MediaItem>(entity =>
-            {
-                entity.HasOne(d => d.MediaType)
-                    .WithMany(p => p.MediaItems)
-                    .HasForeignKey(d => d.MediaTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_media_item_media_type");
-
-                entity.HasOne(d => d.Post)
-                    .WithMany(p => p.MediaItems)
-                    .HasForeignKey(d => d.PostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_media_item_posts");
-            });
-
-            modelBuilder.Entity<Order>(entity =>
-            {
-                entity.Property(e => e.ChannelId).IsUnicode(false);
-
-                entity.HasOne(d => d.Member)
-                    .WithMany(p => p.Orders)
-                    .HasForeignKey(d => d.MemberId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_order_user");
-            });
-
-            modelBuilder.Entity<Post>(entity =>
-            {
-                entity.Property(e => e.Pid).IsUnicode(false);
-
-                entity.Property(e => e.Title).IsUnicode(false);
-
-                entity.HasOne(d => d.Channel)
-                    .WithMany(p => p.Posts)
-                    .HasForeignKey(d => d.ChannelId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_posts_ChannelManagement");
-
-                entity.HasOne(d => d.Hashtag)
-                    .WithMany(p => p.Posts)
-                    .HasForeignKey(d => d.HashtagId)
-                    .HasConstraintName("FK_posts_hashtag");
-            });
-
             modelBuilder.Entity<PostCrawl>(entity =>
             {
-                entity.Property(e => e.Body).IsUnicode(false);
-
-                entity.Property(e => e.Description).IsUnicode(false);
-
                 entity.Property(e => e.Pid).IsUnicode(false);
 
                 entity.Property(e => e.PostType).IsUnicode(false);
-
-                entity.Property(e => e.Title).IsUnicode(false);
 
                 entity.HasOne(d => d.Channel)
                     .WithMany(p => p.PostCrawls)
                     .HasForeignKey(d => d.ChannelId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_post_crawl_channel_crawl");
+            });
+
+            modelBuilder.Entity<PostHashtag>(entity =>
+            {
+                entity.HasKey(e => new { e.PostId, e.HashtagId });
 
                 entity.HasOne(d => d.Hashtag)
-                    .WithMany(p => p.PostCrawls)
+                    .WithMany(p => p.PostHashtags)
                     .HasForeignKey(d => d.HashtagId)
-                    .HasConstraintName("FK_post_crawl_hashtag");
-            });
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_post_hashtag_hashtag");
 
-            modelBuilder.Entity<PostDetail>(entity =>
-            {
                 entity.HasOne(d => d.Post)
-                    .WithMany(p => p.PostDetails)
+                    .WithMany(p => p.PostHashtags)
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_post_detail_post_crawl");
-            });
-
-            modelBuilder.Entity<Rank>(entity =>
-            {
-                entity.HasOne(d => d.Channel)
-                    .WithMany(p => p.Ranks)
-                    .HasForeignKey(d => d.ChannelId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_rank_channel");
-
-                entity.HasOne(d => d.RankType)
-                    .WithMany(p => p.Ranks)
-                    .HasForeignKey(d => d.RankTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_rank_rank_type");
+                    .HasConstraintName("FK_post_hashtag_post_crawl");
             });
 
             modelBuilder.Entity<Reaction>(entity =>
@@ -295,16 +158,43 @@ namespace DataAccess
                     .WithMany(p => p.Reactions)
                     .HasForeignKey(d => d.ReactionTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_reaction_reaction_type");
+                    .HasConstraintName("FK_reaction_reactiontype");
             });
 
-            modelBuilder.Entity<Target>(entity =>
+            modelBuilder.Entity<Reactiontype>(entity =>
             {
-                entity.HasOne(d => d.TargetType)
-                    .WithMany(p => p.Targets)
-                    .HasForeignKey(d => d.TargetTypeId)
+                entity.HasOne(d => d.Platform)
+                    .WithMany(p => p.Reactiontypes)
+                    .HasForeignKey(d => d.PlatformId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_target_target_type");
+                    .HasConstraintName("FK_reactiontype_platform");
+            });
+
+            modelBuilder.Entity<Subscription>(entity =>
+            {
+                entity.HasOne(d => d.Offer)
+                    .WithMany()
+                    .HasForeignKey(d => d.OfferId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_subscription_offer");
+
+                entity.HasOne(d => d.Package)
+                    .WithMany()
+                    .HasForeignKey(d => d.PackageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_subscription_package");
+
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_subscription_user");
+
+                entity.HasOne(d => d.Wallet)
+                    .WithMany()
+                    .HasForeignKey(d => d.WalletId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_subscription_wallet");
             });
 
             modelBuilder.Entity<TransactionDeposit>(entity =>
@@ -345,7 +235,7 @@ namespace DataAccess
                     .WithMany(p => p.TransactionDeposits)
                     .HasForeignKey(d => d.GatewayId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_transaction_deposit_GateWay");
+                    .HasConstraintName("FK_transaction_deposit_gateway");
 
                 entity.HasOne(d => d.Wallet)
                     .WithMany(p => p.TransactionDeposits)
@@ -362,9 +252,9 @@ namespace DataAccess
 
                 entity.Property(e => e.FcmToken).IsUnicode(false);
 
-                entity.Property(e => e.Firstname).IsUnicode(false);
+                entity.Property(e => e.Firstname).IsUnicode(true);
 
-                entity.Property(e => e.Lastname).IsUnicode(false);
+                entity.Property(e => e.Lastname).IsUnicode(true);
 
                 entity.Property(e => e.Password).IsUnicode(false);
 
@@ -387,9 +277,9 @@ namespace DataAccess
 
                 entity.Property(e => e.Status).IsFixedLength(true);
 
-                entity.HasOne(d => d.Member)
+                entity.HasOne(d => d.Userr)
                     .WithMany(p => p.Wallets)
-                    .HasForeignKey(d => d.MemberId)
+                    .HasForeignKey(d => d.UserrId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_wallet_user");
             });

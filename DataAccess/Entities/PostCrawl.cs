@@ -13,25 +13,22 @@ namespace DataAccess.Entities
     {
         public PostCrawl()
         {
-            Comments = new HashSet<Comment>();
-            PostDetails = new HashSet<PostDetail>();
+            PostHashtags = new HashSet<PostHashtag>();
             Reactions = new HashSet<Reaction>();
         }
 
         [Key]
         [Column("id")]
-        public long Id { get; set; }
+        public int Id { get; set; }
         [Required]
         [Column("title")]
-        [StringLength(50)]
         public string Title { get; set; }
         [Required]
-        [Column("body")]
-        public string Body { get; set; }
-        [Column("update_at", TypeName = "datetime")]
-        public DateTime? UpdateAt { get; set; }
-        [Column("created_at", TypeName = "datetime")]
-        public DateTime CreatedAt { get; set; }
+        [Column("pid")]
+        [StringLength(20)]
+        public string Pid { get; set; }
+        [Column("description")]
+        public string Description { get; set; }
         [Required]
         [Column("post_type")]
         [StringLength(50)]
@@ -40,25 +37,21 @@ namespace DataAccess.Entities
         public int Status { get; set; }
         [Column("hashtag_id")]
         public int? HashtagId { get; set; }
-        [Column("description")]
-        public string Description { get; set; }
         [Required]
-        [Column("pid")]
-        [StringLength(50)]
-        public string Pid { get; set; }
+        [Column("body")]
+        public string Body { get; set; }
+        [Column("created_date", TypeName = "datetime")]
+        public DateTime CreatedDate { get; set; }
+        [Column("update_date", TypeName = "datetime")]
+        public DateTime? UpdateDate { get; set; }
         [Column("channel_id")]
-        public long ChannelId { get; set; }
+        public int ChannelId { get; set; }
 
         [ForeignKey(nameof(ChannelId))]
         [InverseProperty(nameof(ChannelCrawl.PostCrawls))]
         public virtual ChannelCrawl Channel { get; set; }
-        [ForeignKey(nameof(HashtagId))]
-        [InverseProperty("PostCrawls")]
-        public virtual Hashtag Hashtag { get; set; }
-        [InverseProperty(nameof(Comment.Post))]
-        public virtual ICollection<Comment> Comments { get; set; }
-        [InverseProperty(nameof(PostDetail.Post))]
-        public virtual ICollection<PostDetail> PostDetails { get; set; }
+        [InverseProperty(nameof(PostHashtag.Post))]
+        public virtual ICollection<PostHashtag> PostHashtags { get; set; }
         [InverseProperty(nameof(Reaction.Post))]
         public virtual ICollection<Reaction> Reactions { get; set; }
     }

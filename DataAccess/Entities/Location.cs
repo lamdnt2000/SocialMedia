@@ -13,7 +13,7 @@ namespace DataAccess.Entities
     {
         public Location()
         {
-            Channels = new HashSet<Channel>();
+            ChannelCrawls = new HashSet<ChannelCrawl>();
         }
 
         [Key]
@@ -28,7 +28,7 @@ namespace DataAccess.Entities
         [StringLength(5)]
         public string Code { get; set; }
 
-        [InverseProperty(nameof(Channel.Location))]
-        public virtual ICollection<Channel> Channels { get; set; }
+        [InverseProperty(nameof(ChannelCrawl.Location))]
+        public virtual ICollection<ChannelCrawl> ChannelCrawls { get; set; }
     }
 }

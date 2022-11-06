@@ -14,7 +14,8 @@ namespace DataAccess.Entities
         public Platform()
         {
             Categories = new HashSet<Category>();
-            Channels = new HashSet<Channel>();
+            ChannelCrawls = new HashSet<ChannelCrawl>();
+            Reactiontypes = new HashSet<Reactiontype>();
         }
 
         [Key]
@@ -29,7 +30,9 @@ namespace DataAccess.Entities
 
         [InverseProperty(nameof(Category.Platform))]
         public virtual ICollection<Category> Categories { get; set; }
-        [InverseProperty(nameof(Channel.Platform))]
-        public virtual ICollection<Channel> Channels { get; set; }
+        [InverseProperty(nameof(ChannelCrawl.Platform))]
+        public virtual ICollection<ChannelCrawl> ChannelCrawls { get; set; }
+        [InverseProperty(nameof(Reactiontype.Platform))]
+        public virtual ICollection<Reactiontype> Reactiontypes { get; set; }
     }
 }

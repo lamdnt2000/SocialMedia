@@ -13,25 +13,25 @@ namespace DataAccess.Entities
     {
         [Key]
         [Column("id")]
-        public long Id { get; set; }
+        public int Id { get; set; }
         [Column("reaction_type_id")]
         public int ReactionTypeId { get; set; }
         [Column("post_id")]
-        public long PostId { get; set; }
-        [Required]
-        [Column("username")]
-        [StringLength(50)]
-        public string Username { get; set; }
-        [Required]
-        [Column("display_name")]
-        [StringLength(255)]
-        public string DisplayName { get; set; }
+        public int PostId { get; set; }
+        [Column("count")]
+        public long Count { get; set; }
+        [Column("created_date", TypeName = "datetime")]
+        public DateTime CreatedDate { get; set; }
+        [Column("update_date", TypeName = "datetime")]
+        public DateTime? UpdateDate { get; set; }
+        [Column("status")]
+        public bool Status { get; set; }
 
         [ForeignKey(nameof(PostId))]
         [InverseProperty(nameof(PostCrawl.Reactions))]
         public virtual PostCrawl Post { get; set; }
         [ForeignKey(nameof(ReactionTypeId))]
-        [InverseProperty("Reactions")]
-        public virtual ReactionType ReactionType { get; set; }
+        [InverseProperty(nameof(Reactiontype.Reactions))]
+        public virtual Reactiontype ReactionType { get; set; }
     }
 }

@@ -20,6 +20,8 @@ namespace Business.Utils
                 cfg.CreateMap<User, GoogleLoginDto>().ReverseMap();
                 cfg.CreateMap<User, GoogleSignUpDto>().ReverseMap();
                 cfg.CreateMap<User, FacebookSignUpDto>().ReverseMap();
+                cfg.CreateMap<User, UpdateUserDto>().ReverseMap();
+                cfg.CreateMap<User, UpdateUserPassworDto>().ReverseMap();
             });
             return configuration.CreateMapper();
         }

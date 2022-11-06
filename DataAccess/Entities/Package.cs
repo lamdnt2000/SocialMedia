@@ -8,29 +8,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities
 {
-    [Table("rank_type")]
-    public partial class RankType
+    [Table("package")]
+    public partial class Package
     {
-        public RankType()
-        {
-            Ranks = new HashSet<Rank>();
-        }
-
         [Key]
         [Column("id")]
         public int Id { get; set; }
         [Required]
         [Column("name")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Name { get; set; }
         [Required]
         [Column("description")]
-        [StringLength(255)]
         public string Description { get; set; }
+        [Column("price")]
+        public double Price { get; set; }
+        [Column("created_at", TypeName = "datetime")]
+        public DateTime CreatedAt { get; set; }
+        [Column("update_at", TypeName = "datetime")]
+        public DateTime? UpdateAt { get; set; }
         [Column("status")]
-        public int? Status { get; set; }
-
-        [InverseProperty(nameof(Rank.RankType))]
-        public virtual ICollection<Rank> Ranks { get; set; }
+        public bool Status { get; set; }
     }
 }

@@ -13,15 +13,74 @@ namespace DataAccess.Entities
     {
         public ChannelCrawl()
         {
+            ChannelRecords = new HashSet<ChannelRecord>();
             PostCrawls = new HashSet<PostCrawl>();
         }
 
         [Key]
         [Column("id")]
-        public long Id { get; set; }
+        public int Id { get; set; }
+        [Column("created_date", TypeName = "datetime")]
+        public DateTime CreatedDate { get; set; }
+        [Column("update_date", TypeName = "datetime")]
+        public DateTime? UpdateDate { get; set; }
+        [Column("location_id")]
+        public int LocationId { get; set; }
+        [Column("category_id")]
+        public int CategoryId { get; set; }
+        [Column("platform_id")]
+        public int PlatformId { get; set; }
+        [Column("brand_id")]
+        public int? BrandId { get; set; }
+        [Column("organization_id")]
+        public int OrganizationId { get; set; }
+        [Column("bot_id")]
+        public int? BotId { get; set; }
+        [Required]
+        [Column("name")]
+        [StringLength(255)]
+        public string Name { get; set; }
+        [Required]
+        [Column("url")]
+        [StringLength(255)]
+        public string Url { get; set; }
+        [Required]
+        [Column("avatar_url")]
+        [StringLength(255)]
+        public string AvatarUrl { get; set; }
+        [Required]
+        [Column("banner_url")]
+        [StringLength(255)]
+        public string BannerUrl { get; set; }
+        [Column("start_date", TypeName = "datetime")]
+        public DateTime? StartDate { get; set; }
+        [Column("status")]
+        public int Status { get; set; }
+        [Column("is_verify")]
+        public bool IsVerify { get; set; }
+        [Required]
+        [Column("bio")]
+        public string Bio { get; set; }
+        [Column("username")]
+        [StringLength(50)]
+        public string Username { get; set; }
+        [Column("cid")]
+        public int Cid { get; set; }
 
-        [InverseProperty("IdNavigation")]
-        public virtual Channel Channel { get; set; }
+        [ForeignKey(nameof(CategoryId))]
+        [InverseProperty("ChannelCrawls")]
+        public virtual Category Category { get; set; }
+        [ForeignKey(nameof(LocationId))]
+        [InverseProperty("ChannelCrawls")]
+        public virtual Location Location { get; set; }
+        [ForeignKey(nameof(OrganizationId))]
+        [InverseProperty("ChannelCrawls")]
+        public virtual Organization Organization { get; set; }
+        [ForeignKey(nameof(PlatformId))]
+        [InverseProperty("ChannelCrawls")]
+        public virtual Platform Platform { get; set; }
+        [InverseProperty(nameof(ChannelRecord.Channel))]
+        public virtual ICollection<ChannelRecord> ChannelRecords { get; set; }
         [InverseProperty(nameof(PostCrawl.Channel))]
         public virtual ICollection<PostCrawl> PostCrawls { get; set; }
     }

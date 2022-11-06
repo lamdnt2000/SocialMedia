@@ -13,9 +13,6 @@ namespace DataAccess.Entities
     {
         public User()
         {
-            Channels = new HashSet<Channel>();
-            HashtagGroups = new HashSet<HashtagGroup>();
-            Orders = new HashSet<Order>();
             Wallets = new HashSet<Wallet>();
         }
 
@@ -37,7 +34,6 @@ namespace DataAccess.Entities
         [Column("lastname")]
         [StringLength(20)]
         public string Lastname { get; set; }
-        [Required]
         [Column("password")]
         [StringLength(255)]
         public string Password { get; set; }
@@ -68,13 +64,7 @@ namespace DataAccess.Entities
         [ForeignKey(nameof(RoleId))]
         [InverseProperty("Users")]
         public virtual Role Role { get; set; }
-        [InverseProperty(nameof(Channel.Member))]
-        public virtual ICollection<Channel> Channels { get; set; }
-        [InverseProperty(nameof(HashtagGroup.Member))]
-        public virtual ICollection<HashtagGroup> HashtagGroups { get; set; }
-        [InverseProperty(nameof(Order.Member))]
-        public virtual ICollection<Order> Orders { get; set; }
-        [InverseProperty(nameof(Wallet.Member))]
+        [InverseProperty(nameof(Wallet.Userr))]
         public virtual ICollection<Wallet> Wallets { get; set; }
     }
 }

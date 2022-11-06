@@ -11,6 +11,11 @@ namespace DataAccess.Entities
     [Table("category")]
     public partial class Category
     {
+        public Category()
+        {
+            ChannelCrawls = new HashSet<ChannelCrawl>();
+        }
+
         [Key]
         [Column("id")]
         public int Id { get; set; }
@@ -23,5 +28,7 @@ namespace DataAccess.Entities
         [ForeignKey(nameof(PlatformId))]
         [InverseProperty("Categories")]
         public virtual Platform Platform { get; set; }
+        [InverseProperty(nameof(ChannelCrawl.Category))]
+        public virtual ICollection<ChannelCrawl> ChannelCrawls { get; set; }
     }
 }

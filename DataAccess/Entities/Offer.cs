@@ -8,14 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities
 {
-    [Table("hashtag")]
-    public partial class Hashtag
+    [Table("offer")]
+    public partial class Offer
     {
-        public Hashtag()
-        {
-            PostHashtags = new HashSet<PostHashtag>();
-        }
-
         [Key]
         [Column("id")]
         public int Id { get; set; }
@@ -23,13 +18,19 @@ namespace DataAccess.Entities
         [Column("name")]
         [StringLength(255)]
         public string Name { get; set; }
+        [Required]
         [Column("description")]
         [StringLength(255)]
         public string Description { get; set; }
+        [Column("price")]
+        public double Price { get; set; }
+        [Column("duration")]
+        public int Duration { get; set; }
         [Column("status")]
         public bool Status { get; set; }
-
-        [InverseProperty(nameof(PostHashtag.Hashtag))]
-        public virtual ICollection<PostHashtag> PostHashtags { get; set; }
+        [Column("create_date", TypeName = "datetime")]
+        public DateTime CreateDate { get; set; }
+        [Column("update_date", TypeName = "datetime")]
+        public DateTime? UpdateDate { get; set; }
     }
 }

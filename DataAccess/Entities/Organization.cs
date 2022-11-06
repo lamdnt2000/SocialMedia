@@ -8,12 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities
 {
-    [Table("target_type")]
-    public partial class TargetType
+    [Table("organization")]
+    public partial class Organization
     {
-        public TargetType()
+        public Organization()
         {
-            Targets = new HashSet<Target>();
+            Brands = new HashSet<Brand>();
+            ChannelCrawls = new HashSet<ChannelCrawl>();
         }
 
         [Key]
@@ -21,17 +22,18 @@ namespace DataAccess.Entities
         public int Id { get; set; }
         [Required]
         [Column("name")]
-        [StringLength(100)]
+        [StringLength(255)]
         public string Name { get; set; }
         [Column("description")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string Description { get; set; }
-        [Required]
-        [Column("field")]
-        [StringLength(50)]
-        public string Field { get; set; }
+        [Column("site")]
+        [StringLength(255)]
+        public string Site { get; set; }
 
-        [InverseProperty(nameof(Target.TargetType))]
-        public virtual ICollection<Target> Targets { get; set; }
+        [InverseProperty(nameof(Brand.Organization))]
+        public virtual ICollection<Brand> Brands { get; set; }
+        [InverseProperty(nameof(ChannelCrawl.Organization))]
+        public virtual ICollection<ChannelCrawl> ChannelCrawls { get; set; }
     }
 }

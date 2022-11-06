@@ -8,21 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities
 {
-    [Table("ChannelManagement")]
-    public partial class ChannelManagement
+    [Table("channel_record")]
+    public partial class ChannelRecord
     {
-        public ChannelManagement()
-        {
-            Posts = new HashSet<Post>();
-        }
-
         [Key]
         [Column("id")]
-        public long Id { get; set; }
-        [Column("target_id")]
-        public int TargetId { get; set; }
-        [Column("total_follow")]
-        public long TotalFollow { get; set; }
+        public int Id { get; set; }
+        [Column("total_follower")]
+        public long TotalFollower { get; set; }
         [Column("total_like")]
         public long TotalLike { get; set; }
         [Column("total_share")]
@@ -33,13 +26,11 @@ namespace DataAccess.Entities
         public long TotalPost { get; set; }
         [Column("total_view")]
         public long? TotalView { get; set; }
+        [Column("channel_id")]
+        public int ChannelId { get; set; }
 
-        [ForeignKey(nameof(TargetId))]
-        [InverseProperty("ChannelManagements")]
-        public virtual Target Target { get; set; }
-        [InverseProperty("Id1")]
-        public virtual Channel Channel { get; set; }
-        [InverseProperty(nameof(Post.Channel))]
-        public virtual ICollection<Post> Posts { get; set; }
+        [ForeignKey(nameof(ChannelId))]
+        [InverseProperty(nameof(ChannelCrawl.ChannelRecords))]
+        public virtual ChannelCrawl Channel { get; set; }
     }
 }

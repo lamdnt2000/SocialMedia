@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.LoginUser
 {
-    public class LoginUserDTO
+    public class UpdateUserDto
     {
+
+        public string? UserName { get; set; }
         [Required]
         public string Email { get; set; }
         [Required]
-        public string Password { get; set; }
-     
-        public string TokenId { get; set; }
+        public string Firstname { get; set; }
+        [Required]
+        public string Lastname { get; set; }
+        public string? Phone { get; set; }
+
+
     }
 }

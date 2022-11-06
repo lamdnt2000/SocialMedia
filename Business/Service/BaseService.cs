@@ -8,7 +8,7 @@ namespace Business.Service
 {
     public class BaseService
     {
-        private readonly IUserRepository _userRepository;
+        protected readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         
         protected BaseService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)

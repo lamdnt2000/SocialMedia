@@ -15,11 +15,11 @@
    "SelectedToBeGenerated": 0,
    "Tables": [
       {
-         "Name": "[dbo].[category]",
+         "Name": "[dbo].[brand]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[channel]",
+         "Name": "[dbo].[category]",
          "ObjectType": 0
       },
       {
@@ -27,19 +27,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[channel_detail]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[ChannelManagement]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[comment]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[criteria]",
+         "Name": "[dbo].[channel_record]",
          "ObjectType": 0
       },
       {
@@ -51,27 +39,19 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[hashtag_group]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[hashtag_post]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[location]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[media_item]",
+         "Name": "[dbo].[offer]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[media_type]",
+         "Name": "[dbo].[organization]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[order]",
+         "Name": "[dbo].[package]",
          "ObjectType": 0
       },
       {
@@ -83,19 +63,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[post_detail]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[posts]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[rank]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[rank_type]",
+         "Name": "[dbo].[post_hashtag]",
          "ObjectType": 0
       },
       {
@@ -103,7 +71,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[reaction_type]",
+         "Name": "[dbo].[reactiontype]",
          "ObjectType": 0
       },
       {
@@ -111,11 +79,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[target]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[target_type]",
+         "Name": "[dbo].[subscription]",
          "ObjectType": 0
       },
       {

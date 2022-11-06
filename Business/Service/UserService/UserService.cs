@@ -12,13 +12,13 @@ using System.Security.Cryptography;
 
 namespace Business.Service.UserService
 {
-    public class UserService :  IUserService
+    public class UserService : BaseService, IUserService
     {
-        private readonly IUserRepository _userRepository;
 
-        public UserService(IUserRepository userRepository)
+
+        public UserService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository) : base(httpContextAccessor, userRepository)
         {
-            _userRepository = userRepository;
+
         }
 
         public bool CheckPassword(string inputPassword, string currentPassword)
@@ -42,7 +42,8 @@ namespace Business.Service.UserService
                 if (user == null)
                 {
                     UserRecord userRecord = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(userDTO.Email);
-                    if (userRecord != null) {
+                    if (userRecord != null)
+                    {
                         if (!userRecord.EmailVerified)
                         {
                             string hashPass = BCrypt.Net.BCrypt.HashPassword(userDTO.Password);
@@ -86,8 +87,13 @@ namespace Business.Service.UserService
                 {
                     throw new Exception("User Not Found");
                 }
-                if (!user.Provider.Equals("email"){
-                    throw new Exception("Your auth not support");
+                if (!user.Provider.Equals("firebase"))
+                {
+                    throw new Exception("Your user auth not support");
+                }
+                if (!CheckPassword(userDTO.Password, user.Password))
+                {
+                    throw new Exception("Invalid user or password");
                 }
 
                 if (user.Status == (int)EnumConst.UserStatus.NEW)
@@ -116,10 +122,6 @@ namespace Business.Service.UserService
         }
 
 
-        public Task<int> Update(InsertUserDTO user)
-        {
-            return null;
-        }
 
         public async Task<User> GoogleSignIn(InsertUserDTO dto)
         {
@@ -167,8 +169,8 @@ namespace Business.Service.UserService
                     throw new Exception("User not found");
                 }
             }
-            
-            
+
+
         }
 
         public async Task<User> GoogleSignUp(GoogleSignUpDto dto)
@@ -225,6 +227,51 @@ namespace Business.Service.UserService
                 throw new Exception("Your user not found !");
             }
             return user;
+        }
+
+        public async Task<bool> UpdateUserInformation(UpdateUserDto dto)
+        {
+            var currentUser = await GetCurrentUser();
+            var user = await FindByEmail(dto.Email);
+            if (user!=null && user.Id == currentUser.Id)
+            {
+                currentUser.Email = dto.Email;
+                currentUser.Firstname = dto.Firstname;
+                currentUser.Lastname = dto.Lastname;
+                currentUser.Username = dto.UserName;
+                currentUser.Phone = dto.Phone;
+                currentUser.UpdateDate = DateTime.Now;
+                int result = await _userRepository.Update(currentUser);
+                return (result > 0) ? true : false;
+            }
+            else
+            {
+                throw new Exception("Duplicated email");
+            }
+
+        }
+
+        public async Task<bool> UpdateUserPassword(UpdateUserPassworDto dto)
+        {
+            var currentUser = await GetCurrentUser();
+            if (CheckPassword(dto.CurrentPassword, currentUser.Password))
+            {
+                currentUser.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+                currentUser.UpdateDate = DateTime.Now;
+                var result = await _userRepository.Update(currentUser);
+                return (result > 0) ? true : false;
+
+            }
+            else
+            {
+                throw new Exception("Old password not match");
+            }
+        }
+
+        public async Task<UpdateUserDto> GetCurrentUserProfile()
+        {
+            var user = await GetCurrentUser();
+            return MapperConfig.GetMapper().Map<UpdateUserDto>(user);
         }
     }
 }

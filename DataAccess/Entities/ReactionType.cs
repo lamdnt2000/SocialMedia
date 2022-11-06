@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities
 {
-    [Table("reaction_type")]
-    public partial class ReactionType
+    [Table("reactiontype")]
+    public partial class Reactiontype
     {
-        public ReactionType()
+        public Reactiontype()
         {
             Reactions = new HashSet<Reaction>();
         }
@@ -19,10 +19,21 @@ namespace DataAccess.Entities
         [Key]
         [Column("id")]
         public int Id { get; set; }
+        [Required]
         [Column("name")]
         [StringLength(50)]
         public string Name { get; set; }
+        [Column("description")]
+        [StringLength(255)]
+        public string Description { get; set; }
+        [Column("status")]
+        public bool Status { get; set; }
+        [Column("platform_id")]
+        public int PlatformId { get; set; }
 
+        [ForeignKey(nameof(PlatformId))]
+        [InverseProperty("Reactiontypes")]
+        public virtual Platform Platform { get; set; }
         [InverseProperty(nameof(Reaction.ReactionType))]
         public virtual ICollection<Reaction> Reactions { get; set; }
     }
