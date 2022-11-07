@@ -1,4 +1,4 @@
-﻿namespace Business.Utils
+﻿namespace Business.Constants
 {
     public static class ResponseMsg
     {
@@ -11,6 +11,9 @@
         public const string DELETE_SUCCESS = "Delete success";
         public const string DELETE_FAILED = "Delete failed";
         public const string NOT_FOUND = "Not found";
+        public const string UNAUTHORIZE = "Unauthorize";
+        public const string DUPLICATED = "Duplicated";
+      
 
     }
 }

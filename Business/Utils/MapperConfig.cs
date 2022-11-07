@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
+using DataAccess.Models.BranModel;
 using DataAccess.Models.LoginUser;
+using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.Role;
 
 namespace Business.Utils
@@ -22,6 +24,15 @@ namespace Business.Utils
                 cfg.CreateMap<User, FacebookSignUpDto>().ReverseMap();
                 cfg.CreateMap<User, UpdateUserDto>().ReverseMap();
                 cfg.CreateMap<User, UpdateUserPassworDto>().ReverseMap();
+
+                cfg.CreateMap<Organization, InsertOrganizationDto>().ReverseMap();
+                cfg.CreateMap<Organization, OrganizationDto>().ReverseMap();
+                cfg.CreateMap<Organization, UpdateOrganizationDto>().ReverseMap();
+
+                cfg.CreateMap<Brand, BrandDto>().ReverseMap();
+                cfg.CreateMap<Brand, InsertBrandDto>().ReverseMap();
+                cfg.CreateMap<Brand, UpdateBrandDto>().ReverseMap();
+                cfg.CreateMap<Brand, CollectionBrandDto>().ReverseMap();
             });
             return configuration.CreateMapper();
         }

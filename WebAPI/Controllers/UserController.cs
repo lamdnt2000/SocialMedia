@@ -9,7 +9,6 @@ using DataAccess.Models.LoginUser;
 using DataAccess.Models;
 using Microsoft.Extensions.Options;
 using Business.Config;
-using Role = Business.Constants.RoleAuthorize;
 using Business.Constants;
 
 namespace WebAPI.Controllers

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
+using System.Text.Json;
 
 namespace Business.Utils
 {
@@ -8,6 +10,11 @@ namespace Business.Utils
         public static JsonResult JsonResponse(int statusCode, string message, Object data)
         {
             Object obj;
+            var options = new JsonSerializerOptions
+            {
+                IncludeFields = true,
+                
+            };
             if (data != null)
             {
                 obj = new { statusCode = statusCode, message = message, data = data };
@@ -16,7 +23,7 @@ namespace Business.Utils
             {
                 obj = new { statusCode = statusCode, message = message };
             }
-            return new JsonResult(obj) { StatusCode = statusCode };
+            return new JsonResult(obj, options) { StatusCode = statusCode };
         }
 
         public static JsonResult ErrorResponse(string detail)

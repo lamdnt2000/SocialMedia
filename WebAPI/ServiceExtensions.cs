@@ -7,7 +7,6 @@ using Microsoft.OpenApi.Models;
 using Business.Repository.RoleRepo;
 using DataAccess.Models;
 using Business.Service.Rule;
-using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.Extensions.Configuration;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
@@ -17,7 +16,10 @@ using System.Text;
 using Business.Repository.UserRepo;
 using Business.Service.UserService;
 using API.Service.Authorize;
-using API.Service.FirebaseService;
+using Business.Repository.OrganizationRepo;
+using Business.Service.OrganizationService;
+using Business.Repository.BrandRepo;
+using Business.Service.BrandService;
 
 namespace API
 {
@@ -33,10 +35,16 @@ namespace API
 
             services.AddScoped<IAuthService, AuthService>();
 
-        
+            services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+            services.AddScoped<IOrganizationService, OrganizationService>();
+
+            services.AddScoped<IBrandRepository, BrandRepository>();
+            services.AddScoped<IBrandService, BrandService>();
+
+
         }
 
-       
+
         public static void ConfigureExceptionHandler(this IApplicationBuilder app)
         {
             app.UseExceptionHandler(error =>
