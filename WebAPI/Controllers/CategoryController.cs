@@ -1,36 +1,36 @@
 ﻿using Business.Config;
 using Business.Constants;
-using Business.Service.OrganizationService;
-using DataAccess.Models.OrganizationModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System;
-using Business.Service.BrandService;
 using static Business.Utils.ResponseFormat;
 using static Business.Constants.ResponseMsg;
+using WebAPI.Constant;
+using Business.Service.CategoryService;
 using DataAccess.Models.BranModel;
+using System.Threading.Tasks;
+using System;
+using DataAccess.Models.CategoryModel;
 
 namespace WebAPI.Controllers
 {
-    [Route(Constant.ApiPath.BRAND_PATH)]
+    [Route(ApiPath.CATEGORY_PATH)]
     [ApiController]
     [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-    public class BrandController : ControllerBase
+    public class CategoryController : ControllerBase
     {
-        private readonly IBrandService _brandService;
+        private readonly ICategoryService _categoryService;
 
-        public BrandController(IBrandService brandService)
+        public CategoryController(ICategoryService categoryService)
         {
-            _brandService = brandService;
+            _categoryService = categoryService;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBrandId(int id)
+        public async Task<IActionResult> GetCategoryId(int id)
         {
             try
             {
-                var result = await _brandService.GetById(id);
+                var result = await _categoryService.GetById(id);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
@@ -46,11 +46,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> InsertBrandId([FromForm] InsertBrandDto dto)
+        public async Task<IActionResult> InsertCategoryId([FromForm] InsertCategoryDto dto)
         {
             try
             {
-                var result = await _brandService.Insert(dto);
+                var result = await _categoryService.Insert(dto);
                 return JsonResponse(200, SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -70,11 +70,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrganizationId(int id, [FromForm] UpdateBrandDto dto)
+        public async Task<IActionResult> UpdateCategory(int id,  [FromForm] UpdateCategoryDto dto)
         {
             try
             {
-                var result = await _brandService.Update(id, dto);
+                var result = await _categoryService.Update(id, dto);
                 return JsonResponse(200, SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -95,11 +95,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBrandById(int id)
+        public async Task<IActionResult> DeleteCategoryById(int id)
         {
             try
             {
-                var result = await _brandService.Delete(id);
+                var result = await _categoryService.Delete(id);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)

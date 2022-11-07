@@ -7,6 +7,8 @@
         public const string USER_PATH = API_VERSION + "/users";
         public const string ORAGANIZATION_PATH = API_VERSION + "/organizations";
         public const string BRAND_PATH = API_VERSION + "/brands";
+        public const string PLATFORM_PATH = API_VERSION + "/platforms";
+        public const string CATEGORY_PATH = API_VERSION + "/categories";
   
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Business.Repository.BrandRepo;
+using Business.Repository.OrganizationRepo;
 using Business.Repository.UserRepo;
 using Business.Utils;
 using DataAccess.Entities;
@@ -14,12 +15,18 @@ namespace Business.Service.BrandService
     public class BrandService : BaseService, IBrandService
     {
         private readonly IBrandRepository _brandRepository;
+        private readonly IOrganizationRepository _organizationRepository;
+
         private readonly string ClassName = typeof(Brand).Name;
+        private readonly string ReferClassName = typeof(Organization).Name;
+
         public BrandService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
-            IBrandRepository brandRepository) : base(httpContextAccessor, userRepository)
+            IBrandRepository brandRepository,
+            IOrganizationRepository organizationRepository) : base(httpContextAccessor, userRepository)
         {
             _brandRepository = brandRepository;
+            _organizationRepository = organizationRepository;
         }
 
         public async Task<bool> Delete(int id)
@@ -48,6 +55,10 @@ namespace Business.Service.BrandService
 
         public async Task<int> Insert(InsertBrandDto dto)
         {
+            if (!(await ValidOrganization(dto.OrganizationId)))
+            {
+                throw new Exception(ReferClassName + " " + NOT_FOUND);
+            }
             var check = await SearchByName(dto.Name);
             if (check == null)
             {
@@ -57,7 +68,7 @@ namespace Business.Service.BrandService
             }
             else
             {
-                throw new Exception(DUPLICATED+ " "+ ClassName);
+                throw new Exception(DUPLICATED + " " + ClassName);
             }
         }
 
@@ -68,20 +79,25 @@ namespace Business.Service.BrandService
 
         public async Task<BrandDto> SearchByName(string name)
         {
-            var brand =  await _brandRepository.Get(x => x.Name.Equals(name));
+            var brand = await _brandRepository.Get(x => x.Name.Equals(name));
             return MapperConfig.GetMapper().Map<BrandDto>(brand);
         }
 
-        public async Task<int> Update(UpdateBrandDto dto)
+        public async Task<int> Update(int id, UpdateBrandDto dto)
         {
-            if ((await GetById(dto.Id)) == null)
+            if (!(await ValidOrganization(dto.OrganizationId)))
+            {
+                throw new Exception(ReferClassName + " " + NOT_FOUND);
+            }
+            if ((await GetById(id)) == null)
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
             var check = await SearchByName(dto.Name);
-            if (check == null || dto.Id == check.Id)
+            if (check == null || id == check.Id)
             {
                 var brand = MapperConfig.GetMapper().Map<Brand>(dto);
+                brand.Id = id;
                 var result = await _brandRepository.Update(brand);
                 return brand.Id;
             }
@@ -89,6 +105,12 @@ namespace Business.Service.BrandService
             {
                 throw new Exception("Duplicated Organization name");
             }
+        }
+
+        public async Task<bool> ValidOrganization(int id)
+        {
+            var organization = await _organizationRepository.Get(x => x.Id == id);
+            return organization != null;
         }
     }
 }

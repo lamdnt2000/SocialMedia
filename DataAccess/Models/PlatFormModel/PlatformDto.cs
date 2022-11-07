@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.BranModel
+namespace DataAccess.Models.PlatFormModel
 {
-    public class UpdateBrandDto:InsertBrandDto
+    public class PlatformDto:InsertPlatformDto
     {
-        
+        public int Id { get; set; }
+        public bool Status { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Text.Json;
 
@@ -13,7 +14,8 @@ namespace Business.Utils
             var options = new JsonSerializerOptions
             {
                 IncludeFields = true,
-                
+                IgnoreNullValues = true,
+
             };
             if (data != null)
             {

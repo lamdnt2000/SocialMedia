@@ -11,7 +11,7 @@ namespace Business.Service.BrandService
     public interface IBrandService
     {
         Task<int> Insert(InsertBrandDto dto);
-        Task<int> Update(UpdateBrandDto dto);
+        Task<int> Update(int id, UpdateBrandDto dto);
         Task<bool> Delete(int id);
         Task<BrandDto> GetById(int id);
         Task<bool> PagingSearch();

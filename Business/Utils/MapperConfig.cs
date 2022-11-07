@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
 using DataAccess.Models.BranModel;
+using DataAccess.Models.CategoryModel;
 using DataAccess.Models.LoginUser;
 using DataAccess.Models.OrganizationModel;
+using DataAccess.Models.PlatFormModel;
 using DataAccess.Models.Role;
 
 namespace Business.Utils
@@ -33,6 +35,16 @@ namespace Business.Utils
                 cfg.CreateMap<Brand, InsertBrandDto>().ReverseMap();
                 cfg.CreateMap<Brand, UpdateBrandDto>().ReverseMap();
                 cfg.CreateMap<Brand, CollectionBrandDto>().ReverseMap();
+
+                cfg.CreateMap<Platform, PlatformDto>().ReverseMap();
+                cfg.CreateMap<Platform, InsertPlatformDto>().ReverseMap();
+                cfg.CreateMap<Platform, UpdatePlatformDto>().ReverseMap();
+
+                cfg.CreateMap<Category, CategoryDto>().ReverseMap();
+                cfg.CreateMap<Category, InsertCategoryDto>().ReverseMap();
+                cfg.CreateMap<Category, UpdateCategoryDto>().ReverseMap();
+
+
             });
             return configuration.CreateMapper();
         }

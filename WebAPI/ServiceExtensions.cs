@@ -20,6 +20,10 @@ using Business.Repository.OrganizationRepo;
 using Business.Service.OrganizationService;
 using Business.Repository.BrandRepo;
 using Business.Service.BrandService;
+using Business.Repository.PlatformRepo;
+using Business.Service.PlatformService;
+using Business.Service.CategoryService;
+using Business.Repository.CategoryRepo;
 
 namespace API
 {
@@ -40,7 +44,12 @@ namespace API
 
             services.AddScoped<IBrandRepository, BrandRepository>();
             services.AddScoped<IBrandService, BrandService>();
+            
+            services.AddScoped<IPlatformRepository, PlatformRepository>();
+            services.AddScoped<IPlatformService, PlatformService>();
 
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
         }
 

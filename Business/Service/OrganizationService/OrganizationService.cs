@@ -37,12 +37,13 @@ namespace Business.Service.OrganizationService
             }
         }
 
-        public async Task<OrganizationDto> GetById(int id)
+        public async Task<OrganizationDto> GetById(int id, bool isInclude = false)
         {
-            var includes = new List<string>()
-                {
-                    nameof(Organization.Brands),
-                };
+            var includes = new List<string>();
+            if (isInclude)
+            {
+                includes.Add(nameof(Organization.Brands));
+            }
             var organization =  await _organizationRepository.Get(x => x.Id == id, includes);
             return MapperConfig.GetMapper().Map<OrganizationDto>(organization);
         }
@@ -73,16 +74,17 @@ namespace Business.Service.OrganizationService
             return MapperConfig.GetMapper().Map<OrganizationDto>(organization);
         }
 
-        public async Task<int> Update(UpdateOrganizationDto dto)
+        public async Task<int> Update(int id, UpdateOrganizationDto dto)
         {
             var check = await SearchByName(dto.Name);
-            if ((await GetById(dto.Id)) == null)
+            if ((await GetById(id)) == null)
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
-            if (check == null || dto.Id == check.Id)
+            if (check == null || id == check.Id)
             {
                 var organization = MapperConfig.GetMapper().Map<Organization>(dto);
+                organization.Id = id;
                 var result = await _organizationRepository.Update(organization);
                 return organization.Id;
             }

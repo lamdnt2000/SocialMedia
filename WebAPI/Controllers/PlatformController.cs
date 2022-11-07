@@ -1,36 +1,40 @@
 ﻿using Business.Config;
 using Business.Constants;
+using Business.Service.BrandService;
 using Business.Service.OrganizationService;
 using DataAccess.Models.OrganizationModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
-using Business.Service.BrandService;
+using WebAPI.Constant;
 using static Business.Utils.ResponseFormat;
 using static Business.Constants.ResponseMsg;
-using DataAccess.Models.BranModel;
+using Business.Service.PlatformService;
+using DataAccess.Models.PlatFormModel;
 
 namespace WebAPI.Controllers
 {
-    [Route(Constant.ApiPath.BRAND_PATH)]
+    [Route(ApiPath.PLATFORM_PATH)]
     [ApiController]
     [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-    public class BrandController : ControllerBase
+    public class PlatformController : ControllerBase
     {
-        private readonly IBrandService _brandService;
+        private readonly IPlatformService _platformService;
 
-        public BrandController(IBrandService brandService)
+        public PlatformController(IPlatformService platformService)
         {
-            _brandService = brandService;
+            _platformService = platformService;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBrandId(int id)
+        public async Task<IActionResult> GetPlatformById(int id)
         {
             try
             {
-                var result = await _brandService.GetById(id);
+
+
+                var result = await _platformService.GetById(id);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
@@ -46,11 +50,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> InsertBrandId([FromForm] InsertBrandDto dto)
+        public async Task<IActionResult> InsertPlatformId([FromForm] InsertPlatformDto dto)
         {
             try
             {
-                var result = await _brandService.Insert(dto);
+                var result = await _platformService.Insert(dto);
                 return JsonResponse(200, SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -60,21 +64,17 @@ namespace WebAPI.Controllers
                 {
                     return JsonResponse(400, DUPLICATED, e.Message);
                 }
-                if (e.Message.Contains(NOT_FOUND))
-                {
-                    return JsonResponse(400, NOT_FOUND, e.Message);
-                }
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
 
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrganizationId(int id, [FromForm] UpdateBrandDto dto)
+        public async Task<IActionResult> UpdatePlatfrom(int id, [FromForm] UpdatePlatformDto dto)
         {
             try
             {
-                var result = await _brandService.Update(id, dto);
+                var result = await _platformService.Update(id, dto);
                 return JsonResponse(200, SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -95,11 +95,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBrandById(int id)
+        public async Task<IActionResult> DeletePlatformById(int id)
         {
             try
             {
-                var result = await _brandService.Delete(id);
+                var result = await _platformService.Delete(id);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
@@ -110,6 +110,31 @@ namespace WebAPI.Controllers
                     return JsonResponse(400, NOT_FOUND, e.Message);
                 }
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+
+
+        [HttpGet]
+        [Route("{id:int}/categories")]
+        public async Task<IActionResult> GetCollectionCategory(int id)
+        {
+            try
+            {
+
+
+                var result = await _platformService.GetById(id, true);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, "");
+                }
+                return JsonResponse(401, UNAUTHORIZE, "");
 
             }
         }
