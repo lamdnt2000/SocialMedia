@@ -1,4 +1,5 @@
 ﻿using DataAccess.Models.OrganizationModel;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataAccess.Models.BranModel
@@ -7,9 +8,9 @@ namespace DataAccess.Models.BranModel
     {
         [Required]
         public int Id { get; set; }
-       
-        public InsertOrganizationDto Organization;
+        public DateTime CreatedDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
+        public bool Status { get; set; }
 
-        
     }
 }

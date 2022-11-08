@@ -2,7 +2,9 @@
 using Business.Repository.UserRepo;
 using Business.Utils;
 using DataAccess.Entities;
+using DataAccess.Models.CategoryModel;
 using DataAccess.Models.OrganizationModel;
+using DataAccess.Models.Pagination;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -54,6 +56,8 @@ namespace Business.Service.OrganizationService
             if (check == null)
             {
                 var organization = MapperConfig.GetMapper().Map<Organization>(dto);
+                organization.CreatedDate = DateTime.Now;
+                organization.Status = true;
                 var result = await _organizationRepository.Insert(organization);
                 return organization.Id;
             }
@@ -63,9 +67,17 @@ namespace Business.Service.OrganizationService
             }
         }
 
-        public Task<bool> PagingSearch()
+        public async Task<PaginationList<OrganizationDto>> SearchAsync(OrganizationPaging paging)
         {
-            throw new NotImplementedException();
+            var result = await _organizationRepository.SearchAsync(paging);
+            var items = MapperConfig.GetMapper().Map<List<OrganizationDto>>(result.Items);
+            return new PaginationList<OrganizationDto>
+            {
+                Items = items,
+                CurrentPage = result.CurrentPage,
+                PageSize = result.PageSize,
+                TotalPage = result.TotalPage
+            };
         }
 
         public async Task<OrganizationDto> SearchByName(string name)
@@ -85,6 +97,7 @@ namespace Business.Service.OrganizationService
             {
                 var organization = MapperConfig.GetMapper().Map<Organization>(dto);
                 organization.Id = id;
+                organization.UpdateDate = DateTime.Now;
                 var result = await _organizationRepository.Update(organization);
                 return organization.Id;
             }

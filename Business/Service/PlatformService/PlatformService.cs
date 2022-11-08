@@ -2,7 +2,7 @@
 using Business.Repository.UserRepo;
 using Business.Utils;
 using DataAccess.Entities;
-using DataAccess.Models.OrganizationModel;
+using DataAccess.Models.Pagination;
 using DataAccess.Models.PlatFormModel;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -12,12 +12,12 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.PlatformService
 {
-    public class PlatformService: BaseService, IPlatformService
+    public class PlatformService : BaseService, IPlatformService
     {
         private readonly IPlatformRepository _platformRepository;
         private readonly string ClassName = typeof(Platform).Name;
 
-        public PlatformService(IHttpContextAccessor httpContextAccessor, 
+        public PlatformService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
             IPlatformRepository platformRepository) : base(httpContextAccessor, userRepository)
         {
@@ -65,9 +65,18 @@ namespace Business.Service.PlatformService
             }
         }
 
-        public Task<bool> PagingSearch()
+
+        public async Task<PaginationList<PlatformDto>> SearchAsync(PlatformPaging paging)
         {
-            throw new NotImplementedException();
+            var result = await _platformRepository.SearchPlatformAsync(paging);
+            var items = MapperConfig.GetMapper().Map<List<PlatformDto>>(result.Items);
+            return new PaginationList<PlatformDto>
+            {
+                Items = items,
+                CurrentPage = result.CurrentPage,
+                PageSize = result.PageSize,
+                TotalPage = result.TotalPage
+            };
         }
 
         public async Task<PlatformDto> SearchByName(string name)

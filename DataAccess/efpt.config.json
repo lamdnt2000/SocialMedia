@@ -95,7 +95,7 @@
          "ObjectType": 0
       }
    ],
-   "UiHint": "SE140089\\MSSQLSERVER19.SocialMedia",
+   "UiHint": "WIN-GRM3JCLP14J\\SOCIALMEDIA.SocialMedia",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDbContextSplitting": false,

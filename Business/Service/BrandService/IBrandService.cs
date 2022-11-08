@@ -1,5 +1,6 @@
 ﻿using DataAccess.Entities;
 using DataAccess.Models.BranModel;
+using DataAccess.Models.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Business.Service.BrandService
         Task<int> Update(int id, UpdateBrandDto dto);
         Task<bool> Delete(int id);
         Task<BrandDto> GetById(int id);
-        Task<bool> PagingSearch();
+        Task<PaginationList<BrandDto>> SearchAsync(BrandPaging paging);
         Task<BrandDto> SearchByName(string name);
     }
 }

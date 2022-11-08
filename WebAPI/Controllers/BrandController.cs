@@ -51,18 +51,18 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _brandService.Insert(dto);
-                return JsonResponse(200, SUCCESS, new { id = result });
+                return JsonResponse(201, INSERT_SUCCESS, new { id = result });
             }
             catch (Exception e)
             {
 
                 if (e.Message.Contains(DUPLICATED))
                 {
-                    return JsonResponse(400, DUPLICATED, e.Message);
+                    return JsonResponse(400, INSERT_FAILED, e.Message);
                 }
                 if (e.Message.Contains(NOT_FOUND))
                 {
-                    return JsonResponse(400, NOT_FOUND, e.Message);
+                    return JsonResponse(400, INSERT_FAILED, e.Message);
                 }
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
 
@@ -75,18 +75,18 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _brandService.Update(id, dto);
-                return JsonResponse(200, SUCCESS, new { id = result });
+                return JsonResponse(200, UPDATE_SUCCESS, new { id = result });
             }
             catch (Exception e)
             {
 
                 if (e.Message.Contains(DUPLICATED))
                 {
-                    return JsonResponse(400, DUPLICATED, e.Message);
+                    return JsonResponse(400, UPDATE_FAILED, e.Message);
                 }
                 if (e.Message.Contains(NOT_FOUND))
                 {
-                    return JsonResponse(400, NOT_FOUND, e.Message);
+                    return JsonResponse(400, UPDATE_FAILED, e.Message);
                 }
 
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
@@ -100,14 +100,14 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _brandService.Delete(id);
-                return JsonResponse(200, SUCCESS, result);
+                return JsonResponse(200, DELETE_SUCCESS, result);
             }
             catch (Exception e)
             {
 
                 if (e.Message.Contains(NOT_FOUND))
                 {
-                    return JsonResponse(400, NOT_FOUND, e.Message);
+                    return JsonResponse(400, DELETE_FAILED, e.Message);
                 }
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
 

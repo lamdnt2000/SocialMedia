@@ -10,7 +10,8 @@ namespace DataAccess.Models.OrganizationModel
 {
     public class UpdateOrganizationDto : InsertOrganizationDto
     {
-       
+        [Required]
+        public bool Status { get; set; }
 
     }
 }

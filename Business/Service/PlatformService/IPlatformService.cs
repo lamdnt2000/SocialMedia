@@ -1,9 +1,6 @@
-﻿using DataAccess.Models.BranModel;
+﻿using DataAccess.Models.Pagination;
 using DataAccess.Models.PlatFormModel;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Business.Service.PlatformService
@@ -14,7 +11,7 @@ namespace Business.Service.PlatformService
         Task<int> Update(int id, UpdatePlatformDto dto);
         Task<bool> Delete(int id);
         Task<PlatformDto> GetById(int id, bool isInclude = false);
-        Task<bool> PagingSearch();
+        Task<PaginationList<PlatformDto>> SearchAsync(PlatformPaging paging);
         Task<PlatformDto> SearchByName(string name);
     }
 }

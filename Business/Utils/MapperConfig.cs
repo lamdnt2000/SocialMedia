@@ -34,7 +34,6 @@ namespace Business.Utils
                 cfg.CreateMap<Brand, BrandDto>().ReverseMap();
                 cfg.CreateMap<Brand, InsertBrandDto>().ReverseMap();
                 cfg.CreateMap<Brand, UpdateBrandDto>().ReverseMap();
-                cfg.CreateMap<Brand, CollectionBrandDto>().ReverseMap();
 
                 cfg.CreateMap<Platform, PlatformDto>().ReverseMap();
                 cfg.CreateMap<Platform, InsertPlatformDto>().ReverseMap();

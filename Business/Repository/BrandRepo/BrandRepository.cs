@@ -1,6 +1,11 @@
-﻿using Business.Repository.GenericRepo;
+﻿using AutoFilterer.Extensions;
+using Business.Repository.GenericRepo;
 using DataAccess;
 using DataAccess.Entities;
+using DataAccess.Models.BranModel;
+using DataAccess.Models.OrganizationModel;
+using DataAccess.Models.Pagination;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +18,22 @@ namespace Business.Repository.BrandRepo
     {
         public BrandRepository(SocialMediaContext context) : base(context)
         {
+        }
+
+        public async Task<PaginationList<Brand>> SearchAsync(BrandPaging paging)
+        {
+            var totalItem = await context.Brands.ApplyFilterWithoutPagination(paging).CountAsync();
+            var currentPage = paging.Page;
+            var pageSize = paging.PerPage;
+            var totalPage = Math.Ceiling((decimal)totalItem / pageSize);
+            var result = context.Brands.ApplyFilter(paging).ToList();
+            return new PaginationList<Brand>
+            {
+                CurrentPage = currentPage,
+                PageSize = pageSize,
+                TotalPage = (int)totalPage,
+                Items = result
+            };
         }
     }
 }
