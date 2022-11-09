@@ -9,6 +9,8 @@
         public const string BRAND_PATH = API_VERSION + "/brands";
         public const string PLATFORM_PATH = API_VERSION + "/platforms";
         public const string CATEGORY_PATH = API_VERSION + "/categories";
+        public const string LOCATION_PATH = API_VERSION + "/locations";
+        public const string CHANNEL_PATH = API_VERSION + "/channels";
   
     }
 }

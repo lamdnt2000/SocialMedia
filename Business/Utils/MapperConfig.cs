@@ -2,6 +2,7 @@
 using DataAccess.Entities;
 using DataAccess.Models.BranModel;
 using DataAccess.Models.CategoryModel;
+using DataAccess.Models.LocationModel;
 using DataAccess.Models.LoginUser;
 using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.PlatFormModel;
@@ -42,6 +43,12 @@ namespace Business.Utils
                 cfg.CreateMap<Category, CategoryDto>().ReverseMap();
                 cfg.CreateMap<Category, InsertCategoryDto>().ReverseMap();
                 cfg.CreateMap<Category, UpdateCategoryDto>().ReverseMap();
+
+                cfg.CreateMap<Location, LocationDto>().ReverseMap();
+                cfg.CreateMap<Location, InsertLocationDto>().ReverseMap();
+                cfg.CreateMap<Location, UpdateLocationDto>().ReverseMap();
+
+
 
 
             });

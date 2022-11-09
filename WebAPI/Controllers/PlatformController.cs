@@ -36,8 +36,15 @@ namespace WebAPI.Controllers
 
 
                 var result = await _platformService.GetById(id);
-                result.Categories = null;
-                return JsonResponse(200, SUCCESS, result);
+                if (result != null)
+                {
+                    result.Categories = null;
+                    return JsonResponse(200, SUCCESS, result);
+                }
+                else
+                {
+                    return JsonResponse(400, NOT_FOUND, result);
+                }
             }
             catch (Exception e)
             {
