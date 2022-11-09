@@ -4,13 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Utils
+namespace Business.Service.ChannelCrawlService
 {
-    public class FilterUtility
+    public class ChannelCrawlService
     {
-        
-
-
-
     }
 }

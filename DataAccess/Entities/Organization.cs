@@ -30,6 +30,12 @@ namespace DataAccess.Entities
         [Column("site")]
         [StringLength(255)]
         public string Site { get; set; }
+        [Column("created_date", TypeName = "datetime")]
+        public DateTime? CreatedDate { get; set; }
+        [Column("update_date", TypeName = "datetime")]
+        public DateTime? UpdateDate { get; set; }
+        [Column("status")]
+        public bool Status { get; set; }
 
         [InverseProperty(nameof(Brand.Organization))]
         public virtual ICollection<Brand> Brands { get; set; }

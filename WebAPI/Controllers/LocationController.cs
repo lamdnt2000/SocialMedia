@@ -1,39 +1,41 @@
-﻿using Business.Config;
-using Business.Constants;
-using Business.Service.OrganizationService;
-using DataAccess.Models.OrganizationModel;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System;
-using Business.Service.BrandService;
 using static Business.Utils.ResponseFormat;
 using static Business.Constants.ResponseMsg;
-using DataAccess.Models.BranModel;
+using WebAPI.Constant;
+using Business.Constants;
+using Business.Config;
+using Business.Service.LocationService;
+using System.Threading.Tasks;
+using System;
+using DataAccess.Models.LocationModel;
+using System.Collections.Generic;
 
 namespace WebAPI.Controllers
 {
-    [Route(Constant.ApiPath.BRAND_PATH)]
+    [Route(ApiPath.LOCATION_PATH)]
     [ApiController]
     [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-    public class BrandController : ControllerBase
+    public class LocationController : ControllerBase
     {
-        private readonly IBrandService _brandService;
+        private readonly ILocationService _locationService;
 
-        public BrandController(IBrandService brandService)
+        public LocationController(ILocationService locationService)
         {
-            _brandService = brandService;
+            _locationService = locationService;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBrandId(int id)
+        public async Task<IActionResult> GetLocationById(int id)
         {
             try
             {
-                var result = await _brandService.GetById(id);
+
+
+                var result = await _locationService.GetById(id);
                 if (result != null)
                 {
-
+                  
                     return JsonResponse(200, SUCCESS, result);
                 }
                 else
@@ -53,12 +55,37 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost()]
-        public async Task<IActionResult> InsertBrandId([FromForm] InsertBrandDto dto)
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] LocationPaging paging)
         {
             try
             {
-                var result = await _brandService.Insert(dto);
+
+
+                var result = await _locationService.SearchAsync(paging);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+
+        
+        [HttpPost]
+        public async Task<IActionResult> InsertLocation([FromForm] InsertLocationDto dto)
+        {
+            try
+            {
+               
+                var result = await _locationService.Insert(dto);
                 return JsonResponse(201, INSERT_SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -68,21 +95,17 @@ namespace WebAPI.Controllers
                 {
                     return JsonResponse(400, INSERT_FAILED, e.Message);
                 }
-                if (e.Message.Contains(NOT_FOUND))
-                {
-                    return JsonResponse(400, INSERT_FAILED, e.Message);
-                }
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
 
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrganizationId(int id, [FromForm] UpdateBrandDto dto)
+        public async Task<IActionResult> UpdateLocation(int id, [FromForm] UpdateLocationDto dto)
         {
             try
             {
-                var result = await _brandService.Update(id, dto);
+                var result = await _locationService.Update(id, dto);
                 return JsonResponse(200, UPDATE_SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -103,11 +126,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBrandById(int id)
+        public async Task<IActionResult> DeleteLocationById(int id)
         {
             try
             {
-                var result = await _brandService.Delete(id);
+                var result = await _locationService.Delete(id);
                 return JsonResponse(200, DELETE_SUCCESS, result);
             }
             catch (Exception e)
@@ -121,5 +144,6 @@ namespace WebAPI.Controllers
 
             }
         }
+
     }
 }

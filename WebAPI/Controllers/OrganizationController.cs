@@ -26,7 +26,7 @@ namespace WebAPI.Controllers
     {
         private readonly IOrganizationService _organizationService;
         private readonly IBrandService _brandService;
-        
+
         public OrganizationController(IOrganizationService organizationService, IBrandService brandService)
         {
             _organizationService = organizationService;
@@ -39,13 +39,21 @@ namespace WebAPI.Controllers
             try
             {
 
-              
+
                 var result = await _organizationService.GetById(id);
-                return JsonResponse(200, SUCCESS, result);
+                if (result != null)
+                {
+                    result.Brands = null;
+                    return JsonResponse(200, SUCCESS, result);
+                }
+                else
+                {
+                    return JsonResponse(400, NOT_FOUND, result);
+                }
             }
             catch (Exception e)
             {
-                
+
                 if (e.Message.Contains(NOT_FOUND))
                 {
                     return JsonResponse(400, NOT_FOUND, "");
@@ -55,22 +63,67 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GettAllOrganization([FromQuery] OrganizationPaging paging)
+        {
+            try
+            {
+
+
+                var result = await _organizationService.SearchAsync(paging);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, "");
+                }
+                return JsonResponse(401, UNAUTHORIZE, "");
+
+            }
+        }
+
+        [HttpGet("brands")]
+        public async Task<IActionResult> GettAllBrand([FromQuery] BrandPaging paging)
+        {
+            try
+            {
+
+
+                var result = await _brandService.SearchAsync(paging);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, "");
+                }
+                return JsonResponse(401, UNAUTHORIZE, "");
+
+            }
+        }
+
+
         [HttpPost()]
         public async Task<IActionResult> InsertOrganizationId([FromForm] InsertOrganizationDto dto)
         {
             try
             {
                 var result = await _organizationService.Insert(dto);
-                return JsonResponse(200, SUCCESS, new { id = result});
+                return JsonResponse(201, INSERT_SUCCESS, new { id = result });
             }
             catch (Exception e)
             {
 
                 if (e.Message.Contains(DUPLICATED))
                 {
-                    return JsonResponse(400, DUPLICATED, "");
+                    return JsonResponse(400, INSERT_FAILED, e.Message);
                 }
-                return JsonResponse(401, UNAUTHORIZE, "");
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
 
             }
         }
@@ -81,20 +134,20 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _organizationService.Update(id, dto);
-                return JsonResponse(200, SUCCESS, new { id = result });
+                return JsonResponse(200, UPDATE_SUCCESS, new { id = result });
             }
             catch (Exception e)
             {
 
                 if (e.Message.Contains(DUPLICATED))
                 {
-                    return JsonResponse(400, DUPLICATED, "");
+                    return JsonResponse(400, UPDATE_FAILED, e.Message);
                 }
                 if (e.Message.Contains(NOT_FOUND))
                 {
-                    return JsonResponse(400, NOT_FOUND, "");
+                    return JsonResponse(400, UPDATE_FAILED, e.Message);
                 }
-                
+
                 return JsonResponse(401, UNAUTHORIZE, "");
 
             }
@@ -106,21 +159,21 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _organizationService.Delete(id);
-                return JsonResponse(200, SUCCESS, result);
+                return JsonResponse(200, DELETE_SUCCESS, result);
             }
             catch (Exception e)
             {
 
                 if (e.Message.Contains(NOT_FOUND))
                 {
-                    return JsonResponse(400, NOT_FOUND, "");
+                    return JsonResponse(400, DELETE_FAILED, e.Message);
                 }
-                return JsonResponse(401, UNAUTHORIZE, "");
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
 
             }
         }
 
-        
+
 
         [HttpGet]
         [Route("{id:int}/brands")]
@@ -128,8 +181,6 @@ namespace WebAPI.Controllers
         {
             try
             {
-
-
                 var result = await _organizationService.GetById(id, true);
                 return JsonResponse(200, SUCCESS, result);
             }
@@ -138,16 +189,16 @@ namespace WebAPI.Controllers
 
                 if (e.Message.Contains(NOT_FOUND))
                 {
-                    return JsonResponse(400, NOT_FOUND, "");
+                    return JsonResponse(400, NOT_FOUND, e.Message);
                 }
-                return JsonResponse(401, UNAUTHORIZE, "");
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
 
             }
+
         }
 
-
-
        
+
 
     }
 }

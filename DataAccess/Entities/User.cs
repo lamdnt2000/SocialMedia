@@ -28,11 +28,11 @@ namespace DataAccess.Entities
         public string Email { get; set; }
         [Required]
         [Column("firstname")]
-        [StringLength(20)]
+        [StringLength(50)]
         public string Firstname { get; set; }
         [Required]
         [Column("lastname")]
-        [StringLength(20)]
+        [StringLength(50)]
         public string Lastname { get; set; }
         [Column("password")]
         [StringLength(255)]

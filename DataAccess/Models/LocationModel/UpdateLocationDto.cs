@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Pagination.Sorting
+namespace DataAccess.Models.LocationModel
 {
-    public enum SortOrders
+    public class UpdateLocationDto:InsertLocationDto
     {
-        Asc = 1,
-        Desc = 2
     }
 }
-    

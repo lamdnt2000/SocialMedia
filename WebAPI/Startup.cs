@@ -1,4 +1,5 @@
 using API;
+using AutoFilterer.Swagger;
 using Business.Config;
 using DataAccess;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -42,6 +43,7 @@ namespace WebAPI
             services.AddHttpContextAccessor();
             services.ConfigureCros();
             services.ConfigureSwagger();
+     
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -9,6 +9,7 @@ namespace DataAccess.Models.BranModel
 {
     public class UpdateBrandDto:InsertBrandDto
     {
-        
+        [Required]
+        public bool Status { get; set; }
     }
 }

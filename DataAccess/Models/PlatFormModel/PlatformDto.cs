@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataAccess.Models.CategoryModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace DataAccess.Models.PlatFormModel
     {
         public int Id { get; set; }
         public bool Status { get; set; }
+        public virtual ICollection<CategoryDto> Categories { get; set; }
     }
 }

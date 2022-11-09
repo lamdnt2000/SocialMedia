@@ -3,6 +3,7 @@ using DataAccess.Entities;
 using DataAccess.Models.BranModel;
 using DataAccess.Models.CategoryModel;
 using DataAccess.Models.HashtagModel;
+using DataAccess.Models.LocationModel;
 using DataAccess.Models.LoginUser;
 using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.PlatFormModel;
@@ -36,7 +37,6 @@ namespace Business.Utils
                 cfg.CreateMap<Brand, BrandDto>().ReverseMap();
                 cfg.CreateMap<Brand, InsertBrandDto>().ReverseMap();
                 cfg.CreateMap<Brand, UpdateBrandDto>().ReverseMap();
-                cfg.CreateMap<Brand, CollectionBrandDto>().ReverseMap();
 
                 cfg.CreateMap<Platform, PlatformDto>().ReverseMap();
                 cfg.CreateMap<Platform, InsertPlatformDto>().ReverseMap();
@@ -53,6 +53,12 @@ namespace Business.Utils
                 cfg.CreateMap<Hashtag, HashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, InsertHashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, UpdateHashtagDto>().ReverseMap();
+                cfg.CreateMap<Location, LocationDto>().ReverseMap();
+                cfg.CreateMap<Location, InsertLocationDto>().ReverseMap();
+                cfg.CreateMap<Location, UpdateLocationDto>().ReverseMap();
+
+
+
 
             });
             return configuration.CreateMapper();

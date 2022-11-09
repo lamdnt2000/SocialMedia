@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Business.Utils
 {
@@ -15,7 +16,7 @@ namespace Business.Utils
             {
                 IncludeFields = true,
                 IgnoreNullValues = true,
-
+              
             };
             if (data != null)
             {

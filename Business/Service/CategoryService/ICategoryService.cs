@@ -1,5 +1,6 @@
 ﻿using DataAccess.Models.BranModel;
 using DataAccess.Models.CategoryModel;
+using DataAccess.Models.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Business.Service.CategoryService
         Task<int> Update(int id, UpdateCategoryDto dto);
         Task<bool> Delete(int id);
         Task<CategoryDto> GetById(int id);
-        Task<bool> PagingSearch();
         Task<CategoryDto> SearchByName(string name);
+        Task<PaginationList<CategoryDto>> SearchAsync(CategoryPaging paging);
     }
 }

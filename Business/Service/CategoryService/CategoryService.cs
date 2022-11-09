@@ -5,8 +5,11 @@ using Business.Utils;
 using DataAccess.Entities;
 using DataAccess.Models.BranModel;
 using DataAccess.Models.CategoryModel;
+using DataAccess.Models.Pagination;
+using DataAccess.Models.PlatFormModel;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Business.Constants.ResponseMsg;
 
@@ -72,14 +75,11 @@ namespace Business.Service.CategoryService
 
         private async Task<bool> ValidPlatfrom(int id)
         {
-            var platform = await _platformRepository.Get(x => x.Id == id);
+            var platform = await _categoryRepository.Get(x => x.Id == id);
             return platform != null;
         }
 
-        public Task<bool> PagingSearch()
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public async Task<CategoryDto> SearchByName(string name)
         {
@@ -111,6 +111,21 @@ namespace Business.Service.CategoryService
             {
                 throw new Exception(DUPLICATED+ " " + ClassName);
             }
+        }
+
+       
+
+        public async Task<PaginationList<CategoryDto>> SearchAsync(CategoryPaging paging)
+        {
+            var result = await _categoryRepository.SearchAsync(paging);
+            var items = MapperConfig.GetMapper().Map<List<CategoryDto>>(result.Items);
+            return new PaginationList<CategoryDto>
+            {
+                Items = items,
+                CurrentPage = result.CurrentPage,
+                PageSize = result.PageSize,
+                TotalPage = result.TotalPage
+            };
         }
     }
 }
