@@ -26,6 +26,8 @@ using Business.Service.CategoryService;
 using Business.Repository.CategoryRepo;
 using Business.Repository.LocationRepo;
 using Business.Service.LocationService;
+using Business.Repository.ReactionTypeRepo;
+using Business.Service.ReactionTypeService;
 
 namespace API
 {
@@ -55,6 +57,9 @@ namespace API
 
             services.AddScoped<ILocationRepository, LocationRepository>();
             services.AddScoped<ILocationService, LocationService>();
+
+            services.AddScoped<IReactionTypeRepository, ReactionTypeRepository>();
+            services.AddScoped<IReactionTypeService, ReactionTypeService>();
 
         }
 
