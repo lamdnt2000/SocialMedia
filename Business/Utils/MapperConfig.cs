@@ -2,9 +2,11 @@
 using DataAccess.Entities;
 using DataAccess.Models.BranModel;
 using DataAccess.Models.CategoryModel;
+using DataAccess.Models.HashtagModel;
 using DataAccess.Models.LoginUser;
 using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.PlatFormModel;
+using DataAccess.Models.ReactionTypeModel;
 using DataAccess.Models.Role;
 
 namespace Business.Utils
@@ -44,6 +46,13 @@ namespace Business.Utils
                 cfg.CreateMap<Category, InsertCategoryDto>().ReverseMap();
                 cfg.CreateMap<Category, UpdateCategoryDto>().ReverseMap();
 
+                cfg.CreateMap<Reactiontype, ReactionTypeDto>().ReverseMap();
+                cfg.CreateMap<Reactiontype, InsertReactionType>().ReverseMap();
+                cfg.CreateMap<Reactiontype, UpdateReactionTypeDto>().ReverseMap();
+
+                cfg.CreateMap<Hashtag, HashtagDto>().ReverseMap();
+                cfg.CreateMap<Hashtag, InsertHashtagDto>().ReverseMap();
+                cfg.CreateMap<Hashtag, UpdateHashtagDto>().ReverseMap();
 
             });
             return configuration.CreateMapper();

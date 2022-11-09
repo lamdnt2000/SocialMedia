@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Repository.CategoryRepo
+namespace Business.Repository.HashtagRepo
 {
-    public interface ICategoryRepository:IGenericRepository<Category>
+    public interface IHashtagRepository : IGenericRepository<Hashtag>
     {
     }
 }

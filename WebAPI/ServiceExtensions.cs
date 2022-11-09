@@ -24,6 +24,8 @@ using Business.Repository.PlatformRepo;
 using Business.Service.PlatformService;
 using Business.Service.CategoryService;
 using Business.Repository.CategoryRepo;
+using Business.Repository.ReactionTypeRepo;
+using Business.Service.ReactionTypeService;
 
 namespace API
 {
@@ -50,6 +52,9 @@ namespace API
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
+
+            services.AddScoped<IReactionTypeRepository, ReactionTypeRepository>();
+            services.AddScoped<IReactionTypeService, ReactionTypeService>();
 
         }
 
