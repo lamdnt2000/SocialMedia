@@ -1,4 +1,5 @@
-﻿using DataAccess.Models.ReactionTypeModel;
+﻿using DataAccess.Models.Pagination;
+using DataAccess.Models.ReactionTypeModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Business.Service.ReactionTypeService
         Task<int> Update(int id, UpdateReactionTypeDto dto);
         Task<bool> Delete(int id);
         Task<ReactionTypeDto> GetById(int id);
-        Task<bool> PagingSearch();
+        Task<PaginationList<ReactionTypeDto>> SearchAsync(ReactionTypePaging paging);
         Task<ReactionTypeDto> SearchByName(string name);
     }
 }
