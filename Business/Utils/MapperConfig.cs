@@ -2,6 +2,8 @@
 using DataAccess.Entities;
 using DataAccess.Models.BranModel;
 using DataAccess.Models.CategoryModel;
+using DataAccess.Models.ChannelCrawlModel;
+using DataAccess.Models.ChannelRecordModel;
 using DataAccess.Models.HashtagModel;
 using DataAccess.Models.LocationModel;
 using DataAccess.Models.LoginUser;
@@ -53,9 +55,18 @@ namespace Business.Utils
                 cfg.CreateMap<Hashtag, HashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, InsertHashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, UpdateHashtagDto>().ReverseMap();
+
                 cfg.CreateMap<Location, LocationDto>().ReverseMap();
                 cfg.CreateMap<Location, InsertLocationDto>().ReverseMap();
                 cfg.CreateMap<Location, UpdateLocationDto>().ReverseMap();
+
+                cfg.CreateMap<ChannelCrawl, ChannelCrawlDto>().ReverseMap();
+                cfg.CreateMap<ChannelCrawl, InsertChannelCrawlDto>().ReverseMap();
+                cfg.CreateMap<ChannelCrawl, UpdateChannelCrawlDto>().ReverseMap();
+
+                cfg.CreateMap<ChannelRecord, ChannelRecordDto>().ReverseMap();
+                cfg.CreateMap<ChannelRecord, InsertChannelRecordDto>().ReverseMap();
+                cfg.CreateMap<ChannelRecord, UpdateChannelRecordDto>().ReverseMap();
 
 
 

@@ -62,7 +62,7 @@ namespace Business.Service.ReactionTypeService
             if (check == null)
             {
                 var reactionType = MapperConfig.GetMapper().Map<Reactiontype>(dto);
-                var result = await _reactionTypeRepository.Insert(reactionType);
+                var result = await _reactionTypeRepository.Update(reactionType);
                 return reactionType.Id;
             }
             else

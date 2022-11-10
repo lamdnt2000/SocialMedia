@@ -43,7 +43,7 @@ namespace Business.Service.LocationService
         public async Task<int> Insert(InsertLocationDto dto)
         {
             var location = MapperConfig.GetMapper().Map<Location>(dto);
-            var result = await _locationRepository.Insert(location);
+            var result = await _locationRepository.Update(location);
             return location.Id;
         }
 

@@ -28,6 +28,10 @@ using Business.Repository.LocationRepo;
 using Business.Service.LocationService;
 using Business.Repository.ReactionTypeRepo;
 using Business.Service.ReactionTypeService;
+using Business.Repository.ChannelCrawlRepo;
+using Business.Service.ChannelCrawlService;
+using Business.Repository.ChannelRecordRepo;
+using Business.Service.ChannelRecordService;
 
 namespace API
 {
@@ -48,7 +52,7 @@ namespace API
 
             services.AddScoped<IBrandRepository, BrandRepository>();
             services.AddScoped<IBrandService, BrandService>();
-            
+
             services.AddScoped<IPlatformRepository, PlatformRepository>();
             services.AddScoped<IPlatformService, PlatformService>();
 
@@ -60,6 +64,12 @@ namespace API
 
             services.AddScoped<IReactionTypeRepository, ReactionTypeRepository>();
             services.AddScoped<IReactionTypeService, ReactionTypeService>();
+
+            services.AddScoped<IChannelCrawlRepository, ChannelCrawlRepository>();
+            services.AddScoped<IChannelCrawlService, ChannelCrawlService>();
+
+            services.AddScoped<IChannelRecordRepository, ChannelRecordRepository>();
+            services.AddScoped<IChannelRecordService, ChannelRecordService>();
 
         }
 
