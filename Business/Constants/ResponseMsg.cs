@@ -11,6 +11,7 @@
         public const string DELETE_SUCCESS = "Delete success";
         public const string DELETE_FAILED = "Delete failed";
         public const string NOT_FOUND = "Not found";
+        public const string NOT_EXIST = "not exist";
         public const string UNAUTHORIZE = "Unauthorize";
         public const string DUPLICATED = "Duplicated";
       

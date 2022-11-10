@@ -11,6 +11,8 @@ using DataAccess.Models.PlatFormModel;
 using Business.Repository.CategoryRepo;
 using Business.Service.CategoryService;
 using DataAccess.Models.CategoryModel;
+using Business.Service.ReactionTypeService;
+using DataAccess.Models.ReactionTypeModel;
 
 namespace WebAPI.Controllers
 {
@@ -21,11 +23,12 @@ namespace WebAPI.Controllers
     {
         private readonly IPlatformService _platformService;
         private readonly ICategoryService _categoryService;
-
-        public PlatformController(IPlatformService platformService, ICategoryService categoryService)
+        private readonly IReactionTypeService _reactionTypeService;
+        public PlatformController(IPlatformService platformService, ICategoryService categoryService, IReactionTypeService reactionTypeService)
         {
             _platformService = platformService;
             _categoryService = categoryService;
+            _reactionTypeService = reactionTypeService;
         }
 
         [HttpGet("{id}")]
@@ -89,6 +92,28 @@ namespace WebAPI.Controllers
 
 
                 var result = await _categoryService.SearchAsync(paging);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+        [HttpGet("reactiontypes")]
+        public async Task<IActionResult> GetAllReactionType([FromQuery] ReactionTypePaging paging)
+        {
+            try
+            {
+
+
+                var result = await _reactionTypeService.SearchAsync(paging);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)

@@ -1,6 +1,7 @@
 ﻿using Business.Repository.GenericRepo;
 using DataAccess;
 using DataAccess.Entities;
+using Google.Api.Gax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,36 @@ namespace Business.Repository.ChannelCrawlRepo
     {
         public ChannelCrawlRepository(SocialMediaContext context) : base(context)
         {
+        }
+
+        public bool ValidateChannel(ChannelCrawl entity)
+        {
+            if (!context.Organizations.Any(x => x.Id == entity.OrganizationId))
+            {
+                throw new Exception("Organization not exist!");
+            }
+            if (entity.BrandId.HasValue)
+            {
+                if (!context.Platforms.Any(x => x.Id == entity.PlatformId))
+                {
+                    throw new Exception("Platform not exist!");
+                }
+            }
+             
+             if (!context.Categories.Any(x => x.Id == entity.CategoryId))
+            {
+                throw new Exception("Category not exist!");
+            }
+            if (!context.Locations.Any(x => x.Id == entity.LocationId))
+            {
+                throw new Exception("Location not exist!");
+            }
+            if (context.ChannelCrawls.Any(x => x.Id != entity.Id && x.Cid == entity.Cid))
+            {
+                throw new Exception("Duplicated channel");
+            }
+
+            return true;
         }
     }
 }

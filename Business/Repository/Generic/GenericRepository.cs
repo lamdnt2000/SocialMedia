@@ -1,4 +1,5 @@
 ﻿using DataAccess;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -109,7 +110,7 @@ namespace Business.Repository.GenericRepo
                 count = await context.SaveChangesAsync();
                 return count;
             }
-            catch (Exception e)
+            catch (SqlException e)
             {
                 await context.DisposeAsync();
                 throw new Exception(e.Message);

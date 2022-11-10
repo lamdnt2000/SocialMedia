@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Business.Repository.ReactionTypeRepo;
 using static Business.Constants.ResponseMsg;
 using Business.Repository.PlatformRepo;
+using DataAccess.Models.Pagination;
 
 namespace Business.Service.ReactionTypeService
 {
@@ -61,7 +62,7 @@ namespace Business.Service.ReactionTypeService
             if (check == null)
             {
                 var reactionType = MapperConfig.GetMapper().Map<Reactiontype>(dto);
-                var result = await _reactionTypeRepository.Insert(reactionType);
+                var result = await _reactionTypeRepository.Update(reactionType);
                 return reactionType.Id;
             }
             else
@@ -76,10 +77,6 @@ namespace Business.Service.ReactionTypeService
             return platform != null;
         }
 
-        public Task<bool> PagingSearch()
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<ReactionTypeDto> SearchByName(string name)
         {
@@ -111,6 +108,19 @@ namespace Business.Service.ReactionTypeService
             {
                 throw new Exception(DUPLICATED + " " + ClassName);
             }
+        }
+
+        public async Task<PaginationList<ReactionTypeDto>> SearchAsync(ReactionTypePaging paging)
+        {
+            var result = await _reactionTypeRepository.SearchAsync(paging);
+            var items = MapperConfig.GetMapper().Map<List<ReactionTypeDto>>(result.Items);
+            return new PaginationList<ReactionTypeDto>
+            {
+                Items = items,
+                CurrentPage = result.CurrentPage,
+                PageSize = result.PageSize,
+                TotalPage = result.TotalPage
+            };
         }
     }
 }
