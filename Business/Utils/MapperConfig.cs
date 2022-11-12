@@ -9,6 +9,7 @@ using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.PlatFormModel;
 using DataAccess.Models.ReactionTypeModel;
 using DataAccess.Models.Role;
+using DataAccess.Models.WalletModel;
 
 namespace Business.Utils
 {
@@ -53,11 +54,14 @@ namespace Business.Utils
                 cfg.CreateMap<Hashtag, HashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, InsertHashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, UpdateHashtagDto>().ReverseMap();
+               
                 cfg.CreateMap<Location, LocationDto>().ReverseMap();
                 cfg.CreateMap<Location, InsertLocationDto>().ReverseMap();
                 cfg.CreateMap<Location, UpdateLocationDto>().ReverseMap();
 
-
+                cfg.CreateMap<Wallet, WalletDto>().ReverseMap();
+                cfg.CreateMap<Wallet, InsertWalletDto>().ReverseMap();
+                cfg.CreateMap<Wallet, UpdateWalletDto>().ReverseMap();
 
 
             });
