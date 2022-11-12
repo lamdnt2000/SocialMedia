@@ -13,6 +13,7 @@ using DataAccess.Models.PostCrawlModel;
 using DataAccess.Models.ReactionModel;
 using DataAccess.Models.ReactionTypeModel;
 using DataAccess.Models.Role;
+using DataAccess.Models.WalletModel;
 
 namespace Business.Utils
 {
@@ -62,6 +63,7 @@ namespace Business.Utils
                 cfg.CreateMap<Hashtag, InsertHashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, UpdateHashtagDto>().ReverseMap();
 
+               
                 cfg.CreateMap<Location, LocationDto>().ReverseMap();
                 cfg.CreateMap<Location, InsertLocationDto>().ReverseMap();
                 cfg.CreateMap<Location, UpdateLocationDto>().ReverseMap();
@@ -79,6 +81,9 @@ namespace Business.Utils
                 cfg.CreateMap<PostCrawl, UpdatePostCrawlDto>().ReverseMap();
 
 
+                cfg.CreateMap<Wallet, WalletDto>().ReverseMap();
+                cfg.CreateMap<Wallet, InsertWalletDto>().ReverseMap();
+                cfg.CreateMap<Wallet, UpdateWalletDto>().ReverseMap();
 
 
             });

@@ -1,53 +1,42 @@
 ﻿using Business.Config;
 using Business.Constants;
+using Business.Service.OfferService;
+using Business.Service.SubscriptionService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using WebAPI.Constant;
 using static Business.Utils.ResponseFormat;
 using static Business.Constants.ResponseMsg;
-using Business.Service.PlatformService;
-using DataAccess.Models.PlatFormModel;
-using Business.Repository.CategoryRepo;
-using Business.Service.CategoryService;
-using DataAccess.Models.CategoryModel;
-using Business.Service.ReactionTypeService;
-using DataAccess.Models.ReactionTypeModel;
+using DataAccess.Models.OfferModel;
+using DataAccess.Models.SubscriptionModel;
 
 namespace WebAPI.Controllers
 {
-    [Route(ApiPath.PLATFORM_PATH)]
+    [Route(ApiPath.OFFER_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-    public class PlatformController : ControllerBase
+    [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+    public class OfferController : ControllerBase
     {
-        private readonly IPlatformService _platformService;
-        private readonly ICategoryService _categoryService;
-        private readonly IReactionTypeService _reactionTypeService;
-        public PlatformController(IPlatformService platformService, ICategoryService categoryService, IReactionTypeService reactionTypeService)
+        private readonly IOfferService _offerService;
+        private readonly ISubscriptionService _subscriptionService;
+
+        public OfferController(IOfferService offerService, ISubscriptionService subscriptionService)
         {
-            _platformService = platformService;
-            _categoryService = categoryService;
-            _reactionTypeService = reactionTypeService;
+            _offerService = offerService;
+            _subscriptionService = subscriptionService;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPlatformById(int id)
+        public async Task<IActionResult> GetOfferId(int id)
         {
             try
             {
-
-
-                var result = await _platformService.GetById(id);
-                if (result != null)
-                {
-                    result.Categories = null;
-                    return JsonResponse(200, SUCCESS, result);
-                }
-                else
-                {
-                    return JsonResponse(400, NOT_FOUND, result);
-                }
+                var result = await _offerService.GetById(id);
+                return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
             {
@@ -60,13 +49,14 @@ namespace WebAPI.Controllers
 
             }
         }
-
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PlatformPaging paging)
+        public async Task<IActionResult> GetAll([FromQuery] OfferPaging paging)
         {
             try
             {
-                var result = await _platformService.SearchAsync(paging);
+
+
+                var result = await _offerService.SearchAsync(paging);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
@@ -82,36 +72,14 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpGet("categories")]
-        public async Task<IActionResult> GetAllCategory([FromQuery] CategoryPaging paging)
+        [HttpGet("Subscriptions")]
+        public async Task<IActionResult> GetAllSubscription([FromQuery] SubscriptionPaging paging)
         {
             try
             {
 
 
-                var result = await _categoryService.SearchAsync(paging);
-                return JsonResponse(200, SUCCESS, result);
-            }
-            catch (Exception e)
-            {
-
-                if (e.Message.Contains(NOT_FOUND))
-                {
-                    return JsonResponse(400, NOT_FOUND, e.Message);
-                }
-                return JsonResponse(401, UNAUTHORIZE, e.Message);
-
-            }
-        }
-
-        [HttpGet("reactiontypes")]
-        public async Task<IActionResult> GetAllReactionType([FromQuery] ReactionTypePaging paging)
-        {
-            try
-            {
-
-
-                var result = await _reactionTypeService.SearchAsync(paging);
+                var result = await _subscriptionService.SearchAsync(paging);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
@@ -127,11 +95,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> InsertPlatformId([FromForm] InsertPlatformDto dto)
+        public async Task<IActionResult> InsertOfferId([FromForm] InsertOfferDto dto)
         {
             try
             {
-                var result = await _platformService.Insert(dto);
+                var result = await _offerService.Insert(dto);
                 return JsonResponse(201, INSERT_SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -147,11 +115,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePlatfrom(int id, [FromForm] UpdatePlatformDto dto)
+        public async Task<IActionResult> UpdateOffer(int id, [FromForm] UpdateOfferDto dto)
         {
             try
             {
-                var result = await _platformService.Update(id, dto);
+                var result = await _offerService.Update(id, dto);
                 return JsonResponse(200, UPDATE_SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -172,11 +140,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlatformById(int id)
+        public async Task<IActionResult> DeleteOfferById(int id)
         {
             try
             {
-                var result = await _platformService.Delete(id);
+                var result = await _offerService.Delete(id);
                 return JsonResponse(200, DELETE_SUCCESS, result);
             }
             catch (Exception e)
@@ -190,16 +158,14 @@ namespace WebAPI.Controllers
 
             }
         }
-
-
-
+        
         [HttpGet]
-        [Route("{id}/categories")]
-        public async Task<IActionResult> GetCollectionCategory(int id)
+        [Route("{id}/Subscritptions")]
+        public async Task<IActionResult> GetCollectionSubscritption(int id)
         {
             try
             {
-                var result = await _platformService.GetById(id, true);
+                var result = await _offerService.GetById(id);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
