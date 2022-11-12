@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Repository.ChannelCrawlRepo
+namespace Business.Repository.ChannelRecordRepo
 {
-    public interface IChannelCrawlRepository: IGenericRepository<ChannelCrawl>
+    public interface IChannelRecordRepository: IGenericRepository<ChannelRecord>
     {
-        bool ValidateChannel(ChannelCrawl entity);
+        bool ValidEntity(ChannelRecord entity);
     }
 }

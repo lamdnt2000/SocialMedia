@@ -28,7 +28,12 @@ namespace DataAccess.Entities
         public long? TotalView { get; set; }
         [Column("channel_id")]
         public int ChannelId { get; set; }
-
+        [Column("created_date", TypeName = "datetime")]
+        public DateTime CreatedDate { get; set; }
+        [Column("update_date", TypeName = "datetime")]
+        public DateTime? UpdateDate { get; set; }
+        [Column("status")]
+        public bool Status { get; set; }
         [ForeignKey(nameof(ChannelId))]
         [InverseProperty(nameof(ChannelCrawl.ChannelRecords))]
         public virtual ChannelCrawl Channel { get; set; }

@@ -53,7 +53,7 @@ namespace Business.Service.UserService
                             user.Status = (int)EnumConst.UserStatus.NEW;
                             user.CreatedDate = DateTime.Now;
                             user.Provider = userRecord.ProviderId;
-                            return await _userRepository.Insert(user);
+                            return await _userRepository.Update(user);
                         }
                         else
                         {
@@ -139,7 +139,7 @@ namespace Business.Service.UserService
                 user.Status = (int)EnumConst.UserStatus.VERIFY;
                 user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
                 user.Provider = "google.com";
-                await _userRepository.Insert(user);
+                await _userRepository.Update(user);
             }
             return user;
         }
@@ -187,7 +187,7 @@ namespace Business.Service.UserService
                 user.Status = (int)EnumConst.UserStatus.VERIFY;
                 user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
                 user.Provider = "google.com";
-                await _userRepository.Insert(user);
+                await _userRepository.Update(user);
             }
             return user;
         }
@@ -203,7 +203,7 @@ namespace Business.Service.UserService
                 user.Status = (int)EnumConst.UserStatus.VERIFY;
                 user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
                 user.Provider = "facebook.com";
-                await _userRepository.Insert(user);
+                await _userRepository.Update(user);
                 var userRecords = new UserRecordArgs
                 {
                     Email = dto.Email,

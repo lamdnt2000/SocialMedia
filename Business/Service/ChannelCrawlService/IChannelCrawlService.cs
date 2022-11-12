@@ -1,4 +1,5 @@
-﻿using DataAccess.Models.LocationModel;
+﻿using DataAccess.Models.ChannelCrawlModel;
+using DataAccess.Models.LocationModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Business.Service.ChannelCrawlService
 {
     public interface IChannelCrawlService
     {
-        Task<int> Insert(InsertLocationDto dto);
-        Task<int> Update(int id, UpdateLocationDto dto);
+        Task<int> Insert(InsertChannelCrawlDto dto);
+        Task<int> Update(int id, UpdateChannelCrawlDto dto);
         Task<bool> Delete(int id);
-        Task<LocationDto> GetById(int id);
+        Task<ChannelCrawlDto> GetById(int id);
     }
 }

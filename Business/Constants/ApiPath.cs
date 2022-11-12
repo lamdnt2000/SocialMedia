@@ -13,6 +13,7 @@
         public const string CHANNEL_PATH = API_VERSION + "/channels";
         public const string REACTIONTYPE_PATH = API_VERSION + "/reactiontypes";
         public const string HASHTAG_PATH = API_VERSION + "/hashtags";
+        public const string RECORD_PATH = API_VERSION + "/records";
         public const string WALLET_PATH = API_VERSION + "/wallets";
         public const string GATEWAY_PATH = API_VERSION + "/gateways";
         public const string TRANSACTIONDEPOSIT_PATH = API_VERSION + "/transactiondeposits";

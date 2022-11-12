@@ -52,7 +52,7 @@ namespace Business.Service.Rule
             try
             {
                 Role role = MapperConfig.GetMapper().Map<Role>(dto);
-                return await _roleRepository.Insert(role);
+                return await _roleRepository.Update(role);
             }
             catch (Exception e)
             {

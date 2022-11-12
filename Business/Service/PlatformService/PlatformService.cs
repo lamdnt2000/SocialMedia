@@ -56,7 +56,7 @@ namespace Business.Service.PlatformService
             {
                 var platform = MapperConfig.GetMapper().Map<Platform>(dto);
                 platform.Status = 1;
-                var result = await _platformRepository.Insert(platform);
+                var result = await _platformRepository.Update(platform);
                 return platform.Id;
             }
             else

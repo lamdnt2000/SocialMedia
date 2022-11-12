@@ -58,7 +58,7 @@ namespace Business.Service.OrganizationService
                 var organization = MapperConfig.GetMapper().Map<Organization>(dto);
                 organization.CreatedDate = DateTime.Now;
                 organization.Status = true;
-                var result = await _organizationRepository.Insert(organization);
+                var result = await _organizationRepository.Update(organization);
                 return organization.Id;
             }
             else

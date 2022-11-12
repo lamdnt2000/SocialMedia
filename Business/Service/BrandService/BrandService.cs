@@ -64,7 +64,7 @@ namespace Business.Service.BrandService
                 var brand = MapperConfig.GetMapper().Map<Brand>(dto);
                 brand.CreatedDate = DateTime.Now;
                 brand.Status = true;
-                var result = await _brandRepository.Insert(brand);
+                var result = await _brandRepository.Update(brand);
                 return brand.Id;
             }
             else

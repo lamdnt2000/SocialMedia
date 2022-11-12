@@ -48,24 +48,20 @@ namespace DataAccess.Entities
         [Column("avatar_url")]
         [StringLength(255)]
         public string AvatarUrl { get; set; }
-        [Required]
         [Column("banner_url")]
         [StringLength(255)]
-        public string BannerUrl { get; set; }
-        [Column("start_date", TypeName = "datetime")]
-        public DateTime? StartDate { get; set; }
+        public string? BannerUrl { get; set; }
         [Column("status")]
         public int Status { get; set; }
         [Column("is_verify")]
         public bool IsVerify { get; set; }
-        [Required]
         [Column("bio")]
-        public string Bio { get; set; }
+        public string? Bio { get; set; }
         [Column("username")]
         [StringLength(50)]
-        public string Username { get; set; }
+        public string? Username { get; set; }
         [Column("cid")]
-        public int Cid { get; set; }
+        public string Cid { get; set; }
 
         [ForeignKey(nameof(CategoryId))]
         [InverseProperty("ChannelCrawls")]
