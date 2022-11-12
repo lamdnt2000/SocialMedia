@@ -13,7 +13,6 @@ namespace Business.Service.ReactionService
         Task<int> Update(int id, UpdateReactionDto dto);
         Task<bool> Delete(int id);
         Task<ReactionDto> GetById(int id);
-        Task<bool> PagingSearch();
-        Task<ReactionDto> SearchByName(string name);
+       
     }
 }

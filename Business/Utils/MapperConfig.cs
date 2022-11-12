@@ -9,6 +9,8 @@ using DataAccess.Models.LocationModel;
 using DataAccess.Models.LoginUser;
 using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.PlatFormModel;
+using DataAccess.Models.PostCrawlModel;
+using DataAccess.Models.ReactionModel;
 using DataAccess.Models.ReactionTypeModel;
 using DataAccess.Models.Role;
 
@@ -52,6 +54,10 @@ namespace Business.Utils
                 cfg.CreateMap<Reactiontype, InsertReactionType>().ReverseMap();
                 cfg.CreateMap<Reactiontype, UpdateReactionTypeDto>().ReverseMap();
 
+                cfg.CreateMap<Reaction, ReactionDto>().ReverseMap();
+                cfg.CreateMap<Reaction, InsertReactionDto>().ReverseMap();
+                cfg.CreateMap<Reaction, UpdateReactionDto>().ReverseMap();
+
                 cfg.CreateMap<Hashtag, HashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, InsertHashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, UpdateHashtagDto>().ReverseMap();
@@ -67,6 +73,10 @@ namespace Business.Utils
                 cfg.CreateMap<ChannelRecord, ChannelRecordDto>().ReverseMap();
                 cfg.CreateMap<ChannelRecord, InsertChannelRecordDto>().ReverseMap();
                 cfg.CreateMap<ChannelRecord, UpdateChannelRecordDto>().ReverseMap();
+
+                cfg.CreateMap<PostCrawl, PostCrawlDto>().ReverseMap();
+                cfg.CreateMap<PostCrawl, InsertPostCrawlDto>().ReverseMap();
+                cfg.CreateMap<PostCrawl, UpdatePostCrawlDto>().ReverseMap();
 
 
 

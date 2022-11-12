@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Repository.ReactionRepo
+namespace Business.Repository.PostRepo
 {
-    public interface IReactionRepository : IGenericRepository<Reaction>
+    public interface IPostCrawlRepository:IGenericRepository<PostCrawl>
     {
-        bool ValidEntity(Reaction reaction);
+        bool ValidEntity(PostCrawl entity);
     }
 }

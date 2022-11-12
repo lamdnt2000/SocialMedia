@@ -1,34 +1,36 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using static Business.Utils.ResponseFormat;
-using static Business.Constants.ResponseMsg;
-using WebAPI.Constant;
-using Business.Config;
+﻿using Business.Config;
 using Business.Constants;
-using Business.Service.ChannelCrawlService;
+using DataAccess.Models.ChannelCrawlModel;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
-using DataAccess.Models.ChannelCrawlModel;
+using WebAPI.Constant;
+using Business.Service.PostService;
+using static Business.Utils.ResponseFormat;
+using static Business.Constants.ResponseMsg;
+using DataAccess.Models.PostCrawlModel;
 
 namespace WebAPI.Controllers
 {
-    [Route(ApiPath.CHANNEL_PATH)]
+    [Route(ApiPath.POST_PATH)]
     [ApiController]
     [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-    public class ChannelController : ControllerBase
+    public class PostController : ControllerBase
     {
-        private readonly IChannelCrawlService _channelCrawlService;
+        private readonly IPostCrawlService _postCrawlService;
 
-        public ChannelController(IChannelCrawlService channelCrawlService)
+        public PostController(IPostCrawlService postCrawlService)
         {
-            _channelCrawlService = channelCrawlService;
+            _postCrawlService = postCrawlService;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetChannelById(int id)
+        public async Task<IActionResult> GetPostById(int id)
         {
             try
             {
-                var result = await _channelCrawlService.GetById(id);
+                var result = await _postCrawlService.GetById(id);
                 if (result != null)
                 {
 
@@ -74,11 +76,16 @@ namespace WebAPI.Controllers
         }*/
 
         [HttpPost]
-        public async Task<IActionResult> InsertChannel([FromForm] InsertChannelCrawlDto dto)
+        public async Task<IActionResult> InsertPost([FromForm] InsertPostCrawlDto dto)
         {
             try
             {
-                var result = await _channelCrawlService.Insert(dto);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var result = await _postCrawlService.Insert(dto);
                 return JsonResponse(201, INSERT_SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -99,11 +106,16 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateChannel(int id, [FromForm] UpdateChannelCrawlDto dto)
+        public async Task<IActionResult> UpdatePost(int id, [FromForm] UpdatePostCrawlDto dto)
         {
             try
             {
-                var result = await _channelCrawlService.Update(id, dto);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var result = await _postCrawlService.Update(id, dto);
                 return JsonResponse(200, UPDATE_SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -128,11 +140,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteChannelById(int id)
+        public async Task<IActionResult> DeletePostById(int id)
         {
             try
             {
-                var result = await _channelCrawlService.Delete(id);
+                var result = await _postCrawlService.Delete(id);
                 return JsonResponse(200, DELETE_SUCCESS, result);
             }
             catch (Exception e)

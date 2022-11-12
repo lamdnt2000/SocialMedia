@@ -54,14 +54,16 @@ namespace Business.Service.ChannelCrawlService
 
         public async Task<int> Update(int id, UpdateChannelCrawlDto dto)
         {
-            if ((await _channelCrawlRepository.Get(x => x.Id == id)) == null)
+            var check = await _channelCrawlRepository.Get(x => x.Id == id);
+            if (check == null)
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
             var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
+            _channelCrawlRepository.ValidateChannel(channel);
             channel.Id = id;
-             _channelCrawlRepository.ValidateChannel(channel);
             channel.UpdateDate = DateTime.Now;
+            channel.CreatedDate = check.CreatedDate;
             await _channelCrawlRepository.Update(channel);
             return channel.Id;
         }

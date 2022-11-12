@@ -34,7 +34,7 @@ namespace DataAccess.Entities
         [StringLength(50)]
         public string PostType { get; set; }
         [Column("status")]
-        public int Status { get; set; }
+        public bool Status { get; set; }
         [Column("hashtag_id")]
         public int? HashtagId { get; set; }
         [Required]

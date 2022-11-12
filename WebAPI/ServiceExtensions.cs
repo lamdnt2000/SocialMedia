@@ -32,6 +32,10 @@ using Business.Repository.ChannelCrawlRepo;
 using Business.Service.ChannelCrawlService;
 using Business.Repository.ChannelRecordRepo;
 using Business.Service.ChannelRecordService;
+using Business.Repository.PostRepo;
+using Business.Service.PostService;
+using Business.Repository.ReactionRepo;
+using Business.Service.ReactionService;
 
 namespace API
 {
@@ -70,6 +74,13 @@ namespace API
 
             services.AddScoped<IChannelRecordRepository, ChannelRecordRepository>();
             services.AddScoped<IChannelRecordService, ChannelRecordService>();
+
+            services.AddScoped<IPostCrawlRepository, PostCrawlRepository>();
+            services.AddScoped<IPostCrawlService, PostCrawlService>();
+
+            services.AddScoped<IReactionRepository, ReactionRepository>();
+            services.AddScoped<IReactionService, ReactionService>();
+
 
         }
 

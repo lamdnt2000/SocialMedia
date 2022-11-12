@@ -15,5 +15,7 @@
         public const string REACTIONTYPE_PATH = API_VERSION + "/reactiontypes";
         public const string HASHTAG_PATH = API_VERSION + "/hashtags";
         public const string RECORD_PATH = API_VERSION + "/records";
+        public const string POST_PATH = API_VERSION + "/posts";
+        public const string REACTION_PATH = API_VERSION + "/reactions";
     }
 }

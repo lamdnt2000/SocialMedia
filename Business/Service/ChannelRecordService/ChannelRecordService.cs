@@ -56,13 +56,16 @@ namespace Business.Service.ChannelRecordService
 
         public async Task<int> Update(int id, UpdateChannelRecordDto dto)
         {
-            if (await GetById(id) == null)
+            var check = await GetById(id);
+            if (check == null)
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
             var channelRecord = MapperConfig.GetMapper().Map<ChannelRecord>(dto);
             _channelRecordRepository.ValidEntity(channelRecord);
+            channelRecord.Id = id;
             channelRecord.UpdateDate = DateTime.Now;
+            channelRecord.CreatedDate = check.CreatedDate;
             await _channelRecordRepository.Update(channelRecord);
             return channelRecord.Id;
         }

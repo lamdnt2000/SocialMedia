@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.ReactionModel
+namespace DataAccess.Models.PostCrawlModel
 {
-    public class UpdateReactionDto:InsertReactionDto
+    public class UpdatePostCrawlDto:InsertPostCrawlDto
     {
-        [Required]
         public bool Status { get; set; }
     }
 }

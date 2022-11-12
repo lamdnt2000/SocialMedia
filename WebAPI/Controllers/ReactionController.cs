@@ -1,34 +1,35 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using static Business.Utils.ResponseFormat;
-using static Business.Constants.ResponseMsg;
-using WebAPI.Constant;
-using Business.Config;
+﻿using Business.Config;
 using Business.Constants;
-using Business.Service.ChannelCrawlService;
+using Business.Service.ReactionService;
+using DataAccess.Models.PostCrawlModel;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
-using DataAccess.Models.ChannelCrawlModel;
+using WebAPI.Constant;
+using static Business.Utils.ResponseFormat;
+using static Business.Constants.ResponseMsg;
+using DataAccess.Models.ReactionModel;
 
 namespace WebAPI.Controllers
 {
-    [Route(ApiPath.CHANNEL_PATH)]
+    [Route(ApiPath.REACTION_PATH)]
     [ApiController]
     [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-    public class ChannelController : ControllerBase
+    public class ReactionController : ControllerBase
     {
-        private readonly IChannelCrawlService _channelCrawlService;
+        private readonly IReactionService _reactionService;
 
-        public ChannelController(IChannelCrawlService channelCrawlService)
+        public ReactionController(IReactionService reactionService)
         {
-            _channelCrawlService = channelCrawlService;
+            _reactionService = reactionService;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetChannelById(int id)
+        public async Task<IActionResult> GetReactionById(int id)
         {
             try
             {
-                var result = await _channelCrawlService.GetById(id);
+                var result = await _reactionService.GetById(id);
                 if (result != null)
                 {
 
@@ -51,34 +52,18 @@ namespace WebAPI.Controllers
             }
         }
 
-        /*[HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PlatformPaging paging)
-        {
-            try
-            {
-
-
-                var result = await _platformService.SearchAsync(paging);
-                return JsonResponse(200, SUCCESS, result);
-            }
-            catch (Exception e)
-            {
-
-                if (e.Message.Contains(NOT_FOUND))
-                {
-                    return JsonResponse(400, NOT_FOUND, e.Message);
-                }
-                return JsonResponse(401, UNAUTHORIZE, e.Message);
-
-            }
-        }*/
 
         [HttpPost]
-        public async Task<IActionResult> InsertChannel([FromForm] InsertChannelCrawlDto dto)
+        public async Task<IActionResult> InsertReaction([FromForm] InsertReactionDto dto)
         {
             try
             {
-                var result = await _channelCrawlService.Insert(dto);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var result = await _reactionService.Insert(dto);
                 return JsonResponse(201, INSERT_SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -99,11 +84,16 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateChannel(int id, [FromForm] UpdateChannelCrawlDto dto)
+        public async Task<IActionResult> UpdateReaction(int id, [FromForm] UpdateReactionDto dto)
         {
             try
             {
-                var result = await _channelCrawlService.Update(id, dto);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var result = await _reactionService.Update(id, dto);
                 return JsonResponse(200, UPDATE_SUCCESS, new { id = result });
             }
             catch (Exception e)
@@ -128,11 +118,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteChannelById(int id)
+        public async Task<IActionResult> DeleteReactionById(int id)
         {
             try
             {
-                var result = await _channelCrawlService.Delete(id);
+                var result = await _reactionService.Delete(id);
                 return JsonResponse(200, DELETE_SUCCESS, result);
             }
             catch (Exception e)

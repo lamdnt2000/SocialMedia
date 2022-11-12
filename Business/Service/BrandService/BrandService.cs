@@ -98,16 +98,18 @@ namespace Business.Service.BrandService
             {
                 throw new Exception(ReferClassName + " " + NOT_FOUND);
             }
-            if ((await GetById(id)) == null)
+            var check = await GetById(id);
+            if (check == null)
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
-            var check = await SearchByName(dto.Name);
-            if (check == null || id == check.Id)
+            var search = await SearchByName(dto.Name);
+            if (search == null || id == search.Id)
             {
                 var brand = MapperConfig.GetMapper().Map<Brand>(dto);
                 brand.UpdateDate = DateTime.Now;
                 brand.Id = id;
+                brand.CreatedDate = check.CreatedDate;
                 var result = await _brandRepository.Update(brand);
                 return brand.Id;
             }
