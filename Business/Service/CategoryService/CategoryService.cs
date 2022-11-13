@@ -8,8 +8,10 @@ using DataAccess.Models.CategoryModel;
 using DataAccess.Models.Pagination;
 using DataAccess.Models.PlatFormModel;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using static Business.Constants.ResponseMsg;
 
@@ -33,7 +35,7 @@ namespace Business.Service.CategoryService
             _platformRepository = platformRepository;
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(long id)
         {
             var category = await GetById(id);
             if (category != null)
@@ -47,14 +49,15 @@ namespace Business.Service.CategoryService
             }
         }
 
-        public async Task<CategoryDto> GetById(int id)
+        public async Task<CategoryDto> GetById(long id)
         {
 
             var category = await _categoryRepository.Get(x => x.Id == id);
+           
             return MapperConfig.GetMapper().Map<CategoryDto>(category);
         }
 
-        public async Task<int> Insert(InsertCategoryDto dto)
+        public async Task<long> Insert(InsertCategoryDto dto)
         {
             if (!(await ValidPlatfrom(dto.PlatformId)))
             {
@@ -87,7 +90,7 @@ namespace Business.Service.CategoryService
             return MapperConfig.GetMapper().Map<CategoryDto>(category);
         }
 
-        public async Task<int> Update(int id, UpdateCategoryDto dto)
+        public async Task<long> Update(long id, UpdateCategoryDto dto)
         {
             if ((await GetById(id) == null))
             {
@@ -127,5 +130,8 @@ namespace Business.Service.CategoryService
                 TotalPage = result.TotalPage
             };
         }
+
+       
     }
+
 }

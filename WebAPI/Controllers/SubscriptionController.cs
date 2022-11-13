@@ -14,7 +14,7 @@ using DataAccess.Models.SubscriptionModel;
 
 namespace WebAPI.Controllers
 {
-    [Route(ApiPath.SUBSCRIPTION_PATH)]
+    [Route(ApiPath.SUBCRIPTION_PATH)]
     [ApiController]
     [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
     public class SubscriptionController : ControllerBase

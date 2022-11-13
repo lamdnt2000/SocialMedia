@@ -71,6 +71,8 @@ namespace Business.Utils
                 cfg.CreateMap<ChannelCrawl, ChannelCrawlDto>().ReverseMap();
                 cfg.CreateMap<ChannelCrawl, InsertChannelCrawlDto>().ReverseMap();
                 cfg.CreateMap<ChannelCrawl, UpdateChannelCrawlDto>().ReverseMap();
+                cfg.CreateMap<ChannelCategory, ChannelCategoryDto>().ReverseMap();
+
 
                 cfg.CreateMap<ChannelRecord, ChannelRecordDto>().ReverseMap();
                 cfg.CreateMap<ChannelRecord, InsertChannelRecordDto>().ReverseMap();

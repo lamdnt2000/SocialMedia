@@ -1,5 +1,5 @@
 ﻿{
-   "CodeGenerationMode": 0,
+   "CodeGenerationMode": 1,
    "ContextClassName": "SocialMediaContext",
    "ContextNamespace": null,
    "DefaultDacpacSchema": null,
@@ -28,6 +28,10 @@
       },
       {
          "Name": "[dbo].[channel_record]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ChannelCategory]",
          "ObjectType": 0
       },
       {

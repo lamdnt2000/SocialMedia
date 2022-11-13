@@ -8,6 +8,6 @@ namespace DataAccess.Models.CategoryModel
 {
     public class CategoryDto:InsertCategoryDto
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
     }
 }

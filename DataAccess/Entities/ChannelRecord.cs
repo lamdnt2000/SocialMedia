@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities
 {
@@ -34,6 +33,7 @@ namespace DataAccess.Entities
         public DateTime? UpdateDate { get; set; }
         [Column("status")]
         public bool Status { get; set; }
+
         [ForeignKey(nameof(ChannelId))]
         [InverseProperty(nameof(ChannelCrawl.ChannelRecords))]
         public virtual ChannelCrawl Channel { get; set; }

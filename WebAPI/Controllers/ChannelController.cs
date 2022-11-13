@@ -74,7 +74,7 @@ namespace WebAPI.Controllers
         }*/
 
         [HttpPost]
-        public async Task<IActionResult> InsertChannel([FromForm] InsertChannelCrawlDto dto)
+        public async Task<IActionResult> InsertChannel([FromBody] InsertChannelCrawlDto dto)
         {
             try
             {

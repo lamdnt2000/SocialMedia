@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Entities;
 
 namespace DataAccess.Models.ChannelCrawlModel
 {
@@ -13,8 +14,6 @@ namespace DataAccess.Models.ChannelCrawlModel
     {
         [Required]
         public int LocationId { get; set; }
-        [Required]
-        public int CategoryId { get; set; }
         [Required]
         public int PlatformId { get; set; }
         public int? BrandId { get; set; }
@@ -40,5 +39,6 @@ namespace DataAccess.Models.ChannelCrawlModel
         public string? Username { get; set; }
         [Required, MaxLength(255)]
         public string Cid { get; set; }
+        public ICollection<ChannelCategoryDto>? ChannelCategories { get; set; }
     }
 }

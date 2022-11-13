@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities
 {
@@ -13,6 +12,7 @@ namespace DataAccess.Entities
     {
         public ChannelCrawl()
         {
+            ChannelCategories = new HashSet<ChannelCategory>();
             ChannelRecords = new HashSet<ChannelRecord>();
             PostCrawls = new HashSet<PostCrawl>();
         }
@@ -26,8 +26,6 @@ namespace DataAccess.Entities
         public DateTime? UpdateDate { get; set; }
         [Column("location_id")]
         public int LocationId { get; set; }
-        [Column("category_id")]
-        public int CategoryId { get; set; }
         [Column("platform_id")]
         public int PlatformId { get; set; }
         [Column("brand_id")]
@@ -48,24 +46,24 @@ namespace DataAccess.Entities
         [Column("avatar_url")]
         [StringLength(255)]
         public string AvatarUrl { get; set; }
+        [Required]
         [Column("banner_url")]
         [StringLength(255)]
-        public string? BannerUrl { get; set; }
+        public string BannerUrl { get; set; }
         [Column("status")]
         public int Status { get; set; }
         [Column("is_verify")]
         public bool IsVerify { get; set; }
         [Column("bio")]
-        public string? Bio { get; set; }
+        public string Bio { get; set; }
         [Column("username")]
         [StringLength(50)]
-        public string? Username { get; set; }
+        public string Username { get; set; }
+        [Required]
         [Column("cid")]
+        [StringLength(255)]
         public string Cid { get; set; }
 
-        [ForeignKey(nameof(CategoryId))]
-        [InverseProperty("ChannelCrawls")]
-        public virtual Category Category { get; set; }
         [ForeignKey(nameof(LocationId))]
         [InverseProperty("ChannelCrawls")]
         public virtual Location Location { get; set; }
@@ -75,6 +73,8 @@ namespace DataAccess.Entities
         [ForeignKey(nameof(PlatformId))]
         [InverseProperty("ChannelCrawls")]
         public virtual Platform Platform { get; set; }
+        [InverseProperty(nameof(ChannelCategory.Channel))]
+        public virtual ICollection<ChannelCategory> ChannelCategories { get; set; }
         [InverseProperty(nameof(ChannelRecord.Channel))]
         public virtual ICollection<ChannelRecord> ChannelRecords { get; set; }
         [InverseProperty(nameof(PostCrawl.Channel))]

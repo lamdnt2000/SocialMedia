@@ -11,10 +11,10 @@ namespace Business.Service.CategoryService
 {
     public interface ICategoryService
     {
-        Task<int> Insert(InsertCategoryDto dto);
-        Task<int> Update(int id, UpdateCategoryDto dto);
-        Task<bool> Delete(int id);
-        Task<CategoryDto> GetById(int id);
+        Task<long> Insert(InsertCategoryDto dto);
+        Task<long> Update(long id, UpdateCategoryDto dto);
+        Task<bool> Delete(long id);
+        Task<CategoryDto> GetById(long id);
         Task<CategoryDto> SearchByName(string name);
         Task<PaginationList<CategoryDto>> SearchAsync(CategoryPaging paging);
     }

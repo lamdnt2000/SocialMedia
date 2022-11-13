@@ -24,15 +24,24 @@ namespace Business.Repository.ChannelCrawlRepo
             }
             if (entity.BrandId.HasValue)
             {
-                if (!context.Platforms.Any(x => x.Id == entity.PlatformId))
+                if (!context.Brands.Any(x => x.Id == entity.BrandId))
                 {
-                    throw new Exception("Platform not exist!");
+                    throw new Exception("Brand not exist!");
                 }
             }
-             
-             if (!context.Categories.Any(x => x.Id == entity.CategoryId))
+            if (!context.Platforms.Any(x => x.Id == entity.PlatformId))
             {
-                throw new Exception("Category not exist!");
+                throw new Exception("Platform not exist!");
+            }
+            if (entity.ChannelCategories != null)
+            {
+                foreach (ChannelCategory c in entity.ChannelCategories)
+                {
+                    if (!context.Categories.Any(x => x.Id == c.CategoryId))
+                    {
+                        throw new Exception("Category not exist!");
+                    }
+                }
             }
             if (!context.Locations.Any(x => x.Id == entity.LocationId))
             {

@@ -26,7 +26,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategoryId(int id)
+        public async Task<IActionResult> GetCategoryId(long id)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id,  [FromForm] UpdateCategoryDto dto)
+        public async Task<IActionResult> UpdateCategory(long id,  [FromForm] UpdateCategoryDto dto)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategoryById(int id)
+        public async Task<IActionResult> DeleteCategoryById(long id)
         {
             try
             {

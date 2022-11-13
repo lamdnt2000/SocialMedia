@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities
 {
@@ -13,22 +12,24 @@ namespace DataAccess.Entities
     {
         public Category()
         {
-            ChannelCrawls = new HashSet<ChannelCrawl>();
+            ChannelCategories = new HashSet<ChannelCategory>();
         }
 
         [Key]
         [Column("id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Column("name")]
         [StringLength(100)]
         public string Name { get; set; }
         [Column("platform_id")]
-        public int? PlatformId { get; set; }
+        public int PlatformId { get; set; }
+        [Column("description")]
+        public string Description { get; set; }
 
         [ForeignKey(nameof(PlatformId))]
         [InverseProperty("Categories")]
         public virtual Platform Platform { get; set; }
-        [InverseProperty(nameof(ChannelCrawl.Category))]
-        public virtual ICollection<ChannelCrawl> ChannelCrawls { get; set; }
+        [InverseProperty(nameof(ChannelCategory.Category))]
+        public virtual ICollection<ChannelCategory> ChannelCategories { get; set; }
     }
 }
