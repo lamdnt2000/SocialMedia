@@ -8,6 +8,6 @@ namespace DataAccess.Models.ChannelRecordModel
 {
     public class UpdateChannelRecordDto:InsertChannelRecordDto
     {
-        public bool Status { get; set; }
+       
     }
 }

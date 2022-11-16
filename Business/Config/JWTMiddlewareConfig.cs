@@ -44,8 +44,7 @@ namespace Business.Config
             //check if current user have permission to access this resources
             string[] specialPathWithoutToken = {
                 PathWithoutToken.USER_LOGIN,
-                PathWithoutToken.USER_SIGNUP,
-                PathWithoutToken.FILE_PATH
+                PathWithoutToken.USER_SIGNUP
             };
             string[] regexSpecification = { "", "", "" };
             int index = 0;
@@ -59,7 +58,7 @@ namespace Business.Config
                 index++;
                 if (isMatch)
                 {
-                    if (value.Contains(PathWithoutToken.FILE_PATH))
+                    if (value.Contains("file"))
                     {
                         if (!context.Request.Method.Equals("GET")) return false;
                     }
@@ -68,7 +67,7 @@ namespace Business.Config
 
                 return false;
             });
-            if (!string.IsNullOrEmpty(path))
+            if (api.StartsWith(PathWithoutToken.HANGFIRE) || !string.IsNullOrEmpty(path))
             {
                 await _next(context);
                 return;

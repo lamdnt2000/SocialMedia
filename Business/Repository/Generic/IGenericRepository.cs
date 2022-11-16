@@ -21,5 +21,6 @@ namespace Business.Repository.GenericRepo
         Task<int> Update(T entity);
         Task<int> Delete(object id);
         Task<int> DeleteRange(IEnumerable<T> entities);
+       
     }
 }

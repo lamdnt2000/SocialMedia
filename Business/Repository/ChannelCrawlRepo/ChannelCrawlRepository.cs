@@ -1,7 +1,10 @@
 ﻿using Business.Repository.GenericRepo;
+using Business.Utils;
 using DataAccess;
 using DataAccess.Entities;
+using DataAccess.Models.ChannelCrawlModel;
 using Google.Api.Gax;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +19,28 @@ namespace Business.Repository.ChannelCrawlRepo
         {
         }
 
+        public async Task<ChannelCrawl> FilterChannel(ChannelFilter filter)
+        {
+            DateTime dateFrom = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Max.Value.AddDays(1);
+            var channel =await context.ChannelCrawls.Where(c => c.Id == filter.Id )
+                .Include(c => c.ChannelRecords)
+                .Include(c => c.PostCrawls.Where(p => p.CreatedTime >= dateFrom && p.CreatedTime < dateTo)
+                .OrderBy(p=>p.CreatedTime))
+                .ThenInclude(p => p.Reactions).ThenInclude(r => r.ReactionType)
+                .FirstOrDefaultAsync();
+            return channel;
+           
+
+        }
+
         public bool ValidateChannel(ChannelCrawl entity)
         {
             if (!context.Organizations.Any(x => x.Id == entity.OrganizationId))
             {
                 throw new Exception("Organization not exist!");
             }
-            if (entity.BrandId.HasValue)
+            if (entity.BrandId!=0)
             {
                 if (!context.Brands.Any(x => x.Id == entity.BrandId))
                 {

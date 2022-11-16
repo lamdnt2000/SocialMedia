@@ -22,7 +22,8 @@ namespace DataAccess.Models.ChannelRecordModel
         public long TotalPost { get; set; }
         
         public long? TotalView { get; set; }
+
         [Required]
-        public int ChannelId { get; set; }
+        public bool Status { get; set; }
     }
 }

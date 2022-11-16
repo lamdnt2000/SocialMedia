@@ -28,7 +28,7 @@ namespace DataAccess.Entities
         [Column("channel_id")]
         public int ChannelId { get; set; }
         [Column("created_date", TypeName = "datetime")]
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
         [Column("update_date", TypeName = "datetime")]
         public DateTime? UpdateDate { get; set; }
         [Column("status")]

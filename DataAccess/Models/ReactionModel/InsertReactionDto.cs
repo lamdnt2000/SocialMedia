@@ -10,12 +10,14 @@ namespace DataAccess.Models.ReactionModel
     public class InsertReactionDto
     {
       
-        [Required]
-        public int PostId { get; set; }
+        
+       
         [Required]
         public int ReactionTypeId { get; set; }
         [Required]
         public long Count { get; set; }
+        [Required]
+        public bool Status { get; set; }
 
     }
 }

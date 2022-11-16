@@ -44,11 +44,9 @@ namespace DataAccess.Entities
         public string Url { get; set; }
         [Required]
         [Column("avatar_url")]
-        [StringLength(255)]
         public string AvatarUrl { get; set; }
         [Required]
         [Column("banner_url")]
-        [StringLength(255)]
         public string BannerUrl { get; set; }
         [Column("status")]
         public int Status { get; set; }
@@ -63,6 +61,8 @@ namespace DataAccess.Entities
         [Column("cid")]
         [StringLength(255)]
         public string Cid { get; set; }
+        [Column("created_time", TypeName = "datetime")]
+        public DateTime? CreatedTime { get; set; } 
 
         [ForeignKey(nameof(LocationId))]
         [InverseProperty("ChannelCrawls")]

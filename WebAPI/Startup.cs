@@ -2,6 +2,8 @@ using API;
 using AutoFilterer.Swagger;
 using Business.Config;
 using DataAccess;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using WebAPI.Config;
 
 namespace WebAPI
 {
@@ -32,13 +36,28 @@ namespace WebAPI
                 options.UseSqlServer(connectionString),
                 ServiceLifetime.Transient
             );
+
+            var hangfireConnectionString = Configuration.GetConnectionString("HangfireConnection");
+            services.AddHangfire(configuration => configuration
+           .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+               .UseSimpleAssemblyNameTypeSerializer()
+               .UseRecommendedSerializerSettings()
+               .UseSqlServerStorage(hangfireConnectionString, new SqlServerStorageOptions
+               {
+                   CommandBatchMaxTimeout = TimeSpan.FromMinutes(30),
+                   SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                   QueuePollInterval = TimeSpan.Zero,
+                   UseRecommendedIsolationLevel = true,
+                   DisableGlobalLocks = true
+               }));
+
             services.AddConfigureDependency();
 
             services.AddAuthentication();
 
             services.ConfigureJWT(Configuration);
             services.ConfigureFirebase(Configuration);
-
+            services.AddHangfireServer();
             services.AddControllers();
             services.AddHttpContextAccessor();
             services.ConfigureCros();
@@ -61,7 +80,7 @@ namespace WebAPI
             }
 
             app.UseSwagger();
-
+            app.UseStaticFiles();
             app.UseSwaggerUI(c =>
             {
                 string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
@@ -84,10 +103,11 @@ namespace WebAPI
             //custom jwt auth middleware
             app.UseMiddleware<JWTMiddlewareConfig>();
 
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHangfireDashboard();
             });
         }
     }

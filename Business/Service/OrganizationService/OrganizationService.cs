@@ -89,7 +89,8 @@ namespace Business.Service.OrganizationService
         public async Task<int> Update(int id, UpdateOrganizationDto dto)
         {
             var check = await SearchByName(dto.Name);
-            if ((await GetById(id)) == null)
+            var entity = await GetById(id);
+            if (entity == null)
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
@@ -98,7 +99,7 @@ namespace Business.Service.OrganizationService
                 var organization = MapperConfig.GetMapper().Map<Organization>(dto);
                 organization.Id = id;
                 organization.UpdateDate = DateTime.Now;
-                organization.CreatedDate = check.CreatedDate;
+                organization.CreatedDate = entity.CreatedDate;
                 var result = await _organizationRepository.Update(organization);
                 return organization.Id;
             }

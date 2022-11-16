@@ -1,5 +1,6 @@
 ﻿using Business.Repository.GenericRepo;
 using DataAccess.Entities;
+using DataAccess.Models.ChannelCrawlModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace Business.Repository.ChannelCrawlRepo
     public interface IChannelCrawlRepository: IGenericRepository<ChannelCrawl>
     {
         bool ValidateChannel(ChannelCrawl entity);
+        Task<ChannelCrawl> FilterChannel(ChannelFilter filter);
     }
 }

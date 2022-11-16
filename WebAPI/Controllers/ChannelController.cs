@@ -92,7 +92,6 @@ namespace WebAPI.Controllers
                 {
                     return JsonResponse(400, NOT_EXIST, e.Message);
                 }
-
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
 
             }
@@ -134,6 +133,26 @@ namespace WebAPI.Controllers
             {
                 var result = await _channelCrawlService.Delete(id);
                 return JsonResponse(200, DELETE_SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, DELETE_FAILED, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+        [HttpGet("statistic")]
+        public async Task<IActionResult> StatisticChannelById([FromQuery] ChannelFilter filter)
+        {
+            try
+            {
+            
+                var result = await _channelCrawlService.Statistic(filter);
+                return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
             {

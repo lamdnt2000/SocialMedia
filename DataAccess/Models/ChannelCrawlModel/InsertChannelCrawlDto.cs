@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Entities;
+using DataAccess.Models.ChannelRecordModel;
+using DataAccess.Models.PostCrawlModel;
 
 namespace DataAccess.Models.ChannelCrawlModel
 {
@@ -27,10 +29,8 @@ namespace DataAccess.Models.ChannelCrawlModel
         [MaxLength(255)]
         public string Url { get; set; }
         [Required]
-        [MaxLength(255)]
         public string AvatarUrl { get; set; }
         [Required]
-        [MaxLength(255)]
         public string BannerUrl { get; set; }
         public int Status { get; set; }
         public bool IsVerify { get; set; }
@@ -40,5 +40,8 @@ namespace DataAccess.Models.ChannelCrawlModel
         [Required, MaxLength(255)]
         public string Cid { get; set; }
         public ICollection<ChannelCategoryDto>? ChannelCategories { get; set; }
+        public InsertChannelRecordDto ChannelRecord { get; set; }
+        public ICollection<InsertPostCrawlDto> PostCrawls { get; set; }
+        public DateTime CreatedTime { get; set; }
     }
 }

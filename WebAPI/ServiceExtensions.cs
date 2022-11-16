@@ -36,6 +36,9 @@ using Business.Repository.PostRepo;
 using Business.Service.PostService;
 using Business.Repository.ReactionRepo;
 using Business.Service.ReactionService;
+using Hangfire;
+using Hangfire.SqlServer;
+using System;
 
 namespace API
 {
@@ -151,6 +154,7 @@ namespace API
                     .AllowAnyHeader());
             });
         }
+     
 
         public static void ConfigureSwagger(this IServiceCollection services)
         {

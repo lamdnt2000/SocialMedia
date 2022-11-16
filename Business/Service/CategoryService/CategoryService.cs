@@ -67,7 +67,8 @@ namespace Business.Service.CategoryService
             if (check == null)
             {
                 var category = MapperConfig.GetMapper().Map<Category>(dto);
-                var result = await _categoryRepository.Update(category);
+
+                var result = await _categoryRepository.Insert(category);
                 return category.Id;
             }
             else
