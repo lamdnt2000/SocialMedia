@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("channel_record")]
-    public partial class ChannelRecord
+    public partial class ChannelRecord: BaseEntity
     {
         [Key]
         [Column("id")]
@@ -27,10 +27,7 @@ namespace DataAccess.Entities
         public long? TotalView { get; set; }
         [Column("channel_id")]
         public int ChannelId { get; set; }
-        [Column("created_date", TypeName = "datetime")]
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
-        [Column("update_date", TypeName = "datetime")]
-        public DateTime? UpdateDate { get; set; }
+        
         [Column("status")]
         public bool Status { get; set; }
 

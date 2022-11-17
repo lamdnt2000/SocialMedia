@@ -62,7 +62,6 @@ namespace Business.Service.BrandService
             if (check == null)
             {
                 var brand = MapperConfig.GetMapper().Map<Brand>(dto);
-                brand.CreatedDate = DateTime.Now;
                 brand.Status = true;
                 var result = await _brandRepository.Update(brand);
                 return brand.Id;
@@ -107,9 +106,7 @@ namespace Business.Service.BrandService
             if (search == null || id == search.Id)
             {
                 var brand = MapperConfig.GetMapper().Map<Brand>(dto);
-                brand.UpdateDate = DateTime.Now;
                 brand.Id = id;
-                brand.CreatedDate = check.CreatedDate;
                 var result = await _brandRepository.Update(brand);
                 return brand.Id;
             }

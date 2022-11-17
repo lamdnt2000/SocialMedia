@@ -45,7 +45,6 @@ namespace Business.Service.PostService
         {
 
             var post = MapperConfig.GetMapper().Map<PostCrawl>(dto);
-            post.CreatedDate = DateTime.Now;
             post.Status = true;
             _postCrawlRepository.ValidEntity(post);
             var result = await _postCrawlRepository.Insert(post);
@@ -63,8 +62,7 @@ namespace Business.Service.PostService
             var post = MapperConfig.GetMapper().Map<PostCrawl>(dto);
             _postCrawlRepository.ValidEntity(post);
             post.Id = id;
-            post.UpdateDate = DateTime.Now;
-            post.CreatedDate = check.CreatedDate;
+            
             var result = await _postCrawlRepository.Update(post);
             return post.Id;
         }

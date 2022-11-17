@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromForm] LoginUserDTO loginUser)
+        public async Task<IActionResult> Login([FromBody] LoginUserDTO loginUser)
         {
             try
             {
