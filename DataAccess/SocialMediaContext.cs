@@ -56,7 +56,7 @@ namespace DataAccess
 
             modelBuilder.Entity<Category>(entity =>
             {
-               
+
 
                 entity.HasOne(d => d.Platform)
                     .WithMany(p => p.Categories)
@@ -298,7 +298,7 @@ namespace DataAccess
             OnModelCreatingPartial(modelBuilder);
         }
 
-        /*public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var entries = ChangeTracker
         .Entries()
@@ -308,7 +308,11 @@ namespace DataAccess
 
             foreach (var entityEntry in entries)
             {
-                ((BaseEntity)entityEntry.Entity).UpdatedDate = DateTime.Now;
+                if (entityEntry.State == EntityState.Modified)
+                {
+                    ((BaseEntity)entityEntry.Entity).UpdateDate = DateTime.Now;
+                    entityEntry.Property("CreatedDate").IsModified = false;
+                }
 
                 if (entityEntry.State == EntityState.Added)
                 {
@@ -318,7 +322,7 @@ namespace DataAccess
 
             return base.SaveChangesAsync(cancellationToken);
         }
-*/
+
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
     }

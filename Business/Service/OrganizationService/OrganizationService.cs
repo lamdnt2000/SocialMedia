@@ -56,7 +56,6 @@ namespace Business.Service.OrganizationService
             if (check == null)
             {
                 var organization = MapperConfig.GetMapper().Map<Organization>(dto);
-                organization.CreatedDate = DateTime.Now;
                 organization.Status = true;
                 var result = await _organizationRepository.Update(organization);
                 return organization.Id;
@@ -98,8 +97,6 @@ namespace Business.Service.OrganizationService
             {
                 var organization = MapperConfig.GetMapper().Map<Organization>(dto);
                 organization.Id = id;
-                organization.UpdateDate = DateTime.Now;
-                organization.CreatedDate = entity.CreatedDate;
                 var result = await _organizationRepository.Update(organization);
                 return organization.Id;
             }

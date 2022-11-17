@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("post_crawl")]
-    public partial class PostCrawl
+    public partial class PostCrawl:BaseEntity
     {
         public PostCrawl()
         {
@@ -37,10 +37,7 @@ namespace DataAccess.Entities
         public int? HashtagId { get; set; }
         [Column("body")]
         public string Body { get; set; }
-        [Column("created_date", TypeName = "datetime")]
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
-        [Column("update_date", TypeName = "datetime")]
-        public DateTime? UpdateDate { get; set; }
+       
         [Column("channel_id")]
         public int ChannelId { get; set; }
         [Column("created_time", TypeName = "datetime")]

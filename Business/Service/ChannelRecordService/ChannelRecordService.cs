@@ -43,7 +43,7 @@ namespace Business.Service.ChannelRecordService
         {
             var channelRecord = MapperConfig.GetMapper().Map<ChannelRecord>(dto);
             _channelRecordRepository.ValidEntity(channelRecord);
-            channelRecord.CreatedDate = DateTime.Now;
+            
             channelRecord.Status = true;
             await _channelRecordRepository.Insert(channelRecord);
             return channelRecord.Id;
@@ -64,8 +64,7 @@ namespace Business.Service.ChannelRecordService
             var channelRecord = MapperConfig.GetMapper().Map<ChannelRecord>(dto);
             _channelRecordRepository.ValidEntity(channelRecord);
             channelRecord.Id = id;
-            channelRecord.UpdateDate = DateTime.Now;
-            channelRecord.CreatedDate = check.CreatedDate;
+          
             await _channelRecordRepository.Update(channelRecord);
             return channelRecord.Id;
         }

@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("brand")]
-    public partial class Brand
+    public partial class Brand: BaseEntity
     {
         [Key]
         [Column("id")]
@@ -23,10 +23,7 @@ namespace DataAccess.Entities
         public string Description { get; set; }
         [Column("organization_id")]
         public int OrganizationId { get; set; }
-        [Column("created_date", TypeName = "datetime")]
-        public DateTime? CreatedDate { get; set; }
-        [Column("update_date", TypeName = "datetime")]
-        public DateTime? UpdateDate { get; set; }
+        
         [Column("status")]
         public bool Status { get; set; }
 

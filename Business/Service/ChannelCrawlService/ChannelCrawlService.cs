@@ -50,7 +50,6 @@ namespace Business.Service.ChannelCrawlService
             var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
             var record = MapperConfig.GetMapper().Map<ChannelRecord>(dto.ChannelRecord);
             _channelCrawlRepository.ValidateChannel(channel);
-            channel.CreatedDate = DateTime.Now;
             channel.ChannelRecords.Add(record);
             await _channelCrawlRepository.Insert(channel);
             return channel.Id;
@@ -161,8 +160,6 @@ namespace Business.Service.ChannelCrawlService
             var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
             _channelCrawlRepository.ValidateChannel(channel);
             channel.Id = id;
-            channel.UpdateDate = DateTime.Now;
-            channel.CreatedDate = check.CreatedDate;
             await _channelCrawlRepository.Update(channel);
             return channel.Id;
         }
