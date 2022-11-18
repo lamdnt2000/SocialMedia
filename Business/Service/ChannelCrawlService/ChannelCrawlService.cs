@@ -65,7 +65,7 @@ namespace Business.Service.ChannelCrawlService
             var groupPost = channel.PostCrawls
                 .Select(x => new
                 {
-                    x.Id,
+                    x.Pid,
                     x.CreatedTime,
                     Reactions = x.Reactions.Select(r => new
                     {
@@ -75,6 +75,20 @@ namespace Business.Service.ChannelCrawlService
                     })
                 }).ToList()
                 .GroupBy(x => x.CreatedTime.Value.Date).ToList();
+
+            var groupByDate = channel.PostCrawls
+                .Select(x => new
+                {
+                    x.Pid,
+                    x.CreatedTime,
+                    Reactions = x.Reactions.Select(r => new
+                    {
+                        r.ReactionTypeId,
+                        r.Count,
+                        r.ReactionType.Name
+                    })
+                }).ToList()
+                .GroupBy(x => x.CreatedTime.Value.Date.DayOfWeek).ToList();
             List<StatisticField> statistics = new List<StatisticField>();
             foreach (var post in groupPost)
             {

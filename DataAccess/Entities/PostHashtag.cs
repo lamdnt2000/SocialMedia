@@ -20,8 +20,5 @@ namespace DataAccess.Entities
         [ForeignKey(nameof(HashtagId))]
         [InverseProperty("PostHashtags")]
         public virtual Hashtag Hashtag { get; set; }
-        [ForeignKey(nameof(PostId))]
-        [InverseProperty(nameof(PostCrawl.PostHashtags))]
-        public virtual PostCrawl Post { get; set; }
     }
 }

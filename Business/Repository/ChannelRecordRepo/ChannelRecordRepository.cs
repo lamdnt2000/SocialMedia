@@ -15,13 +15,6 @@ namespace Business.Repository.ChannelRecordRepo
         {
         }
 
-        public bool ValidEntity(ChannelRecord entity)
-        {
-            if (!context.ChannelCrawls.Any(x => x.Id == entity.ChannelId))
-            {
-                throw new Exception("ChannelCrawls not exist!");
-            }
-            return true;
-        }
+      
     }
 }

@@ -10,6 +10,6 @@ namespace Business.Repository.ReactionRepo
 {
     public interface IReactionRepository : IGenericRepository<Reaction>
     {
-        bool ValidEntity(Reaction reaction);
+     
     }
 }

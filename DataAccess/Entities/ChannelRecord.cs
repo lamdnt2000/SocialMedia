@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("channel_record")]
-    public partial class ChannelRecord: BaseEntity
+    public partial class ChannelRecord : BaseEntity
     {
         [Key]
         [Column("id")]
@@ -27,7 +27,7 @@ namespace DataAccess.Entities
         public long? TotalView { get; set; }
         [Column("channel_id")]
         public int ChannelId { get; set; }
-        
+      
         [Column("status")]
         public bool Status { get; set; }
 

@@ -12,16 +12,12 @@ namespace DataAccess.Entities
     {
         public PostCrawl()
         {
-            PostHashtags = new HashSet<PostHashtag>();
             Reactions = new HashSet<Reaction>();
         }
 
-        [Key]
-        [Column("id")]
-        public int Id { get; set; }
         [Column("title")]
         public string Title { get; set; }
-        [Required]
+        [Key]
         [Column("pid")]
         [StringLength(100)]
         public string Pid { get; set; }
@@ -37,17 +33,13 @@ namespace DataAccess.Entities
         public int? HashtagId { get; set; }
         [Column("body")]
         public string Body { get; set; }
-       
         [Column("channel_id")]
         public int ChannelId { get; set; }
         [Column("created_time", TypeName = "datetime")]
         public DateTime? CreatedTime { get; set; }
-
         [ForeignKey(nameof(ChannelId))]
         [InverseProperty(nameof(ChannelCrawl.PostCrawls))]
         public virtual ChannelCrawl Channel { get; set; }
-        [InverseProperty(nameof(PostHashtag.Post))]
-        public virtual ICollection<PostHashtag> PostHashtags { get; set; }
         [InverseProperty(nameof(Reaction.Post))]
         public virtual ICollection<Reaction> Reactions { get; set; }
     }

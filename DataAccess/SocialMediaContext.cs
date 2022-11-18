@@ -2,11 +2,11 @@
 #nullable disable
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using DataAccess.Entities;
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using DataAccess.Entities;
 
 namespace DataAccess
 {
@@ -50,14 +50,11 @@ namespace DataAccess
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.Brands)
                     .HasForeignKey(d => d.OrganizationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_brand_organization");
             });
 
             modelBuilder.Entity<Category>(entity =>
             {
-
-
                 entity.HasOne(d => d.Platform)
                     .WithMany(p => p.Categories)
                     .HasForeignKey(d => d.PlatformId)
@@ -78,7 +75,6 @@ namespace DataAccess
                 entity.HasOne(d => d.Channel)
                     .WithMany(p => p.ChannelCategories)
                     .HasForeignKey(d => d.ChannelId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ChannelCategory_channel_crawl");
             });
 
@@ -133,6 +129,9 @@ namespace DataAccess
 
             modelBuilder.Entity<PostCrawl>(entity =>
             {
+                entity.HasKey(e => e.Pid)
+                    .HasName("PK_postcrawl");
+
                 entity.Property(e => e.Pid).IsUnicode(false);
 
                 entity.Property(e => e.PostType).IsUnicode(false);
@@ -140,7 +139,7 @@ namespace DataAccess
                 entity.HasOne(d => d.Channel)
                     .WithMany(p => p.PostCrawls)
                     .HasForeignKey(d => d.ChannelId)
-                    .HasConstraintName("FK_post_crawl_channel_crawl");
+                    .HasConstraintName("FK_post_crawl_channel_crawl1");
             });
 
             modelBuilder.Entity<PostHashtag>(entity =>
@@ -152,19 +151,18 @@ namespace DataAccess
                     .HasForeignKey(d => d.HashtagId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_post_hashtag_hashtag");
-
-                entity.HasOne(d => d.Post)
-                    .WithMany(p => p.PostHashtags)
-                    .HasForeignKey(d => d.PostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_post_hashtag_post_crawl");
             });
 
             modelBuilder.Entity<Reaction>(entity =>
             {
+                entity.HasKey(e => new { e.ReactionTypeId, e.PostId });
+
+                entity.Property(e => e.PostId).IsUnicode(false);
+
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Reactions)
                     .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_reaction_post_crawl");
 
                 entity.HasOne(d => d.ReactionType)
@@ -298,6 +296,8 @@ namespace DataAccess
             OnModelCreatingPartial(modelBuilder);
         }
 
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var entries = ChangeTracker
@@ -322,8 +322,5 @@ namespace DataAccess
 
             return base.SaveChangesAsync(cancellationToken);
         }
-
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
     }
 }

@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("channel_crawl")]
-    public partial class ChannelCrawl: BaseEntity
+    public partial class ChannelCrawl : BaseEntity
     {
         public ChannelCrawl()
         {
@@ -20,7 +20,7 @@ namespace DataAccess.Entities
         [Key]
         [Column("id")]
         public int Id { get; set; }
-       
+      
         [Column("location_id")]
         public int LocationId { get; set; }
         [Column("platform_id")]
@@ -59,7 +59,7 @@ namespace DataAccess.Entities
         [StringLength(255)]
         public string Cid { get; set; }
         [Column("created_time", TypeName = "datetime")]
-        public DateTime? CreatedTime { get; set; } 
+        public DateTime? CreatedTime { get; set; }
 
         [ForeignKey(nameof(LocationId))]
         [InverseProperty("ChannelCrawls")]
