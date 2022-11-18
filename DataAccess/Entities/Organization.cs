@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("organization")]
-    public partial class Organization: BaseEntity
+    public partial class Organization : BaseEntity
     {
         public Organization()
         {
@@ -29,6 +29,7 @@ namespace DataAccess.Entities
         [Column("site")]
         [StringLength(255)]
         public string Site { get; set; }
+     
         [Column("status")]
         public bool Status { get; set; }
 

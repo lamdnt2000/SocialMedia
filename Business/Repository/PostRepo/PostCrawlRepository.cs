@@ -15,13 +15,6 @@ namespace Business.Repository.PostRepo
         {
         }
 
-        public bool ValidEntity(PostCrawl entity)
-        {
-            if (!context.ChannelCrawls.Any(x=> x.Id == entity.ChannelId))
-            {
-                throw new Exception("Channel Crawl not exist!");
-            }
-            return true;
-        }
+        
     }
 }

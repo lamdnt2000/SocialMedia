@@ -8,21 +8,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("reaction")]
-    public partial class Reaction
+    public partial class Reaction: BaseEntity
     {
         [Key]
-        [Column("id")]
-        public int Id { get; set; }
         [Column("reaction_type_id")]
         public int ReactionTypeId { get; set; }
+        [Key]
         [Column("post_id")]
-        public int PostId { get; set; }
+        [StringLength(100)]
+        public string PostId { get; set; }
         [Column("count")]
         public long Count { get; set; }
-        [Column("created_date", TypeName = "datetime")]
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
-        [Column("update_date", TypeName = "datetime")]
-        public DateTime? UpdateDate { get; set; }
         [Column("status")]
         public bool Status { get; set; }
 

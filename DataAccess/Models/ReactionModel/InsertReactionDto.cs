@@ -9,9 +9,8 @@ namespace DataAccess.Models.ReactionModel
 {
     public class InsertReactionDto
     {
-      
-        
-       
+        [Required]
+        public string PostId { get; set; }
         [Required]
         public int ReactionTypeId { get; set; }
         [Required]

@@ -15,8 +15,6 @@ namespace DataAccess.Models.PostCrawlModel
         
         public DateTime? UpdateDate { get; set; }
 
-        public int Id { get; set; }
-
         public bool Status { get; set; }
     }
 }

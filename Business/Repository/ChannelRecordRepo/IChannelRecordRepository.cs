@@ -10,6 +10,6 @@ namespace Business.Repository.ChannelRecordRepo
 {
     public interface IChannelRecordRepository: IGenericRepository<ChannelRecord>
     {
-        bool ValidEntity(ChannelRecord entity);
+       
     }
 }

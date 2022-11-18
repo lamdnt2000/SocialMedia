@@ -10,6 +10,6 @@ namespace Business.Repository.PostRepo
 {
     public interface IPostCrawlRepository:IGenericRepository<PostCrawl>
     {
-        bool ValidEntity(PostCrawl entity);
+       
     }
 }
