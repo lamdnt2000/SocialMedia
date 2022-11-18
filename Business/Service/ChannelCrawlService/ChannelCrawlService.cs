@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static Business.Constants.ResponseMsg;
 using DateUtil = Business.Utils.DateUtil;
-
+using DataAccess.Enum;
 namespace Business.Service.ChannelCrawlService
 {
     public class ChannelCrawlService : BaseService, IChannelCrawlService
@@ -48,6 +48,7 @@ namespace Business.Service.ChannelCrawlService
         public async Task<int> Insert(InsertChannelCrawlDto dto)
         {
             var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
+
             var record = MapperConfig.GetMapper().Map<ChannelRecord>(dto.ChannelRecord);
             _channelCrawlRepository.ValidateChannel(channel);
             channel.ChannelRecords.Add(record);
@@ -55,9 +56,46 @@ namespace Business.Service.ChannelCrawlService
             return channel.Id;
         }
 
-        public async Task<ChannelCrawlStatisticDto> Statistic(ChannelFilter filter)
+        public async Task<object> Statistic(ChannelFilter filter)
         {
             var channel = await _channelCrawlRepository.FilterChannel(filter);
+            int platform = channel.PlatformId;
+            switch (platform)
+            {
+                case (int)EnumConst.PlatFormEnum.FACEBOOK:
+                    {
+                        return FacebookStatistic(channel, filter);
+                        
+                    }
+                case (int)EnumConst.PlatFormEnum.YOUTUBE:
+                    {
+                        return YoutubeStatistic(channel, filter);
+                    }
+                case (int)EnumConst.PlatFormEnum.TIKTOK:
+                    {
+                        return FacebookStatistic(channel, filter);
+                    }
+                default: return null;
+
+            }
+        }
+
+        public async Task<int> Update(int id, UpdateChannelCrawlDto dto)
+        {
+            var check = await _channelCrawlRepository.Get(x => x.Id == id);
+            if (check == null)
+            {
+                throw new Exception(ClassName + " " + NOT_FOUND);
+            }
+            var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
+            _channelCrawlRepository.ValidateChannel(channel);
+            channel.Id = id;
+            await _channelCrawlRepository.Update(channel);
+            return channel.Id;
+        }
+
+        public FacebookStatisticDto FacebookStatistic(ChannelCrawl channel, ChannelFilter filter)
+        {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
             DateTime dateTo = filter.CreatedTime.Min.Value;
             double diff = DateUtil.DiffDate(dateFrom, dateTo);
@@ -89,10 +127,10 @@ namespace Business.Service.ChannelCrawlService
                     })
                 }).ToList()
                 .GroupBy(x => x.CreatedTime.Value.Date.DayOfWeek).ToList();
-            List<StatisticField> statistics = new List<StatisticField>();
+            List<FacebookStatisticField> statistics = new List<FacebookStatisticField>();
             foreach (var post in groupPost)
             {
-                StatisticField field = new StatisticField() { Date = post.Key };
+                FacebookStatisticField field = new FacebookStatisticField() { Date = post.Key };
                 foreach (var item in post)
                 {
                     foreach (var reaction in item.Reactions)
@@ -147,7 +185,7 @@ namespace Business.Service.ChannelCrawlService
 
 
             }
-            var result = MapperConfig.GetMapper().Map<ChannelCrawlStatisticDto>(channel);
+            var result = MapperConfig.GetMapper().Map<FacebookStatisticDto>(channel);
             result.StatisticFields = statistics;
             double difDate = DateUtil.DiffDate(result.CreatedTime, DateTime.Now);
             double difMonth = DateUtil.DiffMonth(result.CreatedTime, DateTime.Now);
@@ -164,33 +202,85 @@ namespace Business.Service.ChannelCrawlService
             return result;
         }
 
-        public async Task<int> Update(int id, UpdateChannelCrawlDto dto)
+        public YoutubeStatisticDto YoutubeStatistic(ChannelCrawl channel, ChannelFilter filter)
         {
-            var check = await _channelCrawlRepository.Get(x => x.Id == id);
-            if (check == null)
-            {
-                throw new Exception(ClassName + " " + NOT_FOUND);
-            }
-            var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
-            _channelCrawlRepository.ValidateChannel(channel);
-            channel.Id = id;
-            await _channelCrawlRepository.Update(channel);
-            return channel.Id;
-        }
-
-        /*public StatisticField DataProcess(IGrouping<DateTime, a> posts)
-        {
-            StatisticField statistic = new StatisticField() { Date = posts.Key.Date };
-            foreach (var item in posts)
-            {
-                var reactions = item.Reactions.Select(x => new
+            DateTime dateFrom = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Min.Value;
+            double diff = DateUtil.DiffDate(dateFrom, dateTo);
+            long follower = channel.ChannelRecords.Last().TotalFollower;
+            var groupPost = channel.PostCrawls
+                .Select(x => new
                 {
-                    x.PostId,
-                    x.ReactionTypeId,
-                    x.Count,
-                    x.ReactionType.Name
-                }).ToArray();
+                    x.Pid,
+                    x.CreatedTime,
+                    Reactions = x.Reactions.Select(r => new
+                    {
+                        r.ReactionTypeId,
+                        r.Count,
+                        r.ReactionType.Name
+                    })
+                }).ToList()
+                .GroupBy(x => x.CreatedTime.Value.Date).ToList();
+
+            /*var groupByDate = channel.PostCrawls
+                .Select(x => new
+                {
+                    x.Pid,
+                    x.CreatedTime,
+                    Reactions = x.Reactions.Select(r => new
+                    {
+                        r.ReactionTypeId,
+                        r.Count,
+                        r.ReactionType.Name
+                    })
+                }).ToList()
+                .GroupBy(x => x.CreatedTime.Value.Date.DayOfWeek).ToList();*/
+            List<YoutubeStatisticField> statistics = new List<YoutubeStatisticField>();
+            foreach (var post in groupPost)
+            {
+                YoutubeStatisticField field = new YoutubeStatisticField() { Date = post.Key.Date };
+                foreach (var item in post)
+                {
+                    foreach (var reaction in item.Reactions)
+                    {
+
+                        if (reaction.Name.Equals("reactionLike"))
+                        {
+                            field.TotalLike += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionView"))
+                        {
+                            field.TotalView += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionComment"))
+                        {
+                            field.TotalComment += reaction.Count;
+                        }
+                       
+
+                    }
+                    field.TotalPost += 1;
+                }
+                field.AverageEngagementRate = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView) / follower * 100, 4);
+                statistics.Add(field);
+
+
             }
-        }*/
+            var result = MapperConfig.GetMapper().Map<YoutubeStatisticDto>(channel);
+            result.StatisticFields = statistics;
+            double difDate = DateUtil.DiffDate(result.CreatedTime, DateTime.Now);
+            double difMonth = DateUtil.DiffMonth(result.CreatedTime, DateTime.Now);
+            double difWeak = DateUtil.DiffWeek(result.CreatedTime, DateTime.Now);
+            ChannelRecordDto recordDto = result.ChannelRecords.Last();
+            long? totalRecord = recordDto.TotalLike + recordDto.TotalShare + recordDto.TotalComment;
+            result.AveragePostInDay = Math.Round(recordDto.TotalPost / difDate, 2);
+            result.AveragePostInMonth = Math.Round(recordDto.TotalPost / difMonth, 2);
+            result.AveragePostInWeek = Math.Round(recordDto.TotalPost / difWeak, 2);
+            
+            result.AverageEngagementLikeInPost = (double)(recordDto.TotalLike / recordDto.TotalPost);
+            result.AverageEngagementCommentRateInPost = (double)(recordDto.TotalComment / recordDto.TotalPost);
+            result.AverageEngagementViewInPost = (double)(recordDto.TotalView / recordDto.TotalPost);
+            return result;
+        }
     }
 }

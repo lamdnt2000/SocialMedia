@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
 
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [Route("loginFacebook")]
         public async Task<IActionResult> LoginFacebook(string TokenId)
         {
@@ -120,7 +120,7 @@ namespace WebAPI.Controllers
                 return JsonResponse(401, "Not authenticate", e.Message);
             }
 
-        }
+        }*/
 
 
        
