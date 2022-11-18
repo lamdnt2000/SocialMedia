@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("user")]
-    public partial class User
+    public partial class User:BaseEntity
     {
         public User()
         {
@@ -43,10 +43,6 @@ namespace DataAccess.Entities
         public int Status { get; set; }
         [Column("last_login_at", TypeName = "datetime")]
         public DateTime? LastLoginAt { get; set; }
-        [Column("created_date", TypeName = "datetime")]
-        public DateTime CreatedDate { get; set; }
-        [Column("update_date", TypeName = "datetime")]
-        public DateTime? UpdateDate { get; set; }
         [Column("role_id")]
         public int RoleId { get; set; }
         [Column("fcm_token")]

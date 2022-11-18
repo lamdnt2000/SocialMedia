@@ -44,21 +44,14 @@ namespace Business.Service.UserService
                     UserRecord userRecord = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(userDTO.Email);
                     if (userRecord != null)
                     {
-                        if (!userRecord.EmailVerified)
-                        {
-                            string hashPass = BCrypt.Net.BCrypt.HashPassword(userDTO.Password);
-                            userDTO.Password = hashPass;
-                            user = MapperConfig.GetMapper().Map<User>(userDTO);
-                            user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
-                            user.Status = (int)EnumConst.UserStatus.NEW;
-                            user.CreatedDate = DateTime.Now;
-                            user.Provider = userRecord.ProviderId;
-                            return await _userRepository.Update(user);
-                        }
-                        else
-                        {
-                            throw new Exception("Account already verify on firebase");
-                        }
+                        string hashPass = BCrypt.Net.BCrypt.HashPassword(userDTO.Password);
+                        user = MapperConfig.GetMapper().Map<User>(userDTO);
+                        user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
+                        user.Status = (userRecord.EmailVerified)?(int)EnumConst.UserStatus.NEW: (int)EnumConst.UserStatus.VERIFY;
+                        user.CreatedDate = DateTime.Now;
+                        user.Provider = userRecord.ProviderId;
+                        user.Password = hashPass;
+                        return await _userRepository.Insert(user);
                     }
                     else
                     {
@@ -70,7 +63,7 @@ namespace Business.Service.UserService
                     throw new Exception("Duplicated email on server. Try orthers");
                 }
 
-            }
+            } 
             catch (Exception e)
             {
                 throw new Exception(e.Message);

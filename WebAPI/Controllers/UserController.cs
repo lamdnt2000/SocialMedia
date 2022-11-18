@@ -10,7 +10,7 @@ using DataAccess.Models;
 using Microsoft.Extensions.Options;
 using Business.Config;
 using Business.Constants;
-
+using static Business.Constants.ResponseMsg;
 namespace WebAPI.Controllers
 {
     [Route(ApiPath.USER_PATH)]
@@ -36,11 +36,11 @@ namespace WebAPI.Controllers
 
                 if (result == 1)
                 {
-                    return JsonResponse(200, "Please verify your email", "");
+                    return JsonResponse(201, INSERT_SUCCESS, "Please verify your email");
                 }
                 else
                 {
-                    return JsonResponse(403, "User create fail try gain", "");
+                    return JsonResponse(403, INSERT_FAILED, "User create fail try gain");
                 }
             }
             catch (Exception e)
