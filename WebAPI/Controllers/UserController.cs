@@ -75,7 +75,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Route("loginGoogle")]
-        public async Task<IActionResult> LoginGoogle([FromForm] GoogleLoginDto dto)
+        public async Task<IActionResult> LoginGoogle(string TokenId)
         {
             if (!ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace WebAPI.Controllers
             try
             {
 
-                var user = await _userService.GoogleSignIn(dto);
+                var user = await _userService.GoogleSignIn(TokenId);
                 _authService.SetCurrentUser(user);
                 return JsonResponse(200, "Success", new { Token = _authService.CreateToken() });
 
@@ -100,7 +100,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Route("loginFacebook")]
-        public async Task<IActionResult> LoginFacebook([FromForm] FacebookLoginDto dto)
+        public async Task<IActionResult> LoginFacebook(string TokenId)
         {
             if (!ModelState.IsValid)
             {
@@ -110,7 +110,7 @@ namespace WebAPI.Controllers
             try
             {
 
-                var user = await _userService.FacebookSignIn(dto);
+                var user = await _userService.FacebookSignIn(TokenId);
                 _authService.SetCurrentUser(user);
                 return JsonResponse(200, "Success", new { Token = _authService.CreateToken() });
 
@@ -122,54 +122,8 @@ namespace WebAPI.Controllers
 
         }
 
-        [HttpPost]
-        [Route("signupGoogle")]
-        public async Task<IActionResult> SignUpGoogle([FromForm] GoogleSignUpDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-
-            try
-            {
-
-                var user = await _userService.GoogleSignUp(dto);
-                _authService.SetCurrentUser(user);
-                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() });
-
-            }
-            catch (Exception e)
-            {
-                return JsonResponse(401, "Not authenticate", e.Message);
-            }
-
-        }
-
-        [HttpPost]
-        [Route("signupFacebook")]
-        public async Task<IActionResult> SignUpFacebook([FromForm] FacebookSignUpDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-
-                var user = await _userService.FacebookSignUp(dto);
-                _authService.SetCurrentUser(user);
-                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() });
-
-            }
-            catch (Exception e)
-            {
-                return JsonResponse(401, "Not authenticate", e.Message);
-            }
-
-        }
+       
 
         [HttpGet]
         [Route("me")]
