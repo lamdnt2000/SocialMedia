@@ -137,9 +137,9 @@ namespace Business.Service.UserService
             return user;
         }
 
-        public async Task<User> FacebookSignIn(FacebookLoginDto dto)
+        /*public async Task<User> FacebookSignIn(string TokenId)
         {
-            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.TokenId);
+            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(TokenId);
             var claims = firebaseToken.Claims;
             string email = (string)claims.GetValueOrDefault("email");
             if (email == null)
@@ -151,9 +151,7 @@ namespace Business.Service.UserService
                 User user = await FindByEmail(email);
                 if (user != null)
                 {
-                    user = MapperConfig.GetMapper().Map<User>(dto);
-                    user.AccessToken = dto.AccessToken;
-                    user.UpdateDate = DateTime.Now;
+                    user = new User();
                     await _userRepository.Update(user);
                     return user;
                 }
@@ -164,7 +162,7 @@ namespace Business.Service.UserService
             }
 
 
-        }
+        }*/
 
         public async Task<User> GoogleSignUp(GoogleSignUpDto dto)
         {
@@ -174,18 +172,12 @@ namespace Business.Service.UserService
             User user = await FindByEmail(email);
             if (user == null)
             {
-                user = MapperConfig.GetMapper().Map<User>(dto);
-                user.Email = email;
-                user.CreatedDate = DateTime.Now;
-                user.Status = (int)EnumConst.UserStatus.VERIFY;
-                user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
-                user.Provider = "google.com";
-                await _userRepository.Update(user);
+                
             }
             return user;
         }
 
-        public async Task<User> FacebookSignUp(FacebookSignUpDto dto)
+       /* public async Task<User> FacebookSignUp(FacebookSignUpDto dto)
         {
             FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.TokenId);
             User user = await FindByEmail(dto.Email);
@@ -207,17 +199,27 @@ namespace Business.Service.UserService
                 await FirebaseAuth.DefaultInstance.UpdateUserAsync(userRecords);
             }
             return user;
-        }
+        }*/
 
-        public async Task<User> GoogleSignIn(GoogleLoginDto dto)
+        public async Task<User> GoogleSignIn(string TokenId)
         {
-            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.TokenId);
+            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(TokenId);
             var claims = firebaseToken.Claims;
             string email = (string)claims.GetValueOrDefault("email");
+            
             User user = await FindByEmail(email);
             if (user == null)
             {
-                throw new Exception("Your user not found !");
+                string name = ((string)claims.GetValueOrDefault("name"));
+                int lastSpace = name.LastIndexOf(" ");
+                user = new User();
+                user.Email = email;
+                user.Firstname = name.Substring(0,lastSpace);
+                user.Lastname = name.Substring(lastSpace+1);
+                user.Status = (int)EnumConst.UserStatus.VERIFY;
+                user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
+                user.Provider = "google.com";
+                await _userRepository.Insert(user);
             }
             return user;
         }
@@ -232,8 +234,10 @@ namespace Business.Service.UserService
                 currentUser.Firstname = dto.Firstname;
                 currentUser.Lastname = dto.Lastname;
                 currentUser.Username = dto.UserName;
-                currentUser.Phone = dto.Phone;
-                currentUser.UpdateDate = DateTime.Now;
+                if (dto.Phone != null)
+                {
+                    currentUser.Phone = dto.Phone;
+                }
                 int result = await _userRepository.Update(currentUser);
                 return (result > 0) ? true : false;
             }
@@ -250,7 +254,6 @@ namespace Business.Service.UserService
             if (CheckPassword(dto.CurrentPassword, currentUser.Password))
             {
                 currentUser.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-                currentUser.UpdateDate = DateTime.Now;
                 var result = await _userRepository.Update(currentUser);
                 return (result > 0) ? true : false;
 
