@@ -150,7 +150,6 @@ namespace WebAPI.Controllers
         {
             try
             {
-            
                 var result = await _channelCrawlService.Statistic(filter);
                 return JsonResponse(200, SUCCESS, result);
             }
