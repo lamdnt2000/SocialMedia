@@ -75,7 +75,7 @@ namespace Business.Service.UserService
             try
             {
 
-                var user = await FindByEmail(userDTO.Email);
+                var user = await _userRepository.Get(x => x.Email == userDTO.Email && x.Status != (int)EnumConst.UserStatus.BAN, new List<String>{ "Role"});
                 if (user == null)
                 {
                     throw new Exception("User Not Found");
@@ -121,7 +121,7 @@ namespace Business.Service.UserService
             FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.TokenId);
             var claims = firebaseToken.Claims;
             string email = (string)claims.GetValueOrDefault("email");
-            User user = await FindByEmail(email);
+            User user = await _userRepository.Get(x => x.Email == dto.Email && x.Status != (int)EnumConst.UserStatus.BAN, new List<String> { "Role" });
             if (user == null)
             {
                 user = MapperConfig.GetMapper().Map<User>(dto);
