@@ -21,6 +21,13 @@ namespace DataAccess.Enum
             VERIFY = 2,
             BAN = 3
         }
+
+         public enum PlatFormEnum
+        {
+            YOUTUBE = 1,
+            FACEBOOK = 2,
+            TIKTOK = 3
+        }
         
     }
 }
