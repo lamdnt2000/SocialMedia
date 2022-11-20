@@ -73,7 +73,7 @@ namespace Business.Service.ChannelCrawlService
                     }
                 case (int)EnumConst.PlatFormEnum.TIKTOK:
                     {
-                        return FacebookStatistic(channel, filter);
+                        return TiktokStatistic(channel, filter);
                     }
                 default: return null;
 
@@ -222,19 +222,7 @@ namespace Business.Service.ChannelCrawlService
                 }).ToList()
                 .GroupBy(x => x.CreatedTime.Value.Date).ToList();
 
-            /*var groupByDate = channel.PostCrawls
-                .Select(x => new
-                {
-                    x.Pid,
-                    x.CreatedTime,
-                    Reactions = x.Reactions.Select(r => new
-                    {
-                        r.ReactionTypeId,
-                        r.Count,
-                        r.ReactionType.Name
-                    })
-                }).ToList()
-                .GroupBy(x => x.CreatedTime.Value.Date.DayOfWeek).ToList();*/
+         
             List<YoutubeStatisticField> statistics = new List<YoutubeStatisticField>();
             foreach (var post in groupPost)
             {
@@ -280,6 +268,81 @@ namespace Business.Service.ChannelCrawlService
             result.AverageEngagementLikeInPost = (double)(recordDto.TotalLike / recordDto.TotalPost);
             result.AverageEngagementCommentRateInPost = (double)(recordDto.TotalComment / recordDto.TotalPost);
             result.AverageEngagementViewInPost = (double)(recordDto.TotalView / recordDto.TotalPost);
+            return result;
+        } 
+        
+        
+        public TiktokStatisticDto TiktokStatistic(ChannelCrawl channel, ChannelFilter filter)
+        {
+            DateTime dateFrom = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Min.Value;
+            double diff = DateUtil.DiffDate(dateFrom, dateTo);
+            long follower = channel.ChannelRecords.Last().TotalFollower;
+            var groupPost = channel.PostCrawls
+                .Select(x => new
+                {
+                    x.Pid,
+                    x.CreatedTime,
+                    Reactions = x.Reactions.Select(r => new
+                    {
+                        r.ReactionTypeId,
+                        r.Count,
+                        r.ReactionType.Name
+                    })
+                }).ToList()
+                .GroupBy(x => x.CreatedTime.Value.Date).ToList();
+
+         
+            List<TiktokStatisticField> statistics = new List<TiktokStatisticField>();
+            foreach (var post in groupPost)
+            {
+                TiktokStatisticField field = new TiktokStatisticField() { Date = post.Key.Date };
+                foreach (var item in post)
+                {
+                    foreach (var reaction in item.Reactions)
+                    {
+
+                        if (reaction.Name.Equals("diggCount"))
+                        {
+                            field.TotalLike += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("playCount"))
+                        {
+                            field.TotalView += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("commentCount"))
+                        {
+                            field.TotalComment += reaction.Count;
+                        } 
+                        if (reaction.Name.Equals("shareCount"))
+                        {
+                            field.TotalShare += reaction.Count;
+                        }
+                       
+
+                    }
+                    field.TotalPost += 1;
+                }
+                field.AverageEngagementRate = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView + field.TotalShare) / follower * 100, 4);
+                statistics.Add(field);
+
+
+            }
+            var result = MapperConfig.GetMapper().Map<TiktokStatisticDto>(channel);
+            result.StatisticFields = statistics;
+            double difDate = DateUtil.DiffDate(result.CreatedTime, DateTime.Now);
+            double difMonth = DateUtil.DiffMonth(result.CreatedTime, DateTime.Now);
+            double difWeak = DateUtil.DiffWeek(result.CreatedTime, DateTime.Now);
+            ChannelRecordDto recordDto = result.ChannelRecords.Last();
+            long? totalRecord = recordDto.TotalLike + recordDto.TotalShare + recordDto.TotalComment + recordDto.TotalView;
+            result.AveragePostInDay = Math.Round(recordDto.TotalPost / difDate, 2);
+            result.AveragePostInMonth = Math.Round(recordDto.TotalPost / difMonth, 2);
+            result.AveragePostInWeek = Math.Round(recordDto.TotalPost / difWeak, 2);
+            
+            result.AverageEngagementLikeInPost = (double)(recordDto.TotalLike / recordDto.TotalPost);
+            result.AverageEngagementCommentRateInPost = (double)(recordDto.TotalComment / recordDto.TotalPost);
+            result.AverageEngagementViewInPost = (double)(recordDto.TotalView / recordDto.TotalPost);
+            result.AverageEngagementShareInPost = (double)(recordDto.TotalShare / recordDto.TotalPost);
             return result;
         }
     }
