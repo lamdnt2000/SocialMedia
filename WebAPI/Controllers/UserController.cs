@@ -88,7 +88,7 @@ namespace WebAPI.Controllers
 
                 var user = await _userService.GoogleSignIn(TokenId);
                 _authService.SetCurrentUser(user);
-                return JsonResponse(200, "Success", new { Token = _authService.CreateToken(), FirstName = user.Firstname, LastName = user.Lastname, Role = user.Role.Name });
+                return JsonResponse(200, "Success", new { Token = _authService.CreateToken(), FirstName = user.Firstname, LastName = user.Lastname, Role = "Member" });
 
             }
             catch (Exception e)
