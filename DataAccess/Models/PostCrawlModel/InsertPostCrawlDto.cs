@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Models.ReactionModel;
+using System.Text.Json.Serialization;
 
 namespace DataAccess.Models.PostCrawlModel
 {
@@ -29,5 +30,9 @@ namespace DataAccess.Models.PostCrawlModel
         public ICollection<InsertReactionDto> Reactions { get; set; }
         [Required]
         public DateTime CreatedTime { get; set; }
+        [JsonIgnore]
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        [JsonIgnore]
+        public DateTime? UpdateDate { get; set; } = DateTime.Now;
     }
 }

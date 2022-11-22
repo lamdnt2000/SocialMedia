@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using static Business.Constants.ResponseMsg;
 using DateUtil = Business.Utils.DateUtil;
 using DataAccess.Enum;
+using Microsoft.AspNetCore.Mvc;
+
 namespace Business.Service.ChannelCrawlService
 {
     public class ChannelCrawlService : BaseService, IChannelCrawlService
@@ -50,9 +52,9 @@ namespace Business.Service.ChannelCrawlService
             var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
 
             var record = MapperConfig.GetMapper().Map<ChannelRecord>(dto.ChannelRecord);
-            _channelCrawlRepository.ValidateChannel(channel);
+            await _channelCrawlRepository.ValidateChannelAsync(channel);
             channel.ChannelRecords.Add(record);
-            await _channelCrawlRepository.Insert(channel);
+            await _channelCrawlRepository.BulkInsertOrUpdate(channel);
             return channel.Id;
         }
 
@@ -88,9 +90,12 @@ namespace Business.Service.ChannelCrawlService
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
             var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
-            _channelCrawlRepository.ValidateChannel(channel);
+            var record = MapperConfig.GetMapper().Map<ChannelRecord>(dto.ChannelRecord);
             channel.Id = id;
-            await _channelCrawlRepository.Update(channel);
+            channel.ChannelRecords.Add(record);
+            await _channelCrawlRepository.ValidateChannelAsync(channel);
+            
+            await _channelCrawlRepository.BulkInsertOrUpdate(channel);
             return channel.Id;
         }
 

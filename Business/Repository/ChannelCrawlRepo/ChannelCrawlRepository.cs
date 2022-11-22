@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Z.BulkOperations;
+using Z.EntityFramework.Extensions;
 
 namespace Business.Repository.ChannelCrawlRepo
 {
@@ -19,28 +21,82 @@ namespace Business.Repository.ChannelCrawlRepo
         {
         }
 
+        public async Task<bool> BulkInsertOrUpdate(ChannelCrawl entity)
+        {
+            List<ChannelCrawl> list = new List<ChannelCrawl>() { entity };
+            ICollection<PostCrawl> postCrawls = entity.PostCrawls;
+            if (entity.Id != 0)
+            {
+                var record = await context.ChannelRecords.OrderBy(x => x.CreatedDate).LastOrDefaultAsync(x => x.ChannelId == entity.Id);
+                DateTime now = DateTime.Now;
+                double diffDate = DateUtil.DiffDate(record.CreatedDate.Value.Date.Date, now.Date);
+                if (diffDate == 0)
+                {
+                    entity.ChannelRecords.FirstOrDefault(x => x.ChannelId == entity.Id).Id = record.Id;
+                }
+            }
+
+            await context.BulkMergeAsync(list, options =>
+            {
+                options.IncludeGraph = true;
+                options.InsertIfNotExists = true;
+                options.IncludeGraphOperationBuilder = operation =>
+                {
+                    if (operation is BulkOperation<ChannelCrawl> bulkChannelCraw)
+                    {
+                        bulkChannelCraw.ColumnPrimaryKeyExpression = expression => new { expression.Id };
+
+                        bulkChannelCraw.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate };
+                        bulkChannelCraw.IgnoreOnMergeInsertExpression = c => new { c.UpdateDate };
+                    }
+                    if (operation is BulkOperation<ChannelRecord> bulkRecord)
+                    {
+                        bulkRecord.ColumnPrimaryKeyExpression = expression => new { expression.Id };
+
+                        bulkRecord.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate };
+                        bulkRecord.IgnoreOnMergeInsertExpression = c => new { c.UpdateDate };
+                    }
+                    if (operation is BulkOperation<PostCrawl> bulkPostCrawl)
+                    {
+                        bulkPostCrawl.ColumnPrimaryKeyExpression = expression => new { expression.Pid };
+
+                        bulkPostCrawl.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate };
+                        bulkPostCrawl.IgnoreOnMergeInsertExpression = c => new { c.UpdateDate };
+                    }
+                    else if (operation is BulkOperation<Reaction> bulkReaction)
+                    {
+                        bulkReaction.ColumnPrimaryKeyExpression = expression => new { expression.ReactionTypeId, expression.PostId };
+                        bulkReaction.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate };
+                        bulkReaction.IgnoreOnMergeInsertExpression = c => new { c.UpdateDate };
+                    }
+                };
+
+            });
+            return true;
+        }
+
         public async Task<ChannelCrawl> FilterChannel(ChannelFilter filter)
         {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
             DateTime dateTo = filter.CreatedTime.Max.Value.AddDays(1);
-            var channel =await context.ChannelCrawls.Where(c => c.Id == filter.Id )
+            var channel = await context.ChannelCrawls.Where(c => c.Id == filter.Id)
                 .Include(c => c.ChannelRecords)
                 .Include(c => c.PostCrawls.Where(p => p.CreatedTime >= dateFrom && p.CreatedTime < dateTo)
-                .OrderBy(p=>p.CreatedTime))
+                .OrderBy(p => p.CreatedTime))
                 .ThenInclude(p => p.Reactions).ThenInclude(r => r.ReactionType)
                 .FirstOrDefaultAsync();
             return channel;
-           
+
 
         }
 
-        public bool ValidateChannel(ChannelCrawl entity)
+        public async Task<bool> ValidateChannelAsync(ChannelCrawl entity)
         {
             if (!context.Organizations.Any(x => x.Id == entity.OrganizationId))
             {
                 throw new Exception("Organization not exist!");
             }
-            if (entity.BrandId!=0)
+            if (entity.BrandId != 0)
             {
                 if (!context.Brands.Any(x => x.Id == entity.BrandId))
                 {
@@ -65,7 +121,8 @@ namespace Business.Repository.ChannelCrawlRepo
             {
                 throw new Exception("Location not exist!");
             }
-            if (context.ChannelCrawls.Any(x => x.Id != entity.Id && x.Cid == entity.Cid))
+            var test = await context.ChannelCrawls.FirstOrDefaultAsync(x => x.Cid == entity.Cid && (entity.Id != 0 ? x.Id != entity.Id : true));
+            if ((await context.ChannelCrawls.FirstOrDefaultAsync(x => x.Cid == entity.Cid && (entity.Id != 0 ? x.Id != entity.Id : true))) != null)
             {
                 throw new Exception("Duplicated channel");
             }

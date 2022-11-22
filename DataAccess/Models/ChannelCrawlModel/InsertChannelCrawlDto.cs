@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DataAccess.Entities;
 using DataAccess.Models.ChannelRecordModel;
 using DataAccess.Models.PostCrawlModel;
+using System.Text.Json.Serialization;
 
 namespace DataAccess.Models.ChannelCrawlModel
 {
@@ -43,5 +44,9 @@ namespace DataAccess.Models.ChannelCrawlModel
         public InsertChannelRecordDto ChannelRecord { get; set; }
         public ICollection<InsertPostCrawlDto> PostCrawls { get; set; }
         public DateTime CreatedTime { get; set; }
+        [JsonIgnore]
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        [JsonIgnore]
+        public DateTime? UpdateDate { get; set; } = DateTime.Now;
     }
 }

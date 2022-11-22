@@ -11,7 +11,8 @@ namespace Business.Repository.ChannelCrawlRepo
 {
     public interface IChannelCrawlRepository: IGenericRepository<ChannelCrawl>
     {
-        bool ValidateChannel(ChannelCrawl entity);
+        Task<bool> ValidateChannelAsync(ChannelCrawl entity);
         Task<ChannelCrawl> FilterChannel(ChannelFilter filter);
+        Task<bool> BulkInsertOrUpdate(ChannelCrawl entity);
     }
 }

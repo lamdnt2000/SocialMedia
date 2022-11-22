@@ -75,7 +75,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Route("loginGoogle")]
-        public async Task<IActionResult> LoginGoogle(string TokenId)
+        public async Task<IActionResult> LoginGoogle([FromForm]string TokenId)
         {
             if (!ModelState.IsValid)
             {
@@ -85,7 +85,6 @@ namespace WebAPI.Controllers
 
             try
             {
-
                 var user = await _userService.GoogleSignIn(TokenId);
                 _authService.SetCurrentUser(user);
                 return JsonResponse(200, "Success", new { Token = _authService.CreateToken(), FirstName = user.Firstname, LastName = user.Lastname, Role = "Member" });
