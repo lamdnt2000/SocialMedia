@@ -75,7 +75,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Route("loginGoogle")]
-        public async Task<IActionResult> LoginGoogle(string TokenId)
+        public async Task<IActionResult> LoginGoogle([FromForm]string TokenId)
         {
             if (!ModelState.IsValid)
             {
