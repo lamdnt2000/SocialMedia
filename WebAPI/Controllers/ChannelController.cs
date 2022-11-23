@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateChannel(int id, [FromForm] UpdateChannelCrawlDto dto)
+        public async Task<IActionResult> UpdateChannel(int id, [FromBody] UpdateChannelCrawlDto dto)
         {
             try
             {

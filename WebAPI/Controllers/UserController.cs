@@ -85,7 +85,6 @@ namespace WebAPI.Controllers
 
             try
             {
-
                 var user = await _userService.GoogleSignIn(TokenId);
                 _authService.SetCurrentUser(user);
                 return JsonResponse(200, "Success", new { Token = _authService.CreateToken(), FirstName = user.Firstname, LastName = user.Lastname, Role = "Member" });
