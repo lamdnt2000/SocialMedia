@@ -102,7 +102,7 @@ namespace Business.Service.ChannelCrawlService
         public FacebookStatisticDto FacebookStatistic(ChannelCrawl channel, ChannelFilter filter)
         {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
-            DateTime dateTo = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Max.Value;
             double diff = DateUtil.DiffDate(dateFrom, dateTo);
             long follower = channel.ChannelRecords.Last().TotalFollower;
             var groupPost = channel.PostCrawls
@@ -132,6 +132,15 @@ namespace Business.Service.ChannelCrawlService
                     })
                 }).ToList()
                 .GroupBy(x => x.CreatedTime.Value.Date.DayOfWeek).ToList();
+            var groupType = channel.PostCrawls
+                .Select(x => new
+                {
+                    x.Pid,
+                    x.PostType,
+                    x.CreatedTime,
+                    
+                }).ToList()
+                .GroupBy(x => x.PostType).ToList();
             List<FacebookStatisticField> statistics = new List<FacebookStatisticField>();
             foreach (var post in groupPost)
             {
@@ -186,10 +195,94 @@ namespace Business.Service.ChannelCrawlService
                     field.TotalPost += 1;
                 }
                 field.AverageEngagementRate = Math.Round((float)(field.TotalReaction + field.TotalComment + field.TotalShare) / follower * 100, 4);
+                field.AverageEngagementERPost = Math.Round((float)(field.AverageEngagementRate) / field.TotalPost, 4);
+                field.AverageDailyEngagementRate = Math.Round((float)(field.TotalReaction) / follower * 100, 4);
+                field.AverageDailyEngagementReaction = Math.Round((float)(field.TotalReaction + field.TotalComment) / follower * 100, 4);
+
+
                 statistics.Add(field);
 
 
             }
+            foreach (var post in groupByDate)
+            {
+                FacebookStatisticField field = new FacebookStatisticField() { DateOfWeek = post.Key };
+                foreach (var item in post)
+                {
+                    foreach (var reaction in item.Reactions)
+                    {
+
+                        if (reaction.Name.Equals("reactionCare"))
+                        {
+                            field.TotalReactionCare += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionLike"))
+                        {
+                            field.TotalReactionLike += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionLove"))
+                        {
+                            field.TotalReactionLove += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionWow"))
+                        {
+                            field.TotalReactionWow += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionHAHA"))
+                        {
+                            field.TotalReactionHaha += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionSad"))
+                        {
+                            field.TotalReactionSad += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionAngry"))
+                        {
+                            field.TotalReactionAngry += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("comment"))
+                        {
+                            field.TotalComment += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("share"))
+                        {
+                            field.TotalShare += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("totalLike"))
+                        {
+                            field.TotalReaction = reaction.Count;
+                        }
+
+                    }
+                    field.TotalPost += 1;
+                }
+                field.AverageEngagementERPostInDayOfWeek = Math.Round((float)(field.TotalReaction + field.TotalComment + field.TotalShare) / follower * 100, 4);
+                field.AverageEngagementPostInDayOfWeek = Math.Round((float)(field.AverageEngagementRate) / field.TotalPost, 4);
+
+                statistics.Add(field);
+
+            }
+           foreach (var post in groupType)
+            {
+                FacebookStatisticField field = new FacebookStatisticField() { DateType = post.Key };
+                if (post.Key.Equals("added_photos"))
+                {
+                    field.TotalPostTypePhoto = post.LongCount();
+                }
+                if (post.Key.Equals("added_video"))
+                {
+                    field.TotalPostTypeStory = post.LongCount();
+                }
+                if (post.Key.Equals("shared_story"))
+                {
+                    field.TotalPostTypeVideo = post.LongCount();
+                }
+                field.TotalPost += 1;
+                field.AverageEngagementRatePostType = Math.Round((float)(field.TotalPostTypePhoto + field.TotalPostTypeStory + field.TotalPostTypeVideo) / follower * 100, 4);
+                statistics.Add(field);
+
+            }
+
             var result = MapperConfig.GetMapper().Map<FacebookStatisticDto>(channel);
             result.StatisticFields = statistics;
             double difDate = DateUtil.DiffDate(result.CreatedTime, DateTime.Now);
@@ -210,7 +303,7 @@ namespace Business.Service.ChannelCrawlService
         public YoutubeStatisticDto YoutubeStatistic(ChannelCrawl channel, ChannelFilter filter)
         {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
-            DateTime dateTo = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Max.Value;
             double diff = DateUtil.DiffDate(dateFrom, dateTo);
             long follower = channel.ChannelRecords.Last().TotalFollower;
             var groupPost = channel.PostCrawls
@@ -226,8 +319,21 @@ namespace Business.Service.ChannelCrawlService
                     })
                 }).ToList()
                 .GroupBy(x => x.CreatedTime.Value.Date).ToList();
+            var groupByDate = channel.PostCrawls
+                .Select(x => new
+                {
+                    x.Pid,
+                    x.CreatedTime,
+                    Reactions = x.Reactions.Select(r => new
+                    {
+                        r.ReactionTypeId,
+                        r.Count,
+                        r.ReactionType.Name
+                    })
+                }).ToList()
+                .GroupBy(x => x.CreatedTime.Value.Date.DayOfWeek).ToList();
 
-         
+
             List<YoutubeStatisticField> statistics = new List<YoutubeStatisticField>();
             foreach (var post in groupPost)
             {
@@ -255,8 +361,41 @@ namespace Business.Service.ChannelCrawlService
                     field.TotalPost += 1;
                 }
                 field.AverageEngagementRate = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView) / follower * 100, 4);
+                field.AverageEngagementViewER = Math.Round((float)(field.TotalLike) / field.TotalView * 100, 4);
+                field.AverageEngagementView = Math.Round((float)(field.AverageEngagementViewER) / field.TotalPost, 4);
                 statistics.Add(field);
 
+
+            }
+            foreach (var post in groupByDate)
+            {
+                YoutubeStatisticField field = new YoutubeStatisticField() { DateOfWeek = post.Key };
+                foreach (var item in post)
+                {
+                    foreach (var reaction in item.Reactions)
+                    {
+
+
+                        if (reaction.Name.Equals("reactionLike"))
+                        {
+                            field.TotalLike += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionView"))
+                        {
+                            field.TotalView += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("reactionComment"))
+                        {
+                            field.TotalComment += reaction.Count;
+                        }
+
+                    }
+                    field.TotalPost += 1;
+                }
+                field.AverageEngagementERPostInDayOfWeek = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView) / follower * 100, 4);
+                field.AverageEngagementPostInDayOfWeek = Math.Round((float)(field.AverageEngagementRate) / field.TotalPost, 4);
+
+                statistics.Add(field);
 
             }
             var result = MapperConfig.GetMapper().Map<YoutubeStatisticDto>(channel);
@@ -280,7 +419,7 @@ namespace Business.Service.ChannelCrawlService
         public TiktokStatisticDto TiktokStatistic(ChannelCrawl channel, ChannelFilter filter)
         {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
-            DateTime dateTo = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Max.Value;
             double diff = DateUtil.DiffDate(dateFrom, dateTo);
             long follower = channel.ChannelRecords.Last().TotalFollower;
             var groupPost = channel.PostCrawls
@@ -296,8 +435,20 @@ namespace Business.Service.ChannelCrawlService
                     })
                 }).ToList()
                 .GroupBy(x => x.CreatedTime.Value.Date).ToList();
+            var groupByDate = channel.PostCrawls
+            .Select(x => new
+            {
+                x.Pid,
+                x.CreatedTime,
+                Reactions = x.Reactions.Select(r => new
+                {
+                    r.ReactionTypeId,
+                    r.Count,
+                    r.ReactionType.Name
+                })
+            }).ToList()
+            .GroupBy(x => x.CreatedTime.Value.Date.DayOfWeek).ToList();
 
-         
             List<TiktokStatisticField> statistics = new List<TiktokStatisticField>();
             foreach (var post in groupPost)
             {
@@ -329,8 +480,46 @@ namespace Business.Service.ChannelCrawlService
                     field.TotalPost += 1;
                 }
                 field.AverageEngagementRate = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView + field.TotalShare) / follower * 100, 4);
+                field.AverageEngagementViewER = Math.Round((float)(field.TotalLike) / field.TotalView * 100, 4);
+                field.AverageEngagementView = Math.Round((float)(field.AverageEngagementViewER) / field.TotalPost, 4);
+
                 statistics.Add(field);
 
+
+            }
+            foreach (var post in groupByDate)
+            {
+                TiktokStatisticField field = new TiktokStatisticField() { DateOfWeek = post.Key };
+                foreach (var item in post)
+                {
+                    foreach (var reaction in item.Reactions)
+                    {
+
+
+                        if(reaction.Name.Equals("diggCount"))
+                        {
+                            field.TotalLike += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("playCount"))
+                        {
+                            field.TotalView += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("commentCount"))
+                        {
+                            field.TotalComment += reaction.Count;
+                        }
+                        if (reaction.Name.Equals("shareCount"))
+                        {
+                            field.TotalShare += reaction.Count;
+                        }
+
+                    }
+                    field.TotalPost += 1;
+                }
+                field.AverageEngagementERPostInDayOfWeek = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView + field.TotalShare) / follower * 100, 4);
+                field.AverageEngagementPostInDayOfWeek = Math.Round((float)(field.AverageEngagementRate) / field.TotalPost, 4);
+
+                statistics.Add(field);
 
             }
             var result = MapperConfig.GetMapper().Map<TiktokStatisticDto>(channel);
