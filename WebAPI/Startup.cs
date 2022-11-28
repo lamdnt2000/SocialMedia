@@ -84,7 +84,7 @@ namespace WebAPI
             app.UseSwaggerUI(c =>
             {
                 string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
-                c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "Hotel Booking API v1");
+                c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "Social Media API v1");
             });
 
             app.ConfigureExceptionHandler();
@@ -103,11 +103,10 @@ namespace WebAPI
             //custom jwt auth middleware
             app.UseMiddleware<JWTMiddlewareConfig>();
 
-            
+            app.UseHangfireDashboard();            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHangfireDashboard();
             });
         }
     }

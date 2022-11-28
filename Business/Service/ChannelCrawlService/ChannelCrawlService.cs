@@ -12,19 +12,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using static Business.Constants.ResponseMsg;
 using DateUtil = Business.Utils.DateUtil;
+using static Business.Schedule.RegexUtil;
+using static Business.Schedule.TriggerUtil;
+using static Business.Constants.PlatFormEnum;
 using DataAccess.Enum;
 using Microsoft.AspNetCore.Mvc;
+using Business.Constants;
+using Business.Schedule;
+using Hangfire;
 
 namespace Business.Service.ChannelCrawlService
 {
     public class ChannelCrawlService : BaseService, IChannelCrawlService
     {
         private readonly IChannelCrawlRepository _channelCrawlRepository;
+        
         private string ClassName = typeof(ChannelCrawl).Name;
         public ChannelCrawlService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository
             , IChannelCrawlRepository channelCrawlRepository) : base(httpContextAccessor, userRepository)
         {
             _channelCrawlRepository = channelCrawlRepository;
+     
         }
 
         public async Task<bool> Delete(int id)
@@ -67,7 +75,6 @@ namespace Business.Service.ChannelCrawlService
                 case (int)EnumConst.PlatFormEnum.FACEBOOK:
                     {
                         return FacebookStatistic(channel, filter);
-                        
                     }
                 case (int)EnumConst.PlatFormEnum.YOUTUBE:
                     {
@@ -102,7 +109,7 @@ namespace Business.Service.ChannelCrawlService
         public FacebookStatisticDto FacebookStatistic(ChannelCrawl channel, ChannelFilter filter)
         {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
-            DateTime dateTo = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Max.Value;
             double diff = DateUtil.DiffDate(dateFrom, dateTo);
             long follower = channel.ChannelRecords.Last().TotalFollower;
             var groupPost = channel.PostCrawls
@@ -131,7 +138,21 @@ namespace Business.Service.ChannelCrawlService
                         r.ReactionType.Name
                     })
                 }).ToList()
-                .GroupBy(x => x.CreatedTime.Value.Date.DayOfWeek).ToList();
+                .GroupBy(x => x.CreatedTime.Value.Date.DayOfWeek).ToList();   
+            var groupType = channel.PostCrawls
+                .Select(x => new
+                {
+                    x.Pid,
+                    x.PostType,
+                    x.CreatedTime,
+                    Reactions = x.Reactions.Select(r => new
+                    {
+                        r.ReactionTypeId,
+                        r.Count,
+                        r.ReactionType.Name
+                    })
+                }).ToList()
+                .GroupBy(x => x.PostType).ToList();
             List<FacebookStatisticField> statistics = new List<FacebookStatisticField>();
             foreach (var post in groupPost)
             {
@@ -210,7 +231,7 @@ namespace Business.Service.ChannelCrawlService
         public YoutubeStatisticDto YoutubeStatistic(ChannelCrawl channel, ChannelFilter filter)
         {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
-            DateTime dateTo = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Max.Value;
             double diff = DateUtil.DiffDate(dateFrom, dateTo);
             long follower = channel.ChannelRecords.Last().TotalFollower;
             var groupPost = channel.PostCrawls
@@ -280,7 +301,7 @@ namespace Business.Service.ChannelCrawlService
         public TiktokStatisticDto TiktokStatistic(ChannelCrawl channel, ChannelFilter filter)
         {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
-            DateTime dateTo = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Max.Value;
             double diff = DateUtil.DiffDate(dateFrom, dateTo);
             long follower = channel.ChannelRecords.Last().TotalFollower;
             var groupPost = channel.PostCrawls
@@ -349,6 +370,27 @@ namespace Business.Service.ChannelCrawlService
             result.AverageEngagementViewInPost = (double)(recordDto.TotalView / recordDto.TotalPost);
             result.AverageEngagementShareInPost = (double)(recordDto.TotalShare / recordDto.TotalPost);
             return result;
+        }
+
+        public async Task<int> FindChannelByPlatformAndUserId(string url)
+        {
+            var result = RegexPlatformAndUser(url);
+            if (result.Item1 == null)
+            {
+                throw new Exception("Invalid url");
+            }
+            
+            int platformId = (int)Enum.Parse<PlatFormEnum>(result.Item1);
+            var channel = await _channelCrawlRepository.Get(x => x.PlatformId == platformId && (x.Cid == result.Item2 || x.Username == result.Item2));
+            if (channel == null)
+            {
+                
+                return 0;
+            }
+            else
+            {
+                return channel.Id;
+            }
         }
     }
 }

@@ -8,6 +8,10 @@ using Business.Service.ChannelCrawlService;
 using System.Threading.Tasks;
 using System;
 using DataAccess.Models.ChannelCrawlModel;
+using Business.Schedule;
+using Hangfire;
+using Business.Utils;
+using AutoFilterer.Types;
 
 namespace WebAPI.Controllers
 {
@@ -17,10 +21,12 @@ namespace WebAPI.Controllers
     public class ChannelController : ControllerBase
     {
         private readonly IChannelCrawlService _channelCrawlService;
+        private readonly IScheduleSocial _scheduleSocial;
 
-        public ChannelController(IChannelCrawlService channelCrawlService)
+        public ChannelController(IChannelCrawlService channelCrawlService, IScheduleSocial schedule)
         {
             _channelCrawlService = channelCrawlService;
+            _scheduleSocial = schedule;
         }
 
         [HttpGet("{id}")]
@@ -152,6 +158,41 @@ namespace WebAPI.Controllers
             {
                 var result = await _channelCrawlService.Statistic(filter);
                 return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, DELETE_FAILED, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetChannelByUrl([FromQuery] string url)
+        {
+            try
+            {
+                var channelId = await _channelCrawlService.FindChannelByPlatformAndUserId(url);
+                if (channelId == 0)
+                {
+                    var result = _scheduleSocial.ValidateUrl(url);
+                    var jobId = BackgroundJob.Enqueue(() => _scheduleSocial.FetchChannelJob(result.Item1, result.Item2));
+                    BackgroundJob.ContinueJobWith(jobId, () => _scheduleSocial.CreateChannelJob(result.Item1, result.Item2));
+                    return JsonResponse(200, NOT_FOUND, "Waiting loading data");
+                }
+                else
+                {
+                    var dateRange = DateUtil.GenerateDateInRange(1);
+                    ChannelFilter filter = new ChannelFilter() { Id = channelId, CreatedTime = new Range<DateTime> { Min = dateRange.Item1, Max = dateRange.Item2} };
+                    
+                   
+                    var statistic = await _channelCrawlService.Statistic(filter);
+                    return JsonResponse(200, SUCCESS, statistic);
+                }
             }
             catch (Exception e)
             {

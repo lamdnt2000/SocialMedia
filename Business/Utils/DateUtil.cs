@@ -43,5 +43,11 @@ namespace Business.Utils
         {
             return d2.ToShortDateString().CompareTo(d1.ToShortDateString());
         }
+        public static (DateTime, DateTime) GenerateDateInRange(int range)
+        {
+            DateTime now = DateTime.Now;
+            DateTime before = DateTime.Now.AddMonths(-range);
+            return (before, now);
+        }
     }
 }

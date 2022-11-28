@@ -15,5 +15,6 @@ namespace Business.Service.ChannelCrawlService
         Task<bool> Delete(int id);
         Task<ChannelCrawlDto> GetById(int id);
         Task<object> Statistic(ChannelFilter filter);
+        Task<int> FindChannelByPlatformAndUserId(string url);
     }
 }

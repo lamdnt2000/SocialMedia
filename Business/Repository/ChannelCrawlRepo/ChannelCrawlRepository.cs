@@ -35,11 +35,14 @@ namespace Business.Repository.ChannelCrawlRepo
                     entity.ChannelRecords.FirstOrDefault(x => x.ChannelId == entity.Id).Id = record.Id;
                 }
             }
+            var resultInfo = new Z.BulkOperations.ResultInfo();
 
             await context.BulkMergeAsync(list, options =>
             {
                 options.IncludeGraph = true;
                 options.InsertIfNotExists = true;
+                options.UseRowsAffected = true;
+                options.ResultInfo = resultInfo;
                 options.IncludeGraphOperationBuilder = operation =>
                 {
                     if (operation is BulkOperation<ChannelCrawl> bulkChannelCraw)
@@ -52,26 +55,45 @@ namespace Business.Repository.ChannelCrawlRepo
                     if (operation is BulkOperation<ChannelRecord> bulkRecord)
                     {
                         bulkRecord.ColumnPrimaryKeyExpression = expression => new { expression.Id };
-
+                
                         bulkRecord.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate };
                         bulkRecord.IgnoreOnMergeInsertExpression = c => new { c.UpdateDate };
                     }
                     if (operation is BulkOperation<PostCrawl> bulkPostCrawl)
                     {
                         bulkPostCrawl.ColumnPrimaryKeyExpression = expression => new { expression.Pid };
-
-                        bulkPostCrawl.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate };
+                        bulkPostCrawl.IgnoreOnSynchronizeMatchedAndConditionExpression = e => new
+                        {
+                            e.Status,
+                            e.Body,
+                            e.PostType,
+                            e.Pid,
+                            e.Description,
+                            e.ChannelId,
+                            e.Title,
+                            e.CreatedTime
+                        };
+                        bulkPostCrawl.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate, e.Pid, e.Status };
                         bulkPostCrawl.IgnoreOnMergeInsertExpression = c => new { c.UpdateDate };
                     }
                     else if (operation is BulkOperation<Reaction> bulkReaction)
                     {
                         bulkReaction.ColumnPrimaryKeyExpression = expression => new { expression.ReactionTypeId, expression.PostId };
-                        bulkReaction.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate };
+                        bulkReaction.IgnoreOnSynchronizeMatchedAndConditionExpression = e => new
+                        {
+                            e.Status,
+                            e.Count,
+                            e.PostId,
+                            e.ReactionTypeId
+                        };
+                        bulkReaction.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate, e.ReactionType, e.PostId, e.Status };
                         bulkReaction.IgnoreOnMergeInsertExpression = c => new { c.UpdateDate };
+
                     }
                 };
 
             });
+            Console.WriteLine(resultInfo.RowsAffected);
             return true;
         }
 

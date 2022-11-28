@@ -33,6 +33,12 @@ using Business.Service.ChannelCrawlService;
 using Business.Repository.ChannelRecordRepo;
 using Business.Repository.PostRepo;
 using Business.Repository.ReactionRepo;
+using Business.Schedule;
+using Business.Config;
+using Business.Constants;
+using Business.Service.CacheService;
+using System.Configuration;
+using System;
 
 namespace API
 {
@@ -76,6 +82,7 @@ namespace API
  
 
             services.AddScoped<IReactionRepository, ReactionRepository>();
+            services.AddScoped<IScheduleSocial, ScheduleSocial>();
 
 
         }
@@ -103,7 +110,26 @@ namespace API
                 });
             });
         }
-
+        public static void ConfigureCache(this IServiceCollection services,  IConfiguration configuration)
+        {   
+            services.Configure<CacheConfiguration>(configuration.GetSection("CacheConfiguration"));
+            //For In-Memory Caching
+            services.AddMemoryCache();
+            services.AddTransient<MemoryCacheService>();
+            services.AddTransient<RedisCacheService>();
+            services.AddTransient<Func<CacheTech, ICacheService>>(serviceProvider => key =>
+            {
+                switch (key)
+                {
+                    case CacheTech.Memory:
+                        return serviceProvider.GetService<MemoryCacheService>();
+                    case CacheTech.Redis:
+                        return serviceProvider.GetService<RedisCacheService>();
+                    default:
+                        return serviceProvider.GetService<MemoryCacheService>();
+                }
+            });
+        }
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
             var key = configuration["Jwt:Secret"];
