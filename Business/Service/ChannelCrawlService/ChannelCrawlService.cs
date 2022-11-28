@@ -228,7 +228,7 @@ namespace Business.Service.ChannelCrawlService
                             field.TotalReactionLike += reaction.Count;
                         }
                         if (reaction.Name.Equals("reactionLove"))
-                        {
+                        {-
                             field.TotalReactionLove += reaction.Count;
                         }
                         if (reaction.Name.Equals("reactionWow"))
