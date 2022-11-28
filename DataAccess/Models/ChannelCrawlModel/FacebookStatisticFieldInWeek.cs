@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.ChannelCrawlModel
 {
-    public class FacebookStatisticField
+    public class FacebookStatisticFieldInWeek
     {
-        public DateTime Date { get; set; }
+        public DayOfWeek DateOfWeek { get; set; }
         public long TotalPost { get; set; }
         public long TotalReaction { get; set; }
         public long TotalComment { get; set; }
@@ -20,13 +20,9 @@ namespace DataAccess.Models.ChannelCrawlModel
         public long TotalReactionHaha { get; set; }
         public long TotalReactionSad { get; set; }
         public long TotalReactionAngry { get; set; }
-        public double AverageEngagementRate { get; set; }
-        public double AverageEngagementERPost { get; set; }
-        public double AverageEngagementInPost { get; set; }
-        public double AverageDailyEngagementRate { get; set; }
-        public double AverageDailyEngagementReaction { get; set; }
+        public double AverageEngagementERPostInDayOfWeek { get; set; }
+        public double AverageEngagementRateDayOfWeek { get; set; }
+        public double AverageEngagementPostInDayOfWeek { get; set; }
         
-        
-
     }
 }

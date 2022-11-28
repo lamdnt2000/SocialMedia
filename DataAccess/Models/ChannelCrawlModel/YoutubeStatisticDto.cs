@@ -9,6 +9,8 @@ namespace DataAccess.Models.ChannelCrawlModel
     public class YoutubeStatisticDto:ChannelCrawlDto
     {
         public List<YoutubeStatisticField> StatisticFields { get; set; }
+        public List<YoutubeStatisticFieldInWeek> StatisticFieldsInWeek { get; set; }
+        public List<YoutubeStatisticFieldPostType> StatisticFieldsPostType { get; set; }
         public double AveragePostInDay { get; set; }
         public double AveragePostInWeek { get; set; }
         public double AveragePostInMonth { get; set; }

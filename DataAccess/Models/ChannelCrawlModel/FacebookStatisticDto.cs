@@ -9,6 +9,8 @@ namespace DataAccess.Models.ChannelCrawlModel
     public class FacebookStatisticDto: ChannelCrawlDto
     {
         public List<FacebookStatisticField> StatisticFields { get; set; }
+        public List<FacebookStatisticFieldInWeek> StatisticFieldsInWeek { get; set; }
+        public List<FacebookStatisticFieldPostType> StatisticFieldsPostType { get; set; }
         public double AveragePostInDay { get; set; }
         public double AveragePostInWeek { get; set; }
         public double AveragePostInMonth { get; set; }
