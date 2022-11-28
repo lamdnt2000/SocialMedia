@@ -9,7 +9,6 @@ namespace DataAccess.Models.ChannelCrawlModel
     public class YoutubeStatisticField
     {
         public DateTime Date { get; set; }
-        public DayOfWeek DateOfWeek { get; set; }
         public long TotalPost { get; set; }
         public long TotalLike { get; set; }
         public long TotalComment { get; set; }
@@ -17,7 +16,5 @@ namespace DataAccess.Models.ChannelCrawlModel
         public double AverageEngagementRate { get; set; }
         public double AverageEngagementViewER { get; set; }
         public double AverageEngagementView { get; set; }
-        public double AverageEngagementERPostInDayOfWeek { get; set; }
-        public double AverageEngagementPostInDayOfWeek { get; set; }
     }
 }

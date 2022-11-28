@@ -9,6 +9,7 @@ namespace DataAccess.Models.ChannelCrawlModel
     public class TiktokStatisticDto:ChannelCrawlDto
     {
         public List<TiktokStatisticField> StatisticFields { get; set; }
+        public List<TiktokStatisticFieldInWeek> StatisticFieldsInWeek { get; set; }
         public double AveragePostInDay { get; set; }
         public double AveragePostInWeek { get; set; }
         public double AveragePostInMonth { get; set; }
