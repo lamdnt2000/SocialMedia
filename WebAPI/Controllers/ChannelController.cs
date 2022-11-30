@@ -12,6 +12,7 @@ using Business.Schedule;
 using Hangfire;
 using Business.Utils;
 using AutoFilterer.Types;
+using Business.ScheduleService;
 
 namespace WebAPI.Controllers
 {
@@ -171,17 +172,18 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetChannelByUrl([FromQuery] string url)
+        [HttpPost("url")]
+        public async Task<IActionResult> GetChannelByUrl([FromQuery] SearchUrlModel model)
         {
             try
             {
+                string url = model.Url;
                 var channelId = await _channelCrawlService.FindChannelByPlatformAndUserId(url);
                 if (channelId == 0)
                 {
                     var result = _scheduleSocial.ValidateUrl(url);
                     var jobId = BackgroundJob.Enqueue(() => _scheduleSocial.FetchChannelJob(result.Item1, result.Item2));
-                    BackgroundJob.ContinueJobWith(jobId, () => _scheduleSocial.CreateChannelJob(result.Item1, result.Item2));
+                    BackgroundJob.ContinueJobWith(jobId, () => _scheduleSocial.CreateChannelJobAsync(result.Item1, result.Item2, model.Fcm));
                     return JsonResponse(200, NOT_FOUND, "Waiting loading data");
                 }
                 else

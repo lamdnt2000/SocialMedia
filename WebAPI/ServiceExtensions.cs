@@ -33,12 +33,13 @@ using Business.Service.ChannelCrawlService;
 using Business.Repository.ChannelRecordRepo;
 using Business.Repository.PostRepo;
 using Business.Repository.ReactionRepo;
-using Business.Schedule;
 using Business.Config;
 using Business.Constants;
 using Business.Service.CacheService;
-using System.Configuration;
 using System;
+using CorePush.Google;
+using CorePush.Interfaces;
+using Business.ScheduleService;
 
 namespace API
 {
@@ -83,6 +84,7 @@ namespace API
 
             services.AddScoped<IReactionRepository, ReactionRepository>();
             services.AddScoped<IScheduleSocial, ScheduleSocial>();
+            services.AddScoped<IFcmSender, FcmSender>();
 
 
         }
@@ -110,6 +112,16 @@ namespace API
                 });
             });
         }
+
+        public static void ConfigureFcm(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHttpClient<FcmSender>();
+            var section = configuration.GetSection("FcmNotification");
+            var settings = new FcmSettings();
+            section.Bind(settings);
+            services.AddSingleton(settings);
+        }
+
         public static void ConfigureCache(this IServiceCollection services,  IConfiguration configuration)
         {   
             services.Configure<CacheConfiguration>(configuration.GetSection("CacheConfiguration"));

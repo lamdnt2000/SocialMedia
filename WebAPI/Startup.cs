@@ -1,6 +1,8 @@
 using API;
 using AutoFilterer.Swagger;
 using Business.Config;
+using CorePush.Apple;
+using CorePush.Google;
 using DataAccess;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -12,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Configuration;
+using System.Runtime;
 using WebAPI.Config;
 
 namespace WebAPI
@@ -52,6 +56,7 @@ namespace WebAPI
                }));
 
             services.AddConfigureDependency();
+           
 
             services.AddAuthentication();
 
@@ -60,6 +65,7 @@ namespace WebAPI
             services.AddHangfireServer();
             services.AddControllers();
             services.AddHttpContextAccessor();
+            services.ConfigureFcm(Configuration);
             services.ConfigureCros();
             services.ConfigureSwagger();
      

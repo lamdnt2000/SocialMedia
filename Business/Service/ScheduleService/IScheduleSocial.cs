@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Schedule
+namespace Business.ScheduleService
 {
     public interface IScheduleSocial
     {
         void FetchChannelJob(string platform, string user);
-        void CreateChannelJob(string platfrom, string user);
+        Task CreateChannelJobAsync(string platfrom, string user, string fcmToken);
         void UpdateChannelJob(string platform, string user, int id);
         (string, string) ValidateUrl(string url);
         

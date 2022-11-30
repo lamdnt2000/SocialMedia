@@ -8,7 +8,7 @@ namespace DataAccess.Models.ChannelCrawlModel
 {
     public class FacebookStatisticFieldInWeek
     {
-        public DayOfWeek DateOfWeek { get; set; }
+        public string DateOfWeek { get; set; }
         public long TotalPost { get; set; }
         public long TotalReaction { get; set; }
         public long TotalComment { get; set; }

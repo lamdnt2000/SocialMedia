@@ -44,7 +44,7 @@ namespace Business.Config
             //check if current user have permission to access this resources
             string[] specialPathWithoutToken = {
                 PathWithoutToken.USER_LOGIN,
-                PathWithoutToken.USER_SIGNUP
+                PathWithoutToken.USER_SIGNUP,
             };
             string[] regexSpecification = { "", "", "" };
             int index = 0;
