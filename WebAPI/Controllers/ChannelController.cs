@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
 {
     [Route(ApiPath.CHANNEL_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+
     public class ChannelController : ControllerBase
     {
         private readonly IChannelCrawlService _channelCrawlService;
@@ -30,6 +30,7 @@ namespace WebAPI.Controllers
             _scheduleSocial = schedule;
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetChannelById(int id)
         {
@@ -57,15 +58,13 @@ namespace WebAPI.Controllers
 
             }
         }
-
-        /*[HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PlatformPaging paging)
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll([FromQuery] ChannelSearchFilter paging)
         {
             try
             {
-
-
-                var result = await _platformService.SearchAsync(paging);
+                var result = await _channelCrawlService.SearchAsync(paging);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
@@ -78,8 +77,9 @@ namespace WebAPI.Controllers
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
 
             }
-        }*/
+        }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPost]
         public async Task<IActionResult> InsertChannel([FromBody] InsertChannelCrawlDto dto)
         {
@@ -104,6 +104,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateChannel(int id, [FromBody] UpdateChannelCrawlDto dto)
         {
@@ -133,6 +134,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChannelById(int id)
         {
@@ -152,6 +154,8 @@ namespace WebAPI.Controllers
 
             }
         }
+
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("statistic")]
         public async Task<IActionResult> StatisticChannelById([FromQuery] ChannelFilter filter)
         {
@@ -172,18 +176,21 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("url")]
-        public async Task<IActionResult> GetChannelByUrl([FromQuery] SearchUrlModel model)
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
+        [HttpGet]
+        public async Task<IActionResult> GetChannelByUrl(string url)
         {
             try
             {
-                string url = model.Url;
+              
                 var channelId = await _channelCrawlService.FindChannelByPlatformAndUserId(url);
                 if (channelId == 0)
                 {
+                    var user = HttpContext.Items["User"];
+                    var id = user.GetType().GetProperty("id")?.GetValue(user, null).ToString();
                     var result = _scheduleSocial.ValidateUrl(url);
-                    var jobId = BackgroundJob.Enqueue(() => _scheduleSocial.FetchChannelJob(result.Item1, result.Item2));
-                    BackgroundJob.ContinueJobWith(jobId, () => _scheduleSocial.CreateChannelJobAsync(result.Item1, result.Item2, model.Fcm));
+                    var jobId = BackgroundJob.Enqueue(() => _scheduleSocial.FetchChannelJobAsync(result.Item1, result.Item2, id));
+                    BackgroundJob.ContinueJobWith(jobId, () => _scheduleSocial.CreateChannelJobAsync(result.Item1, result.Item2, id));
                     return JsonResponse(200, NOT_FOUND, "Waiting loading data");
                 }
                 else

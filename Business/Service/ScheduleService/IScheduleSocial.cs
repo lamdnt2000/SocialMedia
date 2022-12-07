@@ -8,9 +8,12 @@ namespace Business.ScheduleService
 {
     public interface IScheduleSocial
     {
-        void FetchChannelJob(string platform, string user);
-        Task CreateChannelJobAsync(string platfrom, string user, string fcmToken);
+        Task FetchChannelJobAsync(string platform, string user, string id);
+        Task CreateChannelJobAsync(string platfrom, string user, string id);
         void UpdateChannelJob(string platform, string user, int id);
+        void CreateScheduleUpdateChannel(int platformId, string user, int id);
+        void TokenSchedule();
+        Task SendAsync(string id, string fcm);
         (string, string) ValidateUrl(string url);
         
     }

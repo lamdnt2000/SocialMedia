@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.ChannelCrawlModel
+namespace DataAccess.Models.ChannelCrawlModel.FacebookStatistic
 {
     public class FacebookStatisticField
     {
@@ -25,8 +25,8 @@ namespace DataAccess.Models.ChannelCrawlModel
         public double AverageEngagementInPost { get; set; }
         public double AverageDailyEngagementRate { get; set; }
         public double AverageDailyEngagementReaction { get; set; }
-        
-        
+
+
 
     }
 }

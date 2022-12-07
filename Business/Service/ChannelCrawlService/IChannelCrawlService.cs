@@ -1,5 +1,6 @@
 ﻿using DataAccess.Models.ChannelCrawlModel;
 using DataAccess.Models.LocationModel;
+using DataAccess.Models.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,6 @@ namespace Business.Service.ChannelCrawlService
         Task<ChannelCrawlDto> GetById(int id);
         Task<object> Statistic(ChannelFilter filter);
         Task<int> FindChannelByPlatformAndUserId(string url);
+        Task<PaginationList<ChannelCrawlDto>> SearchAsync(ChannelSearchFilter paging);
     }
 }

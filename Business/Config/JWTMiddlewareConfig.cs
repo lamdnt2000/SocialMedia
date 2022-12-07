@@ -26,6 +26,15 @@ namespace Business.Config
         public async Task Invoke(HttpContext context)
         {
             //get token from header
+            if (context.Request.Path.Value.StartsWith("/notification"))
+            {
+                string bearerToken = context.Request.Query["access_token"];
+                if (bearerToken != null)
+                {
+                    string[] authorization = { "Bearer " + bearerToken };
+                    context.Request.Headers.Add("Authorization", authorization);
+                }
+            }
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
             {
@@ -67,7 +76,7 @@ namespace Business.Config
 
                 return false;
             });
-            if (api.StartsWith(PathWithoutToken.HANGFIRE) || !string.IsNullOrEmpty(path))
+            if (api.StartsWith(PathWithoutToken.HANGFIRE) || api.StartsWith(PathWithoutToken.NOTIFICATION) || !string.IsNullOrEmpty(path))
             {
                 await _next(context);
                 return;

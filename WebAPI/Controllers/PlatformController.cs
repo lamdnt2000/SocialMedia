@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
 {
     [Route(ApiPath.PLATFORM_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+    
     public class PlatformController : ControllerBase
     {
         private readonly IPlatformService _platformService;
@@ -31,6 +31,7 @@ namespace WebAPI.Controllers
             _reactionTypeService = reactionTypeService;
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPlatformById(int id)
         {
@@ -61,6 +62,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PlatformPaging paging)
         {
@@ -81,7 +83,7 @@ namespace WebAPI.Controllers
             }
         }
 
-
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("categories")]
         public async Task<IActionResult> GetAllCategory([FromQuery] CategoryPaging paging)
         {
@@ -104,6 +106,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpGet("reactiontypes")]
         public async Task<IActionResult> GetAllReactionType([FromQuery] ReactionTypePaging paging)
         {
@@ -126,7 +129,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost()]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+        [HttpPost]
         public async Task<IActionResult> InsertPlatformId([FromForm] InsertPlatformDto dto)
         {
             try
@@ -146,6 +150,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePlatfrom(int id, [FromForm] UpdatePlatformDto dto)
         {
@@ -171,6 +176,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlatformById(int id)
         {
@@ -192,7 +198,7 @@ namespace WebAPI.Controllers
         }
 
 
-
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet]
         [Route("{id}/categories")]
         public async Task<IActionResult> GetCollectionCategory(int id)

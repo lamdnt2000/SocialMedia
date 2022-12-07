@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.ChannelCrawlModel
+namespace DataAccess.Models.ChannelCrawlModel.YoutubeStatistic
 {
     public class YoutubeStatisticField
     {

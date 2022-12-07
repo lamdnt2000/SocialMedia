@@ -4,7 +4,6 @@ using Business.Repository.UserRepo;
 using Business.Utils;
 using DataAccess.Entities;
 using DataAccess.Models.BranModel;
-using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.Pagination;
 using Microsoft.AspNetCore.Http;
 using System;

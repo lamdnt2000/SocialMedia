@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
 {
     [Route(ApiPath.ORAGANIZATION_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+   
     public class OrganizationController : ControllerBase
     {
         private readonly IOrganizationService _organizationService;
@@ -33,6 +33,7 @@ namespace WebAPI.Controllers
             _brandService = brandService;
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrganizationById(int id)
         {
@@ -63,6 +64,37 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllOrganization()
+        {
+            try
+            {
+
+
+                var result = await _organizationService.GetAll();
+                if (result != null)
+                {
+                    return JsonResponse(200, SUCCESS, result);
+                }
+                else
+                {
+                    return JsonResponse(400, NOT_FOUND, result);
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, "");
+                }
+                return JsonResponse(401, UNAUTHORIZE, "");
+
+            }
+        }
+
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet]
         public async Task<IActionResult> GettAllOrganization([FromQuery] OrganizationPaging paging)
         {
@@ -85,6 +117,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("brands")]
         public async Task<IActionResult> GettAllBrand([FromQuery] BrandPaging paging)
         {
@@ -107,7 +140,7 @@ namespace WebAPI.Controllers
             }
         }
 
-
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPost()]
         public async Task<IActionResult> InsertOrganizationId([FromForm] InsertOrganizationDto dto)
         {
@@ -128,6 +161,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrganizationId(int id, [FromForm] UpdateOrganizationDto dto)
         {
@@ -153,6 +187,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrganizationById(int id)
         {
@@ -174,7 +209,7 @@ namespace WebAPI.Controllers
         }
 
 
-
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet]
         [Route("{id:int}/brands")]
         public async Task<IActionResult> GetCollectionBrand(int id)

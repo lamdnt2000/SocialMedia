@@ -15,7 +15,7 @@ namespace WebAPI.Controllers
 {
     [Route(Constant.ApiPath.BRAND_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+   
     public class BrandController : ControllerBase
     {
         private readonly IBrandService _brandService;
@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
         {
             _brandService = brandService;
         }
-
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN+","+RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBrandId(int id)
         {
@@ -53,7 +53,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost()]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+        [HttpPost]
         public async Task<IActionResult> InsertBrandId([FromForm] InsertBrandDto dto)
         {
             try
@@ -77,6 +78,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrganizationId(int id, [FromForm] UpdateBrandDto dto)
         {
@@ -102,6 +104,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBrandById(int id)
         {

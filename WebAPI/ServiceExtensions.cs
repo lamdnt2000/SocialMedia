@@ -35,11 +35,11 @@ using Business.Repository.PostRepo;
 using Business.Repository.ReactionRepo;
 using Business.Config;
 using Business.Constants;
-using Business.Service.CacheService;
 using System;
 using CorePush.Google;
 using CorePush.Interfaces;
 using Business.ScheduleService;
+using System.Threading.Tasks;
 
 namespace API
 {
@@ -83,8 +83,9 @@ namespace API
  
 
             services.AddScoped<IReactionRepository, ReactionRepository>();
-            services.AddScoped<IScheduleSocial, ScheduleSocial>();
+            services.AddTransient<IScheduleSocial, ScheduleSocial>();
             services.AddScoped<IFcmSender, FcmSender>();
+            
 
 
         }
@@ -122,7 +123,7 @@ namespace API
             services.AddSingleton(settings);
         }
 
-        public static void ConfigureCache(this IServiceCollection services,  IConfiguration configuration)
+        /*public static void ConfigureCache(this IServiceCollection services,  IConfiguration configuration)
         {   
             services.Configure<CacheConfiguration>(configuration.GetSection("CacheConfiguration"));
             //For In-Memory Caching
@@ -141,7 +142,7 @@ namespace API
                         return serviceProvider.GetService<MemoryCacheService>();
                 }
             });
-        }
+        }*/
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
             var key = configuration["Jwt:Secret"];
@@ -162,6 +163,7 @@ namespace API
                     ValidIssuer = configuration["Jwt:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
                 };
+                
             });
         }
 

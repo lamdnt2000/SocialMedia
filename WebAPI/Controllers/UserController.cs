@@ -126,7 +126,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Route("me")]
-        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         public async Task<IActionResult> GetUserProfile()
         {
             try
@@ -145,7 +145,7 @@ namespace WebAPI.Controllers
 
         [HttpPut]
         [Route("profile")]
-        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         public async Task<IActionResult> UpdateUserProfile([FromForm] UpdateUserDto dto)
         {
             try
@@ -172,7 +172,7 @@ namespace WebAPI.Controllers
 
         [HttpPut]
         [Route("password")]
-        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         public async Task<IActionResult> UpdateUserPassword([FromForm] UpdateUserPassworDto dto)
         {
             try

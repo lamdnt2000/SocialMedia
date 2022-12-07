@@ -16,7 +16,7 @@ namespace WebAPI.Controllers
 {
     [Route(ApiPath.SUBCRIPTION_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+    
     public class SubscriptionController : ControllerBase
     {
         private readonly ISubscriptionService _subscriptionService;
@@ -25,6 +25,8 @@ namespace WebAPI.Controllers
         {
             _subscriptionService = subscriptionService;
         }
+
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSubscriptionById(int id)
         {
@@ -75,6 +77,7 @@ namespace WebAPI.Controllers
             }
         }*/
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPost]
         public async Task<IActionResult> InsertSubscription([FromForm] InsertSubscriptionDto dto)
         {
@@ -100,6 +103,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSubscription(int id, [FromForm] UpdateSubscriptionDto dto)
         {
@@ -129,6 +133,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSubscrtiptionById(int id)
         {

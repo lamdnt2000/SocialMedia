@@ -7,7 +7,9 @@ using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.Pagination;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using static Business.Constants.ResponseMsg;
 
@@ -37,6 +39,15 @@ namespace Business.Service.OrganizationService
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
+        }
+
+        public async Task<List<OrganizationDto>> GetAll()
+        {
+            var includes = new List<string>(){ "Brands" };
+            var organizations = await _organizationRepository.GetAllAsync(x => x.Status == true , null, includes);
+            var result = MapperConfig.GetMapper().Map<List<OrganizationDto>>(organizations.ToList());
+           
+            return result;
         }
 
         public async Task<OrganizationDto> GetById(int id, bool isInclude = false)

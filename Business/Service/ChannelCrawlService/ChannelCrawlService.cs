@@ -1,5 +1,4 @@
-﻿using API.Utils;
-using Business.Repository.ChannelCrawlRepo;
+﻿using Business.Repository.ChannelCrawlRepo;
 using Business.Repository.UserRepo;
 using Business.Utils;
 using DataAccess.Entities;
@@ -13,13 +12,13 @@ using System.Threading.Tasks;
 using static Business.Constants.ResponseMsg;
 using DateUtil = Business.Utils.DateUtil;
 using static Business.Schedule.RegexUtil;
-using static Business.Schedule.TriggerUtil;
-using static Business.Constants.PlatFormEnum;
 using DataAccess.Enum;
-using Microsoft.AspNetCore.Mvc;
 using Business.Constants;
-using Business.Schedule;
-using Hangfire;
+using DataAccess.Models.ChannelCrawlModel.FacebookStatistic;
+using DataAccess.Models.ChannelCrawlModel.YoutubeStatistic;
+using DataAccess.Models.ChannelCrawlModel.TiktokStatistic;
+using DataAccess.Models.Pagination;
+using DataAccess.Models.OrganizationModel;
 
 namespace Business.Service.ChannelCrawlService
 {
@@ -106,7 +105,7 @@ namespace Business.Service.ChannelCrawlService
             return channel.Id;
         }
 
-        public FacebookStatisticDto FacebookStatistic(ChannelCrawl channel, ChannelFilter filter)
+        public FacebookStatisticDto FacebookStatistic(ChannelStatistic channel, ChannelFilter filter)
         {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
             DateTime dateTo = filter.CreatedTime.Max.Value;
@@ -305,7 +304,7 @@ namespace Business.Service.ChannelCrawlService
             return result;
         }
 
-        public YoutubeStatisticDto YoutubeStatistic(ChannelCrawl channel, ChannelFilter filter)
+        public YoutubeStatisticDto YoutubeStatistic(ChannelStatistic channel, ChannelFilter filter)
         {
             DateTime dateFrom = filter.CreatedTime.Min.Value;
             DateTime dateTo = filter.CreatedTime.Max.Value;
@@ -446,8 +445,9 @@ namespace Business.Service.ChannelCrawlService
         }
 
 
-        public TiktokStatisticDto TiktokStatistic(ChannelCrawl channel, ChannelFilter filter)
+        public TiktokStatisticDto TiktokStatistic(ChannelStatistic channel, ChannelFilter filter)
         {
+           
             DateTime dateFrom = filter.CreatedTime.Min.Value;
             DateTime dateTo = filter.CreatedTime.Max.Value;
             double diff = DateUtil.DiffDate(dateFrom, dateTo);
@@ -556,7 +556,7 @@ namespace Business.Service.ChannelCrawlService
 
                     statisticsInWeek.Add(field);
 
-                }
+                }   
                 result.StatisticFields = statistics;
                 result.StatisticFieldsInWeek = statisticsInWeek;
             }
@@ -595,6 +595,19 @@ namespace Business.Service.ChannelCrawlService
             {
                 return channel.Id;
             }
+        }
+
+        public async Task<PaginationList<ChannelCrawlDto>> SearchAsync(ChannelSearchFilter paging)
+        {
+            var result = await _channelCrawlRepository.SearchAsync(paging);
+            var items = MapperConfig.GetMapper().Map<List<ChannelCrawlDto>>(result.Items);
+            return new PaginationList<ChannelCrawlDto>
+            {
+                Items = items,
+                CurrentPage = result.CurrentPage,
+                PageSize = result.PageSize,
+                TotalPage = result.TotalPage
+            };
         }
     }
 }

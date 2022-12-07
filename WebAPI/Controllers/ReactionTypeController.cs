@@ -16,7 +16,7 @@ namespace WebAPI.Controllers
 {
     [Route(ApiPath.REACTIONTYPE_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+    
     public class ReactionTypeController : ControllerBase
     {
         private readonly IReactionTypeService _reactionTypeService;
@@ -26,6 +26,7 @@ namespace WebAPI.Controllers
             _reactionTypeService = reactionTypeService;
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryId(int id)
         {
@@ -46,6 +47,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPost()]
         public async Task<IActionResult> InsertCategoryId([FromForm] InsertReactionType dto)
         {
@@ -70,6 +72,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromForm] UpdateReactionTypeDto dto)
         {
@@ -95,6 +98,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategoryById(int id)
         {

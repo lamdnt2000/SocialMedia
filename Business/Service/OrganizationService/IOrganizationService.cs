@@ -2,6 +2,7 @@
 using DataAccess.Models.BranModel;
 using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.Pagination;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Business.Service.OrganizationService
@@ -11,6 +12,7 @@ namespace Business.Service.OrganizationService
         Task<int> Insert(InsertOrganizationDto dto);
         Task<int> Update(int id, UpdateOrganizationDto dto);
         Task<bool> Delete(int id);
+        Task<List<OrganizationDto>> GetAll();
         Task<OrganizationDto> GetById(int id, bool isInclude = false);
         Task<PaginationList<OrganizationDto>> SearchAsync(OrganizationPaging paging);
         Task<OrganizationDto> SearchByName(string name);

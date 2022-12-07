@@ -7,17 +7,20 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.NotificationModel
 {
-    public class Notification
+    public class PayLoad
     {
         public class DataPlayload
         {
-            [JsonProperty("message")]
-            public string Message { get; set; }
+            [JsonProperty("body")]
+            public string Body { get; set; }
+            [JsonProperty("title")]
+            public string Title { get; set; }
         }
         [JsonProperty("priority")]
         public string Priority { get; set; } = "high";
+        public bool ContentAvailable { get; set; } = true;
         [JsonProperty("data")]
-        public DataPlayload Data { get; set; }
+        public DataPlayload Notification { get; set; }
     }
 
 }

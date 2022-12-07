@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
 {
     [Route(ApiPath.GATEWAY_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+   
     public class GatewayController : ControllerBase
     {
         private readonly IGatewayService _gatewayService;
@@ -29,6 +29,7 @@ namespace WebAPI.Controllers
             _transactionDepositService = transactionDepositService;
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGatewayById(int id)
         {
@@ -59,6 +60,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] GatewayPaging paging)
         {
@@ -81,8 +83,8 @@ namespace WebAPI.Controllers
             }
         }
 
-
-       [HttpGet("transactiondeposits")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+        [HttpGet("transactiondeposits")]
         public async Task<IActionResult> GetAllTransactionDeposit([FromQuery] TransactionDepositPaging paging)
         {
             try
@@ -104,8 +106,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPost()]
         public async Task<IActionResult> InsertPlatformId([FromForm] InsertGatewayDto dto)
         {
@@ -126,6 +128,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePlatfrom(int id, [FromForm] UpdateGatewayDto dto)
         {
@@ -151,6 +154,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlatformById(int id)
         {
@@ -172,8 +176,8 @@ namespace WebAPI.Controllers
         }
 
 
-
-      [HttpGet]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
+        [HttpGet]
         [Route("{id}/transactiondeposits")]
         public async Task<IActionResult> GetCollectionTransactionDeposit(int id)
         {

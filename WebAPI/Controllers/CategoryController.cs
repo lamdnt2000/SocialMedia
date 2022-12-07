@@ -15,7 +15,7 @@ namespace WebAPI.Controllers
 {
     [Route(ApiPath.CATEGORY_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+    
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -25,6 +25,7 @@ namespace WebAPI.Controllers
             _categoryService = categoryService;
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryId(long id)
         {
@@ -53,7 +54,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost()]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+        [HttpPost]
         public async Task<IActionResult> InsertCategoryId([FromForm] InsertCategoryDto dto)
         {
             try
@@ -77,6 +79,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(long id,  [FromForm] UpdateCategoryDto dto)
         {
@@ -102,6 +105,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategoryById(long id)
         {

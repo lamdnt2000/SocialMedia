@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.ChannelCrawlModel
+namespace DataAccess.Models.ChannelCrawlModel.FacebookStatistic
 {
     public class FacebookStatisticFieldInWeek
     {
@@ -23,6 +23,6 @@ namespace DataAccess.Models.ChannelCrawlModel
         public double AverageEngagementERPostInDayOfWeek { get; set; }
         public double AverageEngagementRateDayOfWeek { get; set; }
         public double AverageEngagementPostInDayOfWeek { get; set; }
-        
+
     }
 }

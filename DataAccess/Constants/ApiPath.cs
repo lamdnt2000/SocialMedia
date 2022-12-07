@@ -22,7 +22,6 @@
         public const string PACKAGE_PATH = API_VERSION + "/packages";
         public const string POST_PATH = API_VERSION + "/posts";
         public const string REACTION_PATH = API_VERSION + "/reactions";
-        public const string HANGFIRE_PATH = API_VERSION + "/jobs";
-        public const string NOTI_PATH = API_VERSION + "/noti";
+        public const string HANGFIRE_PATH = API_VERSION + "/hangfires";
     }
 }

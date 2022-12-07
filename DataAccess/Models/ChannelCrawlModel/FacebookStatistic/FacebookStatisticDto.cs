@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.ChannelCrawlModel
+namespace DataAccess.Models.ChannelCrawlModel.FacebookStatistic
 {
-    public class FacebookStatisticDto: ChannelCrawlDto
+    public class FacebookStatisticDto : ChannelStatisticDto
     {
         public List<FacebookStatisticField> StatisticFields { get; set; }
         public List<FacebookStatisticFieldInWeek> StatisticFieldsInWeek { get; set; }

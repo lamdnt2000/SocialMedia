@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.ChannelCrawlModel
+namespace DataAccess.Models.ChannelCrawlModel.YoutubeStatistic
 {
-    public class YoutubeStatisticDto:ChannelCrawlDto
+    public class YoutubeStatisticDto : ChannelStatisticDto
     {
         public List<YoutubeStatisticField> StatisticFields { get; set; }
         public List<YoutubeStatisticFieldInWeek> StatisticFieldsInWeek { get; set; }

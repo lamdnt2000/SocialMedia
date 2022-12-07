@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.ChannelCrawlModel
+namespace DataAccess.Models.ChannelCrawlModel.TiktokStatistic
 {
-    public class TiktokStatisticDto:ChannelCrawlDto
+    public class TiktokStatisticDto : ChannelStatisticDto
     {
         public List<TiktokStatisticField> StatisticFields { get; set; }
         public List<TiktokStatisticFieldInWeek> StatisticFieldsInWeek { get; set; }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.ChannelCrawlModel
+namespace DataAccess.Models.ChannelCrawlModel.YoutubeStatistic
 {
-    public class FacebookStatisticFieldPostType
+    public class YoutubeStatisticFieldPostType
     {
         public string PostType { get; set; }
         public long Count { get; set; }

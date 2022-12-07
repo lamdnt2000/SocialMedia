@@ -3,6 +3,9 @@ using DataAccess.Entities;
 using DataAccess.Models.BranModel;
 using DataAccess.Models.CategoryModel;
 using DataAccess.Models.ChannelCrawlModel;
+using DataAccess.Models.ChannelCrawlModel.FacebookStatistic;
+using DataAccess.Models.ChannelCrawlModel.TiktokStatistic;
+using DataAccess.Models.ChannelCrawlModel.YoutubeStatistic;
 using DataAccess.Models.ChannelRecordModel;
 using DataAccess.Models.HashtagModel;
 using DataAccess.Models.LocationModel;
@@ -71,9 +74,10 @@ namespace Business.Utils
                 cfg.CreateMap<ChannelCrawl, ChannelCrawlDto>().ReverseMap();
                 cfg.CreateMap<ChannelCrawl, InsertChannelCrawlDto>().ReverseMap();
                 cfg.CreateMap<ChannelCrawl, UpdateChannelCrawlDto>().ReverseMap();
-                cfg.CreateMap<ChannelCrawl, FacebookStatisticDto>().ReverseMap();
-                cfg.CreateMap<ChannelCrawl, YoutubeStatisticDto>().ReverseMap();
-                cfg.CreateMap<ChannelCrawl, TiktokStatisticDto>().ReverseMap();
+                cfg.CreateMap<ChannelStatistic, FacebookStatisticDto>().ReverseMap();
+                cfg.CreateMap<ChannelStatistic, YoutubeStatisticDto>().ReverseMap();
+                cfg.CreateMap<ChannelStatistic, TiktokStatisticDto>().ReverseMap();
+                cfg.CreateMap<ChannelStatistic, ChannelStatisticDto>().ReverseMap();
                 cfg.CreateMap<ChannelCategory, ChannelCategoryDto>().ReverseMap();
 
 
