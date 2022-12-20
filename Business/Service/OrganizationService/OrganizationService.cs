@@ -1,4 +1,5 @@
-﻿using Business.Repository.OrganizationRepo;
+﻿using Business.Repository.ChannelCrawlRepo;
+using Business.Repository.OrganizationRepo;
 using Business.Repository.UserRepo;
 using Business.Utils;
 using DataAccess.Entities;
@@ -19,12 +20,14 @@ namespace Business.Service.OrganizationService
     {
         private readonly IOrganizationRepository _organizationRepository;
         private readonly string ClassName = typeof(Organization).Name;
-
+        private readonly IChannelCrawlRepository _channelCrawlRepository;
         public OrganizationService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
-            IOrganizationRepository organizationRepository) : base(httpContextAccessor, userRepository)
+            IOrganizationRepository organizationRepository,
+            IChannelCrawlRepository channelCrawlRepository) : base(httpContextAccessor, userRepository)
         {
             _organizationRepository = organizationRepository;
+            _channelCrawlRepository = channelCrawlRepository;
         }
 
         public async Task<bool> Delete(int id)
@@ -41,11 +44,12 @@ namespace Business.Service.OrganizationService
             }
         }
 
-        public async Task<List<OrganizationDto>> GetAll()
+        public async Task<List<OrganizationAllDto>> GetAll()
         {
-            var includes = new List<string>(){ "Brands" };
+            var includes = new List<string>(){ "Brands","ChannelCrawls" };
             var organizations = await _organizationRepository.GetAllAsync(x => x.Status == true , null, includes);
-            var result = MapperConfig.GetMapper().Map<List<OrganizationDto>>(organizations.ToList());
+            
+            var result = MapperConfig.GetMapper().Map<List<OrganizationAllDto>>(organizations.ToList());
            
             return result;
         }

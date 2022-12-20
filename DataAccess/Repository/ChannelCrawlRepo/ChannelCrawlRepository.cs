@@ -55,7 +55,7 @@ namespace Business.Repository.ChannelCrawlRepo
                     if (operation is BulkOperation<ChannelRecord> bulkRecord)
                     {
                         bulkRecord.ColumnPrimaryKeyExpression = expression => new { expression.Id };
-                
+
                         bulkRecord.IgnoreOnMergeUpdateExpression = e => new { e.CreatedDate };
                         bulkRecord.IgnoreOnMergeInsertExpression = c => new { c.UpdateDate };
                     }
@@ -105,7 +105,7 @@ namespace Business.Repository.ChannelCrawlRepo
             var channel = await context.ChannelCrawls.Where(c => c.Id == filter.Id)
                 .Select(c => new ChannelStatistic()
 
-                
+
                 {
                     Cid = c.Cid,
                     Id = c.Id,
@@ -149,7 +149,7 @@ namespace Business.Repository.ChannelCrawlRepo
                 })
                 .FirstOrDefaultAsync();
 
-            
+
             return channel;
 
 
@@ -201,7 +201,8 @@ namespace Business.Repository.ChannelCrawlRepo
             var currentPage = paging.Page;
             var pageSize = paging.PerPage;
             var totalPage = Math.Ceiling((decimal)totalItem / pageSize);
-            var result = context.ChannelCrawls.ApplyFilter(paging).Include(c => c.Organization).ToList();
+            var result = context.ChannelCrawls.ApplyFilter(paging).Include(c => c.Organization).
+                Include(c => c.Platform).Include(c=> c.ChannelCategories).ThenInclude(c=>c.Category).ToList();
             return new PaginationList<ChannelCrawl>
             {
                 CurrentPage = currentPage,

@@ -12,7 +12,7 @@ namespace Business.Service.OrganizationService
         Task<int> Insert(InsertOrganizationDto dto);
         Task<int> Update(int id, UpdateOrganizationDto dto);
         Task<bool> Delete(int id);
-        Task<List<OrganizationDto>> GetAll();
+        Task<List<OrganizationAllDto>> GetAll();
         Task<OrganizationDto> GetById(int id, bool isInclude = false);
         Task<PaginationList<OrganizationDto>> SearchAsync(OrganizationPaging paging);
         Task<OrganizationDto> SearchByName(string name);

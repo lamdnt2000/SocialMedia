@@ -17,6 +17,7 @@ using DataAccess.Models.ReactionModel;
 using DataAccess.Models.ReactionTypeModel;
 using DataAccess.Models.Role;
 using DataAccess.Models.WalletModel;
+using System.Linq;
 
 namespace Business.Utils
 {
@@ -39,6 +40,7 @@ namespace Business.Utils
                 cfg.CreateMap<User, UpdateUserPassworDto>().ReverseMap();
 
                 cfg.CreateMap<Organization, InsertOrganizationDto>().ReverseMap();
+                cfg.CreateMap<Organization, OrganizationAllDto>().ForMember(x=> x.TotalChannels, o=> o.MapFrom(x=>x.ChannelCrawls.Count));
                 cfg.CreateMap<Organization, OrganizationDto>().ReverseMap();
                 cfg.CreateMap<Organization, UpdateOrganizationDto>().ReverseMap();
 
@@ -47,6 +49,7 @@ namespace Business.Utils
                 cfg.CreateMap<Brand, UpdateBrandDto>().ReverseMap();
 
                 cfg.CreateMap<Platform, PlatformDto>().ReverseMap();
+                cfg.CreateMap<Platform, ShortPlatformDto>().ReverseMap();
                 cfg.CreateMap<Platform, InsertPlatformDto>().ReverseMap();
                 cfg.CreateMap<Platform, UpdatePlatformDto>().ReverseMap();
 
@@ -71,7 +74,9 @@ namespace Business.Utils
                 cfg.CreateMap<Location, InsertLocationDto>().ReverseMap();
                 cfg.CreateMap<Location, UpdateLocationDto>().ReverseMap();
 
-                cfg.CreateMap<ChannelCrawl, ChannelCrawlDto>().ReverseMap();
+                cfg.CreateMap<ChannelCrawl, ChannelCrawlDto>()
+                .ForMember(x=> x.Categories, o => o.MapFrom(o => o.ChannelCategories.Select(x=> x.Category)));
+                cfg.CreateMap<ChannelCrawlDto, ChannelCrawl>();
                 cfg.CreateMap<ChannelCrawl, InsertChannelCrawlDto>().ReverseMap();
                 cfg.CreateMap<ChannelCrawl, UpdateChannelCrawlDto>().ReverseMap();
                 cfg.CreateMap<ChannelStatistic, FacebookStatisticDto>().ReverseMap();

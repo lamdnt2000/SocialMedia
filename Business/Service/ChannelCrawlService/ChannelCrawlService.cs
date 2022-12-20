@@ -609,5 +609,20 @@ namespace Business.Service.ChannelCrawlService
                 TotalPage = result.TotalPage
             };
         }
+
+        public async Task<int> Update(ChannelCrawlDto dto)
+        {
+            var check = await _channelCrawlRepository.Get(x => x.Id == dto.Id);
+            if (check == null)
+            {
+                throw new Exception(ClassName + " " + NOT_FOUND);
+            }
+            var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
+         
+            await _channelCrawlRepository.ValidateChannelAsync(channel);
+
+            await _channelCrawlRepository.Update(channel);
+            return channel.Id;
+        }
     }
 }

@@ -135,6 +135,36 @@ namespace WebAPI.Controllers
         }
 
         [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+        [HttpPut]
+        public async Task<IActionResult> AdminUpdateChannel([FromBody] ChannelCrawlDto dto)
+        {
+            try
+            {
+                var result = await _channelCrawlService.Update(dto);
+                return JsonResponse(200, UPDATE_SUCCESS, new { id = result });
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(DUPLICATED))
+                {
+                    return JsonResponse(400, UPDATE_FAILED, e.Message);
+                }
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, UPDATE_FAILED, e.Message);
+                }
+                if (e.Message.Contains(NOT_EXIST))
+                {
+                    return JsonResponse(400, NOT_EXIST, e.Message);
+                }
+
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChannelById(int id)
         {

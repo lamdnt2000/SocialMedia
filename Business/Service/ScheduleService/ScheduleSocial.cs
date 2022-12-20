@@ -47,7 +47,7 @@ namespace Business.ScheduleService
             fetchResult = fetchResult.Replace("\r", "").Replace("\n", "");
             if (Int32.TryParse(fetchResult, out int result))
             {
-                RecurringJob.AddOrUpdate(user, () => UpdateChannelJob(platform, user, result), Cron.MinuteInterval(30));
+                //RecurringJob.AddOrUpdate(user, () => UpdateChannelJob(platform, user, result), Cron.MinuteInterval(30));
                 var dateRange = DateUtil.GenerateDateInRange(1);
                 await SendAsync(id,"Data is ready");
             }

@@ -13,6 +13,7 @@ namespace Business.Service.ChannelCrawlService
     {
         Task<int> Insert(InsertChannelCrawlDto dto);
         Task<int> Update(int id, UpdateChannelCrawlDto dto);
+        Task<int> Update(ChannelCrawlDto dto);
         Task<bool> Delete(int id);
         Task<ChannelCrawlDto> GetById(int id);
         Task<object> Statistic(ChannelFilter filter);

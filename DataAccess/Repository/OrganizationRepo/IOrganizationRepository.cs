@@ -10,5 +10,6 @@ namespace Business.Repository.OrganizationRepo
     public interface IOrganizationRepository : IGenericRepository<Organization>
     {
         Task<PaginationList<Organization>> SearchAsync(OrganizationPaging paging);
+
     }
 }

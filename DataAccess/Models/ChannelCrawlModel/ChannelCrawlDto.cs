@@ -1,6 +1,9 @@
-﻿using DataAccess.Models.ChannelRecordModel;
+﻿using DataAccess.Models.BranModel;
+using DataAccess.Models.CategoryModel;
+using DataAccess.Models.ChannelRecordModel;
 using DataAccess.Models.LocationModel;
 using DataAccess.Models.OrganizationModel;
+using DataAccess.Models.PlatFormModel;
 using DataAccess.Models.PostCrawlModel;
 using System;
 using System.Collections.Generic;
@@ -31,8 +34,10 @@ namespace DataAccess.Models.ChannelCrawlModel
         public string? Username { get; set; }
         public string Cid { get; set; }
         public DateTime CreatedTime { get; set; }
-        public ICollection<ChannelRecordDto> ChannelRecords { get; set; }
-        public LocationDto Location { get; set; }
-        public OrganizationDto Organization { get; set; }
+        public ICollection<ChannelRecordDto>? ChannelRecords { get; set; }
+        public LocationDto? Location { get; set; }
+        public OrganizationDto? Organization { get; set; }
+        public ICollection<CategoryDto>? Categories { get; set; }
+        public ShortPlatformDto? Platform { get; set; }
     }
 }

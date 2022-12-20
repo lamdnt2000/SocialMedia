@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.OrganizationModel
 {
-    public class OrganizationDto:InsertOrganizationDto
+    public class OrganizationAllDto:InsertOrganizationDto
     {
         [Required]
         public int Id { get; set; }
@@ -18,6 +18,6 @@ namespace DataAccess.Models.OrganizationModel
         public DateTime? UpdateDate { get; set; }
         public bool Status { get; set; }
         public ICollection<BrandDto> Brands { get; set; }
-        
+        public int TotalChannels { get; set; } = 0;
     }
 }
