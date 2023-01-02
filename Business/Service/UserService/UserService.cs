@@ -47,7 +47,7 @@ namespace Business.Service.UserService
                         string hashPass = BCrypt.Net.BCrypt.HashPassword(userDTO.Password);
                         user = MapperConfig.GetMapper().Map<User>(userDTO);
                         user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
-                        user.Status = (userRecord.EmailVerified)?(int)EnumConst.UserStatus.NEW: (int)EnumConst.UserStatus.VERIFY;
+                        user.Status = (userRecord.EmailVerified)?(int)EnumConst.UserStatus.VERIFY: (int)EnumConst.UserStatus.NEW;
                         user.CreatedDate = DateTime.Now;
                         user.Provider = userRecord.ProviderId;
                         user.Password = hashPass;
@@ -95,13 +95,10 @@ namespace Business.Service.UserService
                     if (userRecord != null && userRecord.EmailVerified)
                     {
                         user.Status = (int)EnumConst.UserStatus.VERIFY;
-                        await _userRepository.Update(user);
-                        return user;
+                        await _userRepository.Update(user);        
                     }
-                    else
-                    {
-                        throw new Exception("User not verify yet. Please verify your email");
-                    }
+                    return user;
+
                 }
                 else
                 {

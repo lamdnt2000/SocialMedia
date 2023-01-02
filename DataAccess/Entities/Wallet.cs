@@ -8,13 +8,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("wallet")]
-    public partial class Wallet
+    public partial class Wallet:BaseEntity
     {
+
         public Wallet()
         {
             TransactionDeposits = new HashSet<TransactionDeposit>();
         }
-
         [Key]
         [Column("id")]
         public int Id { get; set; }
@@ -22,18 +22,17 @@ namespace DataAccess.Entities
         public int Balance { get; set; }
         [Required]
         [Column("status")]
-        [StringLength(10)]
-        public string Status { get; set; }
+        public bool Status { get; set; }
         [Required]
         [Column("currency")]
-        [StringLength(10)]
+        [StringLength(5)]
         public string Currency { get; set; }
-        [Column("userr_id")]
-        public int UserrId { get; set; }
+        [Column("user_id")]
+        public int UserId { get; set; }
 
-        [ForeignKey(nameof(UserrId))]
-        [InverseProperty(nameof(User.Wallets))]
-        public virtual User Userr { get; set; }
+        [ForeignKey(nameof(UserId))]
+        [InverseProperty("Wallet")]
+        public virtual User User { get; set; }
         [InverseProperty(nameof(TransactionDeposit.Wallet))]
         public virtual ICollection<TransactionDeposit> TransactionDeposits { get; set; }
     }

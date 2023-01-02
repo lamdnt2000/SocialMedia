@@ -19,7 +19,7 @@ namespace Business.Repository.GenericRepo
         Task<int> InsertRange(IEnumerable<T> entities);
         Task<int> UpdateRange(IEnumerable<T> entities);
         Task<int> Update(T entity);
-        Task<int> Delete(object id);
+        Task<int> Delete(params object[] id);
         Task<int> DeleteRange(IEnumerable<T> entities);
        
     }

@@ -1,4 +1,5 @@
 ﻿using DataAccess.Models.ChannelCrawlModel;
+using DataAccess.Models.ChannelCrawlModel.CompareModel;
 using DataAccess.Models.LocationModel;
 using DataAccess.Models.Pagination;
 using System;
@@ -17,7 +18,9 @@ namespace Business.Service.ChannelCrawlService
         Task<bool> Delete(int id);
         Task<ChannelCrawlDto> GetById(int id);
         Task<object> Statistic(ChannelFilter filter);
-        Task<int> FindChannelByPlatformAndUserId(string url);
+        Task<object> StatisticTopPost(int id);
+        Task<string> FindChannelByPlatformAndUserId(string url);
         Task<PaginationList<ChannelCrawlDto>> SearchAsync(ChannelSearchFilter paging);
+        Task<object> CompareChannel(CompareDto dto);
     }
 }

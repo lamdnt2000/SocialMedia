@@ -11,6 +11,13 @@ using Microsoft.Extensions.Options;
 using Business.Config;
 using Business.Constants;
 using static Business.Constants.ResponseMsg;
+using Business.Service.WalletService;
+using DataAccess.Models.PaymentModel;
+using Business.Utils;
+using Firebase.Auth;
+using Business.Service.TransactionDepositService;
+using DataAccess.Models.TransectionDepositModel;
+
 namespace WebAPI.Controllers
 {
     [Route(ApiPath.USER_PATH)]
@@ -19,11 +26,15 @@ namespace WebAPI.Controllers
     {
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
-
-        public UserController(IUserService userService, IAuthService authService, IOptions<FirebaseMetadata> firebaseMetadata)
+        private readonly IWalletService _walletService;
+        public UserController(IUserService userService, IAuthService authService, 
+            IOptions<FirebaseMetadata> firebaseMetadata, 
+            IWalletService walletService,
+            ITransactionDepositService transactionDepositService)
         {
             _userService = userService;
             _authService = authService;
+            _walletService = walletService;
 
         }
 
@@ -63,7 +74,7 @@ namespace WebAPI.Controllers
 
                 var user = await _userService.GetUser(loginUser);
                 _authService.SetCurrentUser(user);
-                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() ,FirstName = user.Firstname, LastName = user.Lastname, Role = user.Role.Name });
+                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() ,FirstName = user.Firstname, LastName = user.Lastname, Role = user.Role.Name, Status = (user.Status==2)?true:false });
 
             }
             catch (Exception e)
@@ -97,32 +108,6 @@ namespace WebAPI.Controllers
 
         }
 
-        /*[HttpPost]
-        [Route("loginFacebook")]
-        public async Task<IActionResult> LoginFacebook(string TokenId)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-
-                var user = await _userService.FacebookSignIn(TokenId);
-                _authService.SetCurrentUser(user);
-                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() });
-
-            }
-            catch (Exception e)
-            {
-                return JsonResponse(401, "Not authenticate", e.Message);
-            }
-
-        }*/
-
-
-       
 
         [HttpGet]
         [Route("me")]
@@ -194,6 +179,133 @@ namespace WebAPI.Controllers
                     return JsonResponse(400, "Bad request", e.Message);
                 }
                 return JsonResponse(401, "Not authenticate", e.Message);
+            }
+        }
+
+        [HttpGet("wallet")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> GetWallet()
+        {
+            try
+            {
+                var result = await _walletService.GetCurrentWallet();
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+               
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+        [HttpGet("wallet/history")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> GetHistoryWallet([FromQuery]TransactionDepositPaging paging)
+        {
+            try
+            {
+                var result = await _walletService.SearchTransaction(paging);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+
+        [HttpPost("wallet")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> CreateWallet()
+        {
+            try
+            {
+                var result = await _walletService.Insert();
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+                if (e.Message.Contains(DUPLICATED))
+                {
+                    return JsonResponse(400, DUPLICATED, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+        
+        [HttpPost("wallet/deposit")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> DepositMoney(PaymentDto dto)
+        {
+            try
+            {
+                var result = await _walletService.CreateDepositLink(dto);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+        
+        [HttpPost("wallet/verify")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> UpdateBalanceAfterDeposit()
+        {
+            try
+            {
+                var vnpayData = Request.Query;
+                VnPayLibrary vnpay = new VnPayLibrary();
+                foreach (string s in vnpayData.Keys)
+                {
+                    //get all querystring data
+                    if (!string.IsNullOrEmpty(s) && s.StartsWith("vnp_"))
+                    {
+                        vnpay.AddResponseData(s, vnpayData[s]);
+                    }
+                }
+                var result = await _walletService.UpdateBalance(vnpay);
+                return JsonResponse(200, INSERT_SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+                if (e.Message.Contains(INVALID))
+                {
+                    return JsonResponse(400, INVALID, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
             }
         }
     }

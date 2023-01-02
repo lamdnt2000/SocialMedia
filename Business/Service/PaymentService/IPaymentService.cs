@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.WalletModel
+namespace Business.Service.PaymentService
 {
-    public class UpdateWalletDto:InsertWalletDto
+    public interface IPaymentService
     {
     }
 }

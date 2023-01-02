@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.ChannelCrawlModel.TiktokStatistic
 {
-    public class TiktokStatisticField
+    public class TiktokStatisticField: BaseFieldStatistic
     {
-        public DateTime Date { get; set; }
         public long TotalPost { get; set; }
         public long TotalLike { get; set; }
         public long TotalComment { get; set; }

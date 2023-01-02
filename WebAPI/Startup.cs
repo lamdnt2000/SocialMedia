@@ -2,6 +2,7 @@ using API;
 using Business.Config;
 using Business.SignalR;
 using DataAccess;
+using DataAccess.Models.ConfigModel;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
@@ -52,14 +53,7 @@ namespace WebAPI
 
             services.AddConfigureDependency();
 
-           /* services.AddCors(options =>
-            {
-                options.AddPolicy(name: "localhost",
-                                  builder =>
-                                  {
-                                      builder.WithOrigins("https://localhost:44335/");
-                                  });
-            });*/
+            services.Configure<PaymentConfig>(Configuration.GetSection("Payment"));
             services.AddAuthentication();
             services.AddSignalR()
             .AddJsonProtocol(options =>

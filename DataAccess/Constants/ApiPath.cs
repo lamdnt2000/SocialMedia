@@ -23,5 +23,6 @@
         public const string POST_PATH = API_VERSION + "/posts";
         public const string REACTION_PATH = API_VERSION + "/reactions";
         public const string HANGFIRE_PATH = API_VERSION + "/hangfires";
+        public const string WATCHLIST_PATH = API_VERSION + "/watchlists";
     }
 }

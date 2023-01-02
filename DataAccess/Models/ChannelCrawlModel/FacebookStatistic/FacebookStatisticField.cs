@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.ChannelCrawlModel.FacebookStatistic
 {
-    public class FacebookStatisticField
+    public class FacebookStatisticField: BaseFieldStatistic
     {
-        public DateTime Date { get; set; }
+        
         public long TotalPost { get; set; }
         public long TotalReaction { get; set; }
         public long TotalComment { get; set; }

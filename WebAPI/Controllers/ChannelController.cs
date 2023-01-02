@@ -13,6 +13,7 @@ using Hangfire;
 using Business.Utils;
 using AutoFilterer.Types;
 using Business.ScheduleService;
+using DataAccess.Models.ChannelCrawlModel.CompareModel;
 
 namespace WebAPI.Controllers
 {
@@ -207,14 +208,35 @@ namespace WebAPI.Controllers
         }
 
         [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
+        [HttpGet("toppost/{id}")]
+        public async Task<IActionResult> StatisticTopPostChannelById(int id)
+        {
+            try
+            {
+                var result = await _channelCrawlService.StatisticTopPost(id);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, DELETE_FAILED, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
         [HttpGet]
         public async Task<IActionResult> GetChannelByUrl(string url)
         {
             try
             {
               
-                var channelId = await _channelCrawlService.FindChannelByPlatformAndUserId(url);
-                if (channelId == 0)
+                var userId = await _channelCrawlService.FindChannelByPlatformAndUserId(url);
+                if (userId.Equals(""))
                 {
                     var user = HttpContext.Items["User"];
                     var id = user.GetType().GetProperty("id")?.GetValue(user, null).ToString();
@@ -226,12 +248,34 @@ namespace WebAPI.Controllers
                 else
                 {
                     var dateRange = DateUtil.GenerateDateInRange(1);
-                    ChannelFilter filter = new ChannelFilter() { Id = channelId, CreatedTime = new Range<DateTime> { Min = dateRange.Item1, Max = dateRange.Item2} };
+                    ChannelFilter filter = new ChannelFilter() { Username = userId, CreatedTime = new Range<DateTime> { Min = dateRange.Item1, Max = dateRange.Item2} };
                     
                    
                     var statistic = await _channelCrawlService.Statistic(filter);
                     return JsonResponse(200, SUCCESS, statistic);
                 }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, DELETE_FAILED, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        [HttpGet("compare")]
+        public async Task<IActionResult> CompareChannel([FromQuery] CompareDto dto)
+        {
+            try
+            {
+                var result = await _channelCrawlService.CompareChannel(dto);
+                return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)
             {

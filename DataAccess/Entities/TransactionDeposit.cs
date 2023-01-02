@@ -13,55 +13,48 @@ namespace DataAccess.Entities
         [Key]
         [Column("id")]
         public int Id { get; set; }
-        [Required]
-        [Column("card_type")]
-        [StringLength(10)]
-        public string CardType { get; set; }
         [Column("amount")]
-        public int Amount { get; set; }
-        [Column("status")]
-        public int Status { get; set; }
-        [Required]
-        [Column("code")]
-        [StringLength(20)]
-        public string Code { get; set; }
-        [Required]
-        [Column("trans_no_id")]
-        [StringLength(20)]
-        public string TransNoId { get; set; }
-        [Column("pay_date", TypeName = "datetime")]
-        public DateTime PayDate { get; set; }
-        [Required]
+        public int? Amount { get; set; }
+        [Column("transaction_status")]
         [StringLength(5)]
-        public string Locale { get; set; }
-        [Required]
+        public string TransactionStatus { get; set; }
+        [Column("response_code")]
+        [StringLength(20)]
+        public string ResponseCode { get; set; }
+        [Column("trans_no_id")]
+        public long? TransNoId { get; set; }
+        [Column("pay_date", TypeName = "datetime")]
+        public DateTime? PayDate { get; set; }
         [Column("order_infor")]
         [StringLength(50)]
         public string OrderInfor { get; set; }
-        [Required]
         [Column("order_type")]
         [StringLength(10)]
         public string OrderType { get; set; }
-        [Required]
         [Column("txn_ref")]
-        [StringLength(10)]
-        public string TxnRef { get; set; }
+        public long TxnRef { get; set; }
+        [Required]
         [Column("wallet_id")]
         public int WalletId { get; set; }
-        [Column("gateway_id")]
-        public int GatewayId { get; set; }
-        [Required]
         [Column("tmn_code")]
-        [StringLength(10)]
+        [StringLength(20)]
         public string TmnCode { get; set; }
         [Column("current_blance")]
-        public int CurrentBlance { get; set; }
+        public int? CurrentBlance { get; set; }
         [Column("new_balance")]
-        public int NewBalance { get; set; }
+        public int? NewBalance { get; set; }
+        [Column("bank_code")]
+        [StringLength(50)]
+        public string BankCode { get; set; }
+        [Column("bank_tran_no")]
+        [StringLength(50)]
+        public string BankTranNo { get; set; }
+        [Column("card_type")]
+        [StringLength(10)]
+        public string CardType { get; set; }
+        [Column("status")]
+        public bool Status { get; set; }
 
-        [ForeignKey(nameof(GatewayId))]
-        [InverseProperty("TransactionDeposits")]
-        public virtual Gateway Gateway { get; set; }
         [ForeignKey(nameof(WalletId))]
         [InverseProperty("TransactionDeposits")]
         public virtual Wallet Wallet { get; set; }

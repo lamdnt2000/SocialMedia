@@ -5,7 +5,9 @@ using DataAccess;
 using DataAccess.Entities;
 using DataAccess.Models.BranModel;
 using DataAccess.Models.ChannelCrawlModel;
+using DataAccess.Models.ChannelCrawlModel.FacebookStatistic;
 using DataAccess.Models.Pagination;
+using DataAccess.Models.ReactionModel;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -102,7 +104,7 @@ namespace Business.Repository.ChannelCrawlRepo
 
             DateTime dateFrom = filter.CreatedTime.Min.Value;
             DateTime dateTo = filter.CreatedTime.Max.Value.AddDays(1);
-            var channel = await context.ChannelCrawls.Where(c => c.Id == filter.Id)
+            var channel = await context.ChannelCrawls.Where(c => (filter.Platform > 0 ? c.PlatformId == filter.Platform : true) && (c.Username == filter.Username || c.Cid == filter.Username))
                 .Select(c => new ChannelStatistic()
 
 
@@ -117,19 +119,12 @@ namespace Business.Repository.ChannelCrawlRepo
                     PostCrawls = c.PostCrawls.Where(p => p.CreatedTime >= dateFrom && p.CreatedTime < dateTo).Select(p =>
                         new PostCrawl()
                         {
-                            Pid = p.Pid,
-                            Body = p.Body,
-                            CreatedDate = p.CreatedDate,
-                            UpdateDate = p.UpdateDate,
-                            Description = p.Description,
+                            Pid = p.Pid,                       
                             CreatedTime = p.CreatedTime,
                             PostType = p.PostType,
-                            Status = p.Status,
-                            Title = p.Title,
                             Reactions = p.Reactions.Select(r => new Reaction()
                             {
                                 Count = r.Count,
-                                ReactionTypeId = r.ReactionTypeId,
                                 ReactionType = r.ReactionType,
                             }).ToList()
 
@@ -151,6 +146,66 @@ namespace Business.Repository.ChannelCrawlRepo
 
 
             return channel;
+
+
+        }
+        public async Task<List<ChannelStatistic>> FilterChannels(List<string> userIds, ChannelFilter filter)
+        {
+
+            DateTime dateFrom = filter.CreatedTime.Min.Value;
+            DateTime dateTo = filter.CreatedTime.Max.Value.AddDays(1);
+            List<ChannelStatistic> channels = new List<ChannelStatistic>();
+            
+            foreach (string userId in userIds)
+            {
+                var channel = await context.ChannelCrawls
+                .Where(c => (filter.Platform > 0 ? c.PlatformId == filter.Platform : true) && c.Username== userId)
+                .Select(c => new ChannelStatistic()
+
+
+                {
+                    Cid = c.Cid,
+                    Id = c.Id,
+                    Location = c.Location.Name,
+                    IsVerify = c.IsVerify,
+                    Name = c.Name,
+                    Organization = c.Organization.Name,
+                    Platform = c.Platform.Name,
+                    PostCrawls = c.PostCrawls.Where(p => p.CreatedTime >= dateFrom && p.CreatedTime < dateTo).Select(p =>
+                        new PostCrawl()
+                        {
+                            Pid = p.Pid,
+                            Body = p.Body,
+                            Description = p.Description,
+                            CreatedTime = p.CreatedTime,
+                            PostType = p.PostType,
+                            Status = p.Status,
+                            Title = p.Title,
+                            Reactions = p.Reactions.Select(r => new Reaction()
+                            {
+                                Count = r.Count,
+                                ReactionTypeId = r.ReactionTypeId,
+                                ReactionType = r.ReactionType,
+                            }).ToList()
+
+                        }).ToList(),
+                    Status = c.Status,
+                    UpdateDate = c.UpdateDate.Value,
+                    CreatedTime = c.CreatedTime.Value,
+                    Bio = c.Bio,
+                    AvatarUrl = c.AvatarUrl,
+                    BannerUrl = c.BannerUrl,
+                    Url = c.Url,
+                    PlatformId = c.PlatformId,
+                    Username = c.Username,
+                    ChannelRecords = c.ChannelRecords,
+                    Categories = c.ChannelCategories.Select(x => x.Category.Name).ToList()
+                }).FirstOrDefaultAsync();
+                channels.Add(channel);
+            }
+            
+
+            return channels;
 
 
         }
@@ -202,13 +257,335 @@ namespace Business.Repository.ChannelCrawlRepo
             var pageSize = paging.PerPage;
             var totalPage = Math.Ceiling((decimal)totalItem / pageSize);
             var result = context.ChannelCrawls.ApplyFilter(paging).Include(c => c.Organization).
-                Include(c => c.Platform).Include(c=> c.ChannelCategories).ThenInclude(c=>c.Category).ToList();
+                Include(c => c.Platform).Include(c => c.ChannelCategories).ThenInclude(c => c.Category).ToList();
             return new PaginationList<ChannelCrawl>
             {
                 CurrentPage = currentPage,
                 PageSize = pageSize,
                 TotalPage = (int)totalPage,
                 Items = result
+            };
+        }
+
+        public async Task<Dictionary<string,object>> FilterTopPostFacebookChannel(int id)
+        {
+
+            var topLike = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
+
+                    Reactions = c.Reactions
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "totalLike")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            var topComment = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
+                    Reactions = c.Reactions
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "comment")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            var topShare = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                        Body = c.Body,
+                        CreatedDate = c.CreatedDate,
+                        UpdateDate = c.UpdateDate,
+                        Description = c.Description,
+                        CreatedTime = c.CreatedTime,
+                        PostType = c.PostType,
+                        Status = c.Status,
+                        Title = c.Title,
+
+                    Reactions = c.Reactions
+
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "share")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            return new Dictionary<string, object>() {
+                {"like", topLike },
+                {"comment",topComment },
+                {"share",topShare } };
+        }
+
+        public async Task<Dictionary<string, object>> FilterTopPostTiktokChannel(int id)
+        {
+            var topHeart = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
+
+                    Reactions = c.Reactions
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "diggCount")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            var topView = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
+
+                    Reactions = c.Reactions
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "playCount")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            var topShare = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
+
+                    Reactions = c.Reactions
+
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "shareCount")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            var topComment = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
+
+                    Reactions = c.Reactions
+
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "commentCount")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            return new Dictionary<string, object>() {
+                {"heart", topHeart },
+                {"comment",topComment },
+                {"share",topShare },
+                {"view",topView } };
+        }
+
+        public async Task<Dictionary<string, object>> FilterTopPostYoutubeChannel(int id)
+        {
+            var topLike = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
+                    Reactions = c.Reactions
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "reactionLike")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            var topView = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
+
+                    Reactions = c.Reactions
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "reactionView")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            var topComment = await context.PostCrawls.Where(x => x.ChannelId == id)
+                .Select(c => new
+                {
+                    Pid = c.Pid,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
+                    Reactions = c.Reactions
+
+                    .Select(r => new TopPostReaction()
+                    {
+                        Count = r.Count,
+                        ReactionName = r.ReactionType.Name
+                    }).ToList()
+                }
+                ).OrderByDescending(c =>
+                c.Reactions.Where(x => x.ReactionName == "reactionComment")
+                .Select(x => x.Count)
+                .OrderByDescending(x => x)
+                .FirstOrDefault())
+                .Take(10).ToListAsync();
+            return new Dictionary<string, object>() {
+                {"like", topLike },
+                {"view",topView },
+                {"comment",topComment } };
+        }
+
+        public async Task<object> FilterTopPost(int id)
+        {
+            var channel =  await context.ChannelCrawls.Where(c => c.Id == id)
+               .Select(c => new ChannelStatistic()
+               {
+                   Id = c.Id,
+                   PlatformId = c.PlatformId, 
+               })
+               .FirstOrDefaultAsync();
+            if (channel == null)
+            {
+                return null;
+            }
+            Dictionary<string, object> data = null;
+            switch (channel.PlatformId)
+            {
+                case 1:
+                    data = await FilterTopPostYoutubeChannel(id);
+                    break;
+                case 2:
+                    data =await FilterTopPostFacebookChannel(id);
+                    break;
+                case 3:
+                    data = await FilterTopPostTiktokChannel(id);
+                    break;
+                default:
+                    return null;
+
+            }
+            return new
+            {
+                data
             };
         }
     }

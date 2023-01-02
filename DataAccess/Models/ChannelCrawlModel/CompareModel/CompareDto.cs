@@ -6,12 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.ChannelCrawlModel
+namespace DataAccess.Models.ChannelCrawlModel.CompareModel
 {
-    public class ChannelFilter: FilterBase
+    public class CompareDto
     {
         [Required]
-        public string Username { get; set; }
+        public string UserIdOne { get; set; }
+        [Required]
+        public string UserIdTwo { get; set; }
         [Required]
         public int Platform { get; set; }
         [Required]

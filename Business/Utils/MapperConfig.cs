@@ -16,7 +16,9 @@ using DataAccess.Models.PostCrawlModel;
 using DataAccess.Models.ReactionModel;
 using DataAccess.Models.ReactionTypeModel;
 using DataAccess.Models.Role;
+using DataAccess.Models.TransectionDepositModel;
 using DataAccess.Models.WalletModel;
+using DataAccess.Models.WatchlistModel;
 using System.Linq;
 
 namespace Business.Utils
@@ -96,8 +98,10 @@ namespace Business.Utils
 
 
                 cfg.CreateMap<Wallet, WalletDto>().ReverseMap();
-                cfg.CreateMap<Wallet, InsertWalletDto>().ReverseMap();
-                cfg.CreateMap<Wallet, UpdateWalletDto>().ReverseMap();
+                cfg.CreateMap<TransactionDeposit, TransactionDepositDto>().ReverseMap();
+
+                cfg.CreateMap<Watchlist, WatchlistDto>().ReverseMap();
+
 
 
             });

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+using JsonIgnoreAttribute = Newtonsoft.Json.JsonIgnoreAttribute;
 
 namespace DataAccess.Models.ChannelRecordModel
 {
@@ -15,13 +11,13 @@ namespace DataAccess.Models.ChannelRecordModel
         public long TotalFollower { get; set; }
         [Required]
         public long TotalLike { get; set; }
-   
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public long? TotalShare { get; set; }
         [Required]
         public long TotalComment { get; set; }
         [Required]
         public long TotalPost { get; set; }
-        
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public long? TotalView { get; set; }
 
         [Required]

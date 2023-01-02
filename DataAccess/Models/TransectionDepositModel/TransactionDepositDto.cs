@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.TransectionDepositModel
 {
-    public class TransactionDepositDto: InsertTransactionDepositDto
+    public class TransactionDepositDto
     {
         public int Id { get; set; }
+        public long TxnRef { get; set; }
+        public DateTime PayDate { get; set; }
+        public int Amount { get; set; }
+        public bool Status { get; set; }
+        
     }
 }

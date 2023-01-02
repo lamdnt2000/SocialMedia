@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.GatewayModel
+namespace DataAccess.Models.ChannelCrawlModel.CompareModel
 {
-    public class UpdateGatewayDto: InsertGatewayDto
+    public class TiktokCompareDto
     {
     }
 }

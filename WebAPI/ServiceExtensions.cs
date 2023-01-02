@@ -33,13 +33,15 @@ using Business.Service.ChannelCrawlService;
 using Business.Repository.ChannelRecordRepo;
 using Business.Repository.PostRepo;
 using Business.Repository.ReactionRepo;
-using Business.Config;
-using Business.Constants;
-using System;
 using CorePush.Google;
 using CorePush.Interfaces;
 using Business.ScheduleService;
-using System.Threading.Tasks;
+using Business.Service.WatchlistService;
+using Business.Repository.WatchlistRepo;
+using Business.Service.WalletService;
+using Business.Repository.WalletRepo;
+using Business.Repository.TransactionDepositRepo;
+using Business.Service.TransactionDepositService;
 
 namespace API
 {
@@ -52,7 +54,13 @@ namespace API
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+            
+            services.AddScoped<IWalletService, WalletService>();
+            services.AddScoped<IWalletRepository, WalletRepository>();
 
+            services.AddScoped<ITransactionDepositRepository, TransactionDepositRepository>();
+            services.AddScoped<ITransactionDepositService, TransactionDepositService>();
+            
             services.AddScoped<IAuthService, AuthService>();
 
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
@@ -85,6 +93,9 @@ namespace API
             services.AddScoped<IReactionRepository, ReactionRepository>();
             services.AddTransient<IScheduleSocial, ScheduleSocial>();
             services.AddScoped<IFcmSender, FcmSender>();
+
+            services.AddScoped<IWatchlistRepository, WatchlistRepository>();
+            services.AddScoped<IWatchlistService, WatchlistService>();
             
 
 

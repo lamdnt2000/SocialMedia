@@ -12,6 +12,6 @@ namespace Business.Repository.WalletRepo
 {
     public interface IWalletRepository : IGenericRepository<Wallet>
     {
-        Task<PaginationList<Wallet>> SearchPlatformAsync(WalletPaging paging);
+       
     }
 }

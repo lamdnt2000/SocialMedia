@@ -3,16 +3,17 @@ using DataAccess.Entities;
 using DataAccess.Models.BranModel;
 using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.Pagination;
+using DataAccess.Models.WatchlistModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Repository.BrandRepo
+namespace Business.Repository.WatchlistRepo
 {
-    public interface IBrandRepository : IGenericRepository<Brand>
+    public interface IWatchlistRepository: IGenericRepository<Watchlist>
     {
-        Task<PaginationList<Brand>> SearchAsync(BrandPaging paging);
+        Task<PaginationList<Watchlist>> SearchAsync(string name, int platformId, WatchlistPaging paging, int userId);
     }
 }

@@ -20,7 +20,7 @@ namespace Business.Repository.GenericRepo
             this.dbSet = context.Set<T>();
         }
 
-        public async Task<int> Delete(object id)
+        public async Task<int> Delete(params object[] id)
         {
             try
             {

@@ -26,7 +26,6 @@ namespace DataAccess
         public virtual DbSet<ChannelCategory> ChannelCategories { get; set; }
         public virtual DbSet<ChannelCrawl> ChannelCrawls { get; set; }
         public virtual DbSet<ChannelRecord> ChannelRecords { get; set; }
-        public virtual DbSet<Gateway> Gateways { get; set; }
         public virtual DbSet<Hashtag> Hashtags { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<Offer> Offers { get; set; }
@@ -42,6 +41,7 @@ namespace DataAccess
         public virtual DbSet<TransactionDeposit> TransactionDeposits { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Wallet> Wallets { get; set; }
+        public virtual DbSet<Watchlist> Watchlists { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -109,18 +109,6 @@ namespace DataAccess
                     .HasConstraintName("FK_channel_record_channel_crawl");
             });
 
-            modelBuilder.Entity<Gateway>(entity =>
-            {
-                entity.Property(e => e.AccessKey).IsUnicode(false);
-
-                entity.Property(e => e.BankCode).IsUnicode(false);
-
-                entity.Property(e => e.BankTransNo).IsUnicode(false);
-
-                entity.Property(e => e.SecretKey).IsUnicode(false);
-
-                entity.Property(e => e.Type).IsFixedLength();
-            });
 
             modelBuilder.Entity<Location>(entity =>
             {
@@ -212,17 +200,9 @@ namespace DataAccess
 
             modelBuilder.Entity<TransactionDeposit>(entity =>
             {
-                entity.Property(e => e.CardType)
-                    .IsUnicode(false)
-                    .IsFixedLength();
+                entity.Property(e => e.BankCode).IsUnicode(false);
 
-                entity.Property(e => e.Code)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.Locale)
-                    .IsUnicode(false)
-                    .IsFixedLength();
+                entity.Property(e => e.CardType).IsUnicode(false);
 
                 entity.Property(e => e.OrderInfor)
                     .IsUnicode(false)
@@ -232,30 +212,20 @@ namespace DataAccess
                     .IsUnicode(false)
                     .IsFixedLength();
 
+                entity.Property(e => e.ResponseCode)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
                 entity.Property(e => e.TmnCode)
                     .IsUnicode(false)
                     .IsFixedLength();
 
-                entity.Property(e => e.TransNoId)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.TxnRef)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.HasOne(d => d.Gateway)
-                    .WithMany(p => p.TransactionDeposits)
-                    .HasForeignKey(d => d.GatewayId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_transaction_deposit_gateway");
-
                 entity.HasOne(d => d.Wallet)
                     .WithMany(p => p.TransactionDeposits)
                     .HasForeignKey(d => d.WalletId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_transaction_deposit_wallet");
             });
+
 
             modelBuilder.Entity<User>(entity =>
             {
@@ -282,16 +252,35 @@ namespace DataAccess
 
             modelBuilder.Entity<Wallet>(entity =>
             {
-                entity.Property(e => e.Currency).IsFixedLength();
+                entity.HasIndex(e => e.UserId)
+                    .HasName("FK_user_id_wallet")
+                    .IsUnique();
 
-                entity.Property(e => e.Status).IsFixedLength();
-
-                entity.HasOne(d => d.Userr)
-                    .WithMany(p => p.Wallets)
-                    .HasForeignKey(d => d.UserrId)
+            
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.Wallet)
+                    .HasForeignKey<Wallet>(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_wallet_user");
             });
+
+            modelBuilder.Entity<Watchlist>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.ChannelId });
+
+                entity.HasOne(d => d.Channel)
+                    .WithMany(p => p.Watchlists)
+                    .HasForeignKey(d => d.ChannelId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_watchlist_channel_crawl");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Watchlists)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_watchlist_user");
+            });
+
 
             OnModelCreatingPartial(modelBuilder);
         }

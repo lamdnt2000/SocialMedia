@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models.TransectionDepositModel
+namespace DataAccess.Models.ChannelCrawlModel
 {
-    public class UpdateTransactionDepositDto : InsertTransactionDepositDto
+    public class BaseFieldStatistic
     {
+        public DateTime Date { get; set; }
     }
 }

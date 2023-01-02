@@ -12,7 +12,7 @@ namespace DataAccess.Entities
     {
         public User()
         {
-            Wallets = new HashSet<Wallet>();
+            Watchlists = new HashSet<Watchlist>();
         }
 
         [Key]
@@ -59,7 +59,9 @@ namespace DataAccess.Entities
         [ForeignKey(nameof(RoleId))]
         [InverseProperty("Users")]
         public virtual Role Role { get; set; }
-        [InverseProperty(nameof(Wallet.Userr))]
-        public virtual ICollection<Wallet> Wallets { get; set; }
+        [InverseProperty("User")]
+        public virtual Wallet Wallet { get; set; }
+        [InverseProperty(nameof(Watchlist.User))]
+        public virtual ICollection<Watchlist> Watchlists { get; set; }
     }
 }

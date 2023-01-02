@@ -19,6 +19,10 @@ using DataAccess.Models.ChannelCrawlModel.YoutubeStatistic;
 using DataAccess.Models.ChannelCrawlModel.TiktokStatistic;
 using DataAccess.Models.Pagination;
 using DataAccess.Models.OrganizationModel;
+using DataAccess.Models.ChannelCrawlModel.CompareModel;
+using System.Threading.Channels;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Reflection;
 
 namespace Business.Service.ChannelCrawlService
 {
@@ -447,7 +451,7 @@ namespace Business.Service.ChannelCrawlService
 
         public TiktokStatisticDto TiktokStatistic(ChannelStatistic channel, ChannelFilter filter)
         {
-           
+
             DateTime dateFrom = filter.CreatedTime.Min.Value;
             DateTime dateTo = filter.CreatedTime.Max.Value;
             double diff = DateUtil.DiffDate(dateFrom, dateTo);
@@ -556,7 +560,7 @@ namespace Business.Service.ChannelCrawlService
 
                     statisticsInWeek.Add(field);
 
-                }   
+                }
                 result.StatisticFields = statistics;
                 result.StatisticFieldsInWeek = statisticsInWeek;
             }
@@ -576,7 +580,7 @@ namespace Business.Service.ChannelCrawlService
             return result;
         }
 
-        public async Task<int> FindChannelByPlatformAndUserId(string url)
+        public async Task<string> FindChannelByPlatformAndUserId(string url)
         {
             var result = RegexPlatformAndUser(url);
             if (result.Item1 == null)
@@ -589,11 +593,11 @@ namespace Business.Service.ChannelCrawlService
             if (channel == null)
             {
 
-                return 0;
+                return "";
             }
             else
             {
-                return channel.Id;
+                return channel.Username;
             }
         }
 
@@ -618,11 +622,159 @@ namespace Business.Service.ChannelCrawlService
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
             var channel = MapperConfig.GetMapper().Map<ChannelCrawl>(dto);
-         
+
             await _channelCrawlRepository.ValidateChannelAsync(channel);
 
             await _channelCrawlRepository.Update(channel);
             return channel.Id;
+        }
+
+        public async Task<object> CompareChannel(CompareDto dto)
+        {
+            ChannelFilter channelFilter = new ChannelFilter() { Platform = dto.Platform, CreatedTime = dto.CreatedTime };
+            List<string> userIds = new List<string>() { dto.UserIdOne, dto.UserIdTwo };
+            var result = await _channelCrawlRepository.FilterChannels(userIds, channelFilter);
+            if (result.Count == 0)
+            {
+                throw new Exception("No channel found on data. Please request view data first");
+            }
+            else if (result.Count == 1)
+            {
+                throw new Exception("Only " + result[0].Username + " channel found. Please request orther first to compare data");
+            }
+            else
+            {
+                int platform = dto.Platform;
+                var data = new List<object>();
+
+                var fields = new Object();
+                switch (platform)
+                {
+
+                    case (int)EnumConst.PlatFormEnum.FACEBOOK:
+
+                        data = new List<object>() { FacebookStatistic(result[0], channelFilter), FacebookStatistic(result[1], channelFilter) };
+
+                        fields = CreateCompareStatisticField(((FacebookStatisticDto)data[0]).StatisticFields, ((FacebookStatisticDto)data[1]).StatisticFields, dto);
+                        break;
+                    case (int)EnumConst.PlatFormEnum.YOUTUBE:
+                        data = new List<object>() { YoutubeStatistic(result[0], channelFilter), YoutubeStatistic(result[1], channelFilter) };
+                        fields = CreateCompareStatisticField(((YoutubeStatisticDto)data[0]).StatisticFields, ((YoutubeStatisticDto)data[1]).StatisticFields, dto);
+
+                        break;
+                    case (int)EnumConst.PlatFormEnum.TIKTOK:
+                        data = new List<object>() { TiktokStatistic(result[0], channelFilter), TiktokStatistic(result[1], channelFilter) };
+                        fields = CreateCompareStatisticField(((TiktokStatisticDto)data[0]).StatisticFields, ((TiktokStatisticDto)data[1]).StatisticFields, dto);
+
+                        break;
+                    default: return null;
+
+                }
+                var informations = MapperConfig.GetMapper().Map<List<ChannelStatisticDto>>(data);
+                return new
+                {
+                    left = informations[0],
+                    right = informations[1]
+                    ,
+                    ChannelRecord = CreateChannelRecordCompare(informations[0], informations[1])
+                    ,
+                    StatisticFiled = fields
+                };
+            }
+
+        }
+
+        public async Task<object> StatisticTopPost(int id)
+        {
+            return await _channelCrawlRepository.FilterTopPost(id);
+        }
+
+        private List<Dictionary<string, object>> CreateChannelRecordCompare(ChannelStatisticDto userLeft, ChannelStatisticDto userRight)
+        {
+            var fieldValues = typeof(InsertChannelRecordDto).GetProperties().Select(f => f.Name).ToList();
+            var usernameLeft = userLeft.Username;
+            var usernameRight = userRight.Username;
+            var lastRecordLeft = userLeft.ChannelRecords.Last();
+            var lastRecordRight = userRight.ChannelRecords.Last();
+            var records = new List<Dictionary<string, object>>();
+
+            foreach (var field in fieldValues)
+            {
+                if (!field.Equals("Status") && !field.Equals("ChannelId") && !field.Equals("CreatedDate") && !field.Equals("UpdateDate"))
+                {
+                    var dataLeft = lastRecordLeft.GetType().GetProperty(field).GetValue(lastRecordLeft, null);
+                    var dataRight = lastRecordRight.GetType().GetProperty(field).GetValue(lastRecordRight, null);
+                    if (dataLeft != null || dataRight != null)
+                    {
+
+                        Dictionary<string, object> record = new Dictionary<string, object>();
+                        record.Add("Name", field);
+                        record.Add("UserLeft", dataLeft);
+                        record.Add("UserRight", dataRight);
+                        records.Add(record);
+
+                    }
+                }
+            }
+            return records;
+        }
+
+        private List<Dictionary<string, object>> CreateCompareStatisticField<T>(List<T> userLeft, List<T> userRight, CompareDto dto) where T : BaseFieldStatistic
+        {
+            var fieldValues = new List<string>();
+
+            if (userLeft is List<FacebookStatisticField>)
+            {
+                fieldValues = typeof(FacebookStatisticField).GetProperties().Select(f => f.Name).ToList();
+
+            }
+            else if (userLeft is List<YoutubeStatisticField>)
+            {
+                fieldValues = typeof(YoutubeStatisticField).GetProperties().Select(f => f.Name).ToList();
+
+            }
+            else if (userLeft is List<TiktokStatisticField>)
+            {
+                fieldValues = typeof(TiktokStatisticField).GetProperties().Select(f => f.Name).ToList();
+            }
+
+            var records = new List<Dictionary<string, object>>();
+            var from = dto.CreatedTime.Min.GetValueOrDefault();
+            var to = dto.CreatedTime.Max.GetValueOrDefault();
+            var fieldsLeft = userLeft.ToDictionary(x => x.Date, x => x);
+            var fieldsRight = userRight.ToDictionary(x => x.Date, x => x);
+            for (var day = from.Date; day < to.Date; day = day.AddDays(1))
+            {
+                var field1 = fieldsLeft.ContainsKey(day) ? fieldsLeft[day] : null;
+                var field2 = fieldsRight.ContainsKey(day) ? fieldsRight[day] : null;
+                Dictionary<string, object> statisticField = new Dictionary<string, object>();
+                bool flag = true;
+                foreach (var field in fieldValues)
+                {
+                    if (!field.Equals("Date"))
+                    {
+                        if (field1 != null)
+                        {
+                            statisticField.Add(field + "UserLeft", field1.GetType().GetProperty(field).GetValue(field1, null));
+                            flag = false;
+                        }
+
+                        if (field2 != null)
+                        {
+                            statisticField.Add(field + "UserRight", field2.GetType().GetProperty(field).GetValue(field2, null));
+                            flag = false;
+                        }
+                    }
+
+                }
+                if (!flag)
+                {
+                    statisticField.Add("Date", day);
+                    records.Add(statisticField);
+                }
+            }
+
+            return records;
         }
     }
 }

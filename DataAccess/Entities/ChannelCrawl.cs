@@ -15,6 +15,7 @@ namespace DataAccess.Entities
             ChannelCategories = new HashSet<ChannelCategory>();
             ChannelRecords = new HashSet<ChannelRecord>();
             PostCrawls = new HashSet<PostCrawl>();
+            Watchlists = new HashSet<Watchlist>();
         }
 
         [Key]
@@ -76,5 +77,7 @@ namespace DataAccess.Entities
         public virtual ICollection<ChannelRecord> ChannelRecords { get; set; }
         [InverseProperty(nameof(PostCrawl.Channel))]
         public virtual ICollection<PostCrawl> PostCrawls { get; set; }
+        [InverseProperty(nameof(Watchlist.Channel))]
+        public virtual ICollection<Watchlist> Watchlists { get; set; }
     }
 }

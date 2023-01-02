@@ -19,20 +19,6 @@ namespace Business.Repository.WalletRepo
         {
         }
 
-        public async Task<PaginationList<Wallet>> SearchPlatformAsync(WalletPaging paging)
-        {
-            var totalItem = await context.Wallets.ApplyFilterWithoutPagination(paging).CountAsync();
-            var currentPage = paging.Page;
-            var pageSize = paging.PerPage;
-            var totalPage = Math.Ceiling((decimal)totalItem / pageSize);
-            var result = context.Wallets.ApplyFilter(paging).ToList();
-            return new PaginationList<Wallet>
-            {
-                CurrentPage = currentPage,
-                PageSize = pageSize,
-                TotalPage = (int)totalPage,
-                Items = result
-            };
-        }
+        
     }
 }
