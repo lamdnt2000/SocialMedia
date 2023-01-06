@@ -13,6 +13,7 @@ namespace DataAccess.Entities
 
         public Wallet()
         {
+            Subscriptions = new HashSet<Subscription>();
             TransactionDeposits = new HashSet<TransactionDeposit>();
         }
         [Key]
@@ -33,6 +34,8 @@ namespace DataAccess.Entities
         [ForeignKey(nameof(UserId))]
         [InverseProperty("Wallet")]
         public virtual User User { get; set; }
+        [InverseProperty(nameof(Subscription.Wallet))]
+        public virtual ICollection<Subscription> Subscriptions { get; set; }
         [InverseProperty(nameof(TransactionDeposit.Wallet))]
         public virtual ICollection<TransactionDeposit> TransactionDeposits { get; set; }
     }

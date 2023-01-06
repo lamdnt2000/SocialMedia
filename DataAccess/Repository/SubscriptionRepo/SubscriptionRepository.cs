@@ -1,6 +1,11 @@
-﻿using Business.Repository.GenericRepo;
+﻿using AutoFilterer.Extensions;
+using Business.Repository.GenericRepo;
 using DataAccess;
 using DataAccess.Entities;
+using DataAccess.Models.Pagination;
+using DataAccess.Models.SubscriptionModel;
+using DataAccess.Models.TransectionDepositModel;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,21 +20,20 @@ namespace Business.Repository.SubscriptionRepo
         {
         }
 
-        public bool ValidateCSubscription(Subscription entity)
+        public async Task<PaginationList<Subscription>> SearchAsync(SubscriptionPaging paging)
         {
-            if (!context.Wallets.Any(x => x.Id == entity.WalletId))
+            var totalItem = await context.Subscriptions.ApplyFilterWithoutPagination(paging).CountAsync();
+            var currentPage = paging.Page;
+            var pageSize = paging.PerPage;
+            var totalPage = Math.Ceiling((decimal)totalItem / pageSize);
+            var result = context.Subscriptions.ApplyFilter(paging).ToList();
+            return new PaginationList<Subscription>
             {
-                throw new Exception("Wallet not exist!");
-            }
-            if (!context.Offers.Any(x => x.Id == entity.OfferId))
-            {
-                throw new Exception("Offer not exist!");
-            }
-            if (!context.Packages.Any(x => x.Id == entity.PackageId))
-            {
-                throw new Exception("Package not exist!");
-            }
-            return true;
+                CurrentPage = currentPage,
+                PageSize = pageSize,
+                TotalPage = (int)totalPage,
+                Items = result
+            };
         }
     }
 }

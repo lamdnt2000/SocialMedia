@@ -49,5 +49,12 @@ namespace Business.Utils
             DateTime before = DateTime.Now.AddYears(-range);
             return (before, now);
         }
+
+        public static DateTime GenerateDayInRange(int range)
+        {
+            
+            return DateTime.Now.AddDays(range);
+           
+        }
     }
 }

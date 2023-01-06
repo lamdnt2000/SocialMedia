@@ -10,8 +10,8 @@ namespace Business.Service.SubscriptionService
 {
     public interface ISubscriptionService
     {
-        Task<int> Insert(InsertSubscriptionDto dto);
-        Task<int> Update(int id, UpdateSubscriptionDto dto);
+        Task<int> Insert(PlanPaymentDto dto);
+        
         Task<bool> Delete(int id);
         Task<SubscriptionDto> GetById(int id);
         Task<PaginationList<SubscriptionDto>> SearchAsync(SubscriptionPaging paging);

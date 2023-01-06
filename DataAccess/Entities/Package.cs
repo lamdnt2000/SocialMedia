@@ -8,8 +8,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("package")]
-    public partial class Package
+    public partial class Package:BaseEntity
     {
+        public Package()
+        {
+            Features = new HashSet<Feature>();
+            Plans = new HashSet<Plan>();
+        }
+
         [Key]
         [Column("id")]
         public int Id { get; set; }
@@ -17,16 +23,14 @@ namespace DataAccess.Entities
         [Column("name")]
         [StringLength(255)]
         public string Name { get; set; }
-        [Required]
         [Column("description")]
         public string Description { get; set; }
-        [Column("price")]
-        public double Price { get; set; }
-        [Column("created_at", TypeName = "datetime")]
-        public DateTime CreatedAt { get; set; }
-        [Column("update_at", TypeName = "datetime")]
-        public DateTime? UpdateAt { get; set; }
         [Column("status")]
         public bool Status { get; set; }
+
+        [InverseProperty(nameof(Feature.Package))]
+        public virtual ICollection<Feature> Features { get; set; }
+        [InverseProperty(nameof(Plan.Package))]
+        public virtual ICollection<Plan> Plans { get; set; }
     }
 }

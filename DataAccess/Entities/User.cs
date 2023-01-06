@@ -60,6 +60,8 @@ namespace DataAccess.Entities
         [InverseProperty("Users")]
         public virtual Role Role { get; set; }
         [InverseProperty("User")]
+        public virtual UserType UserType { get; set; }
+        [InverseProperty("User")]
         public virtual Wallet Wallet { get; set; }
         [InverseProperty(nameof(Watchlist.User))]
         public virtual ICollection<Watchlist> Watchlists { get; set; }

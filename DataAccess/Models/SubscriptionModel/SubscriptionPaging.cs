@@ -10,10 +10,7 @@ namespace DataAccess.Models.SubscriptionModel
     public class SubscriptionPaging : PaginationFilterBase
     {
         public int WalletId { get; set; }
-        public int PackageId { get; set; }
-        public int OfferId { get; set; }
-        public int UserId { get; set; }
-        public Range<DateTime> Offset { get; set; }
-        public int Status { get; set; }
+        //public Range<DateTime> CreatedDate { get; set; }
+       
     }
 }

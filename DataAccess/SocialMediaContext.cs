@@ -28,7 +28,6 @@ namespace DataAccess
         public virtual DbSet<ChannelRecord> ChannelRecords { get; set; }
         public virtual DbSet<Hashtag> Hashtags { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
-        public virtual DbSet<Offer> Offers { get; set; }
         public virtual DbSet<Organization> Organizations { get; set; }
         public virtual DbSet<Package> Packages { get; set; }
         public virtual DbSet<Platform> Platforms { get; set; }
@@ -42,6 +41,12 @@ namespace DataAccess
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Wallet> Wallets { get; set; }
         public virtual DbSet<Watchlist> Watchlists { get; set; }
+        public virtual DbSet<Feature> Features { get; set; }
+        public virtual DbSet<FeaturePlan> FeaturePlans { get; set; }
+        public virtual DbSet<Plan> Plans { get; set; }
+        public virtual DbSet<PlanPrice> PlanPrices { get; set; }
+        public virtual DbSet<UserType> UserTypes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -169,30 +174,55 @@ namespace DataAccess
                     .HasConstraintName("FK_reactiontype_platform");
             });
 
-            modelBuilder.Entity<Subscription>(entity =>
+            modelBuilder.Entity<Feature>(entity =>
             {
-                entity.HasNoKey();
-
-                entity.HasOne(d => d.Offer)
-                    .WithMany()
-                    .HasForeignKey(d => d.OfferId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_subscription_offer");
-
+                
                 entity.HasOne(d => d.Package)
-                    .WithMany()
+                    .WithMany(p => p.Features)
                     .HasForeignKey(d => d.PackageId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_subscription_package");
+                    .HasConstraintName("FK_feature_package");
+            });
 
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.UserId)
+            modelBuilder.Entity<Plan>(entity =>
+            {
+                entity.HasOne(d => d.Package)
+                    .WithMany(p => p.Plans)
+                    .HasForeignKey(d => d.PackageId)
+                    .HasConstraintName("FK_plan_package");
+            });
+
+            modelBuilder.Entity<FeaturePlan>(entity =>
+            {
+                entity.HasKey(e => new { e.PlanId, e.FeatureId });
+
+                
+                entity.HasOne(d => d.Feature)
+                    .WithMany(p => p.FeaturePlans)
+                    .HasForeignKey(d => d.FeatureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_subscription_user");
+                    .HasConstraintName("FK_feature_plan_feature");
 
+                entity.HasOne(d => d.Plan)
+                    .WithMany(p => p.FeaturePlans)
+                    .HasForeignKey(d => d.PlanId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_feature_plan_plan");
+            });
+
+            modelBuilder.Entity<PlanPrice>(entity =>
+            {
+               
+                entity.HasOne(d => d.Plan)
+                    .WithMany(p => p.PlanPrices)
+                    .HasForeignKey(d => d.PlanId)
+                    .HasConstraintName("FK_plan_price_plan");
+            });
+
+            modelBuilder.Entity<Subscription>(entity =>
+            {
                 entity.HasOne(d => d.Wallet)
-                    .WithMany()
+                    .WithMany(p => p.Subscriptions)
                     .HasForeignKey(d => d.WalletId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_subscription_wallet");
@@ -248,6 +278,19 @@ namespace DataAccess
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_user_role");
+            });
+
+            modelBuilder.Entity<UserType>(entity =>
+            {
+                entity.HasIndex(e => e.UserId)
+                    .HasName("FK_user_id_user_type")
+                    .IsUnique();
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.UserType)
+                    .HasForeignKey<UserType>(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_user_type_user");
             });
 
             modelBuilder.Entity<Wallet>(entity =>

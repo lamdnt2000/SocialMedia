@@ -3,9 +3,7 @@ using AutoFilterer.Extensions;
 using Business.Repository.GenericRepo;
 using DataAccess;
 using DataAccess.Entities;
-using DataAccess.Models.BranModel;
 using DataAccess.Models.ChannelCrawlModel;
-using DataAccess.Models.ChannelCrawlModel.FacebookStatistic;
 using DataAccess.Models.Pagination;
 using DataAccess.Models.ReactionModel;
 using Microsoft.EntityFrameworkCore;
@@ -37,14 +35,12 @@ namespace Business.Repository.ChannelCrawlRepo
                     entity.ChannelRecords.FirstOrDefault(x => x.ChannelId == entity.Id).Id = record.Id;
                 }
             }
-            var resultInfo = new Z.BulkOperations.ResultInfo();
-
+            
             await context.BulkMergeAsync(list, options =>
             {
                 options.IncludeGraph = true;
                 options.InsertIfNotExists = true;
                 options.UseRowsAffected = true;
-                options.ResultInfo = resultInfo;
                 options.IncludeGraphOperationBuilder = operation =>
                 {
                     if (operation is BulkOperation<ChannelCrawl> bulkChannelCraw)
@@ -95,7 +91,7 @@ namespace Business.Repository.ChannelCrawlRepo
                 };
 
             });
-            Console.WriteLine(resultInfo.RowsAffected);
+            
             return true;
         }
 

@@ -12,12 +12,12 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.PakageService
 {
-    public class PakageService : BaseService, IPakageService
+    public class PackageService : BaseService, IPackageService
     {
         private readonly IPackageRepository _packageRepository;
         private readonly string ClassName = typeof(Package).Name;
 
-        public PakageService(IHttpContextAccessor httpContextAccessor,
+        public PackageService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
             IPackageRepository packageRepository) : base(httpContextAccessor, userRepository)
         {
@@ -30,6 +30,7 @@ namespace Business.Service.PakageService
             if (platform != null)
             {
                 var result = await _packageRepository.Delete(id);
+                
                 return (result > 0);
             }
             else
@@ -44,13 +45,26 @@ namespace Business.Service.PakageService
             return MapperConfig.GetMapper().Map<PackageDto>(package);
         }
 
+        public async Task<PackageDto> GetPackageInclude(int id)
+        {
+            var package = await _packageRepository.Get(x => x.Id == id, new List<string>() { "Features"});
+            return MapperConfig.GetMapper().Map<PackageDto>(package);
+        }
+
+        public async Task<PackageDto> GetPlansOfPackage(int id)
+        {
+            return await _packageRepository.GetPlanOfPackage(id);
+            
+        }
+
         public async Task<int> Insert(InsertPakageDto dto)
         {
             var check = await SearchByName(dto.Name);
             if (check == null)
             {
                 var package = MapperConfig.GetMapper().Map<Package>(dto);
-                var result = await _packageRepository.Update(package);
+                package.Status = true;
+                var result = await _packageRepository.Insert(package);
                 return package.Id;
             }
             else

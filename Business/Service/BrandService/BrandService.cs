@@ -13,7 +13,7 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.BrandService
 {
-    public class BrandService : BaseService, IBrandService
+    public class BrandService :  IBrandService
     {
         private readonly IBrandRepository _brandRepository;
         private readonly IOrganizationRepository _organizationRepository;
@@ -21,10 +21,9 @@ namespace Business.Service.BrandService
         private readonly string ClassName = typeof(Brand).Name;
         private readonly string ReferClassName = typeof(Organization).Name;
 
-        public BrandService(IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository,
+        public BrandService(
             IBrandRepository brandRepository,
-            IOrganizationRepository organizationRepository) : base(httpContextAccessor, userRepository)
+            IOrganizationRepository organizationRepository) 
         {
             _brandRepository = brandRepository;
             _organizationRepository = organizationRepository;

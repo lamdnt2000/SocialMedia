@@ -42,6 +42,16 @@ using Business.Service.WalletService;
 using Business.Repository.WalletRepo;
 using Business.Repository.TransactionDepositRepo;
 using Business.Service.TransactionDepositService;
+using Business.Repository.PackageRepo;
+using Business.Service.PakageService;
+using Business.Service.FeatureService;
+using DataAccess.Repository.FeatureRepo;
+using DataAccess.Repository.PlanRepo;
+using Business.Service.PlanService;
+using DataAccess.Repository.FeaturePlanRepo;
+using Business.Repository.SubscriptionRepo;
+using Business.Service.SubscriptionService;
+using DataAccess.Repository.UserTypeRepo;
 
 namespace API
 {
@@ -54,13 +64,13 @@ namespace API
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
-            
+
             services.AddScoped<IWalletService, WalletService>();
             services.AddScoped<IWalletRepository, WalletRepository>();
 
             services.AddScoped<ITransactionDepositRepository, TransactionDepositRepository>();
             services.AddScoped<ITransactionDepositService, TransactionDepositService>();
-            
+
             services.AddScoped<IAuthService, AuthService>();
 
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
@@ -85,10 +95,10 @@ namespace API
             services.AddScoped<IChannelCrawlService, ChannelCrawlService>();
 
             services.AddScoped<IChannelRecordRepository, ChannelRecordRepository>();
-           
+
 
             services.AddScoped<IPostCrawlRepository, PostCrawlRepository>();
- 
+
 
             services.AddScoped<IReactionRepository, ReactionRepository>();
             services.AddTransient<IScheduleSocial, ScheduleSocial>();
@@ -96,7 +106,21 @@ namespace API
 
             services.AddScoped<IWatchlistRepository, WatchlistRepository>();
             services.AddScoped<IWatchlistService, WatchlistService>();
-            
+
+            services.AddScoped<IPackageRepository, PackageRepository>();
+            services.AddScoped<IPackageService, PackageService>();
+
+            services.AddScoped<IFeatureRepository, FeatureRepository>();
+            services.AddScoped<IFeatureService, FeatureService>();
+
+            services.AddScoped<IPlanRepository, PlanRepository>();
+            services.AddScoped<IPlanService, PlanService>();
+
+            services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddScoped<ISubscriptionService, SubscriptionService>();
+
+            services.AddScoped<IFeaturePlanRepository, FeaturePlanRepository>(); 
+            services.AddScoped<IUserTypeRepository, UserTypeRepository>();
 
 
         }
@@ -174,7 +198,7 @@ namespace API
                     ValidIssuer = configuration["Jwt:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
                 };
-                
+
             });
         }
 
@@ -198,7 +222,7 @@ namespace API
                     .AllowAnyHeader());
             });
         }
-     
+
 
         public static void ConfigureSwagger(this IServiceCollection services)
         {

@@ -17,6 +17,9 @@ using Business.Utils;
 using Firebase.Auth;
 using Business.Service.TransactionDepositService;
 using DataAccess.Models.TransectionDepositModel;
+using Microsoft.AspNet.SignalR.Messaging;
+using Business.Service.SubscriptionService;
+using DataAccess.Models.SubscriptionModel;
 
 namespace WebAPI.Controllers
 {
@@ -27,14 +30,17 @@ namespace WebAPI.Controllers
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
         private readonly IWalletService _walletService;
+        private readonly ISubscriptionService _subscriptionService;
         public UserController(IUserService userService, IAuthService authService, 
             IOptions<FirebaseMetadata> firebaseMetadata, 
             IWalletService walletService,
-            ITransactionDepositService transactionDepositService)
+            ITransactionDepositService transactionDepositService,
+            ISubscriptionService subscriptionService)
         {
             _userService = userService;
             _authService = authService;
             _walletService = walletService;
+            _subscriptionService = subscriptionService;
 
         }
 
@@ -211,6 +217,28 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _walletService.SearchTransaction(paging);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+        
+        [HttpGet("wallet/subscriptions")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> GetHistorySubscription([FromQuery]SubscriptionPaging paging)
+        {
+            try
+            {
+                var result = await _subscriptionService.SearchAsync(paging);
                 return JsonResponse(200, SUCCESS, result);
             }
             catch (Exception e)

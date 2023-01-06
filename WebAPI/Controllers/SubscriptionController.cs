@@ -77,9 +77,9 @@ namespace WebAPI.Controllers
             }
         }*/
 
-        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
         [HttpPost]
-        public async Task<IActionResult> InsertSubscription([FromForm] InsertSubscriptionDto dto)
+        public async Task<IActionResult> InsertSubscription([FromBody] PlanPaymentDto dto)
         {
             try
             {
@@ -103,55 +103,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSubscription(int id, [FromForm] UpdateSubscriptionDto dto)
-        {
-            try
-            {
-                var result = await _subscriptionService.Update(id, dto);
-                return JsonResponse(200, UPDATE_SUCCESS, new { id = result });
-            }
-            catch (Exception e)
-            {
-
-                if (e.Message.Contains(DUPLICATED))
-                {
-                    return JsonResponse(400, UPDATE_FAILED, e.Message);
-                }
-                if (e.Message.Contains(NOT_FOUND))
-                {
-                    return JsonResponse(400, UPDATE_FAILED, e.Message);
-                }
-                if (e.Message.Contains(NOT_EXIST))
-                {
-                    return JsonResponse(400, NOT_EXIST, e.Message);
-                }
-
-                return JsonResponse(401, UNAUTHORIZE, e.Message);
-
-            }
-        }
-
-        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSubscrtiptionById(int id)
-        {
-            try
-            {
-                var result = await _subscriptionService.Delete(id);
-                return JsonResponse(200, DELETE_SUCCESS, result);
-            }
-            catch (Exception e)
-            {
-
-                if (e.Message.Contains(NOT_FOUND))
-                {
-                    return JsonResponse(400, DELETE_FAILED, e.Message);
-                }
-                return JsonResponse(401, UNAUTHORIZE, e.Message);
-
-            }
-        }
+        
+       
     }
 }

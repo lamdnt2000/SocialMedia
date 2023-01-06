@@ -16,6 +16,6 @@ namespace DataAccess.Models.TransectionDepositModel
 
         public int WalletId { get; set; }
         
-        public bool Status { get; set; }
+        
     }
 }

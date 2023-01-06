@@ -13,5 +13,6 @@ namespace Business.Repository.PackageRepo
     public interface IPackageRepository : IGenericRepository<Package>
     {
         Task<PaginationList<Package>> SearchPackageAsync(PakagePaging paging);
+        Task<PackageDto> GetPlanOfPackage(int id);
     }
 }

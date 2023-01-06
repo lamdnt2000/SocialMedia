@@ -1,5 +1,8 @@
 ﻿using Business.Repository.GenericRepo;
 using DataAccess.Entities;
+using DataAccess.Models.Pagination;
+using DataAccess.Models.SubscriptionModel;
+using DataAccess.Models.TransectionDepositModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +13,6 @@ namespace Business.Repository.SubscriptionRepo
 {
     public interface ISubscriptionRepository : IGenericRepository<Subscription>
     {
-        bool ValidateCSubscription(Subscription entity);
+        Task<PaginationList<Subscription>> SearchAsync(SubscriptionPaging paging);
     }
 }

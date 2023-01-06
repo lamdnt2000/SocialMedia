@@ -13,7 +13,5 @@ namespace DataAccess.Models.PackageModel
         [StringLength(255)]
         public string Name { get; set; }
         public string Description { get; set; }
-        public double Price { get; set; }
-        public bool Status { get; set; }
     }
 }

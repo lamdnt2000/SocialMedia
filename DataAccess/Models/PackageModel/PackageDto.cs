@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DataAccess.Models.FeatureModel;
+using DataAccess.Models.PlanModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +14,7 @@ namespace DataAccess.Models.PackageModel
         public bool Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public ICollection<FeatureDto> Features { get; set; }
+        public ICollection<PlanDto> Plans { get; set; }
     }
 }

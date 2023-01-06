@@ -18,11 +18,7 @@ using DataAccess.Models.ChannelCrawlModel.FacebookStatistic;
 using DataAccess.Models.ChannelCrawlModel.YoutubeStatistic;
 using DataAccess.Models.ChannelCrawlModel.TiktokStatistic;
 using DataAccess.Models.Pagination;
-using DataAccess.Models.OrganizationModel;
 using DataAccess.Models.ChannelCrawlModel.CompareModel;
-using System.Threading.Channels;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Reflection;
 
 namespace Business.Service.ChannelCrawlService
 {

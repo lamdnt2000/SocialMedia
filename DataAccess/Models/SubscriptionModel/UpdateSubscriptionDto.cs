@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.SubscriptionModel
 {
-    public class UpdateSubscriptionDto : InsertSubscriptionDto
+    public class UpdateSubscriptionDto
     {
         public int Status { get; set; }
     }

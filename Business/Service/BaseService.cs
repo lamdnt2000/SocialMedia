@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Business.Repository.UserRepo;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
@@ -50,7 +51,7 @@ namespace Business.Service
         protected async Task<User> GetCurrentUser()
         {
             var userId = int.Parse(GetUserId());
-            return await _userRepository.Get(user => user.Id == userId);
+            return await _userRepository.Get(user => user.Id == userId, new List<string>() { "UserType"});
         }
 
         protected int GetCurrentUserId()

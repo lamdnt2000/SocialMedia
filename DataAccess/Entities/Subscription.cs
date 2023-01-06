@@ -8,38 +8,30 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DataAccess.Entities
 {
     [Table("subscription")]
-    public partial class Subscription
+    public partial class Subscription:BaseEntity
     {
+        [Key]
         [Column("id")]
         public int Id { get; set; }
         [Column("price")]
         public double Price { get; set; }
-        [Column("create_date", TypeName = "datetime")]
-        public DateTime CreateDate { get; set; }
-        [Column("update_date", TypeName = "datetime")]
-        public DateTime? UpdateDate { get; set; }
         [Column("wallet_id")]
         public int WalletId { get; set; }
         [Column("user_id")]
         public int UserId { get; set; }
         [Column("status")]
         public int Status { get; set; }
-        [Column("offer_id")]
-        public int OfferId { get; set; }
-        [Column("package_id")]
-        public int PackageId { get; set; }
         [Column("start_date", TypeName = "datetime")]
         public DateTime StartDate { get; set; }
         [Column("end_date", TypeName = "datetime")]
         public DateTime EndDate { get; set; }
-
-        [ForeignKey(nameof(OfferId))]
-        public virtual Offer Offer { get; set; }
-        [ForeignKey(nameof(PackageId))]
-        public virtual Package Package { get; set; }
-        [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; }
+        [Column("plan_id")]
+        public int PlanId { get; set; }
+        [Column("plan_name")]
+        [StringLength(50)]
+        public string PlanName { get; set; }
         [ForeignKey(nameof(WalletId))]
+        [InverseProperty("Subscriptions")]
         public virtual Wallet Wallet { get; set; }
     }
 }
