@@ -31,6 +31,7 @@ namespace Business.Repository.CategoryRepo
                 CurrentPage = currentPage,
                 PageSize = pageSize,
                 TotalPage = (int)totalPage,
+                TotalItem = totalItem,
                 Items = result
             };
         }

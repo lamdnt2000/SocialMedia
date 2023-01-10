@@ -12,7 +12,8 @@ namespace DataAccess.Enum
         FACEBOOK = 1,
         TIKTOK = 2,
         DAILYSEARCH = 3,
-        DAILYREQUEST = 4,
+        MONTHREQUEST = 4,
         COMPARE = 5,
+        TOPPOST = 6
     }
 }

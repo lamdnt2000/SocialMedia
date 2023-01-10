@@ -22,5 +22,7 @@ namespace Business.Service.ChannelCrawlService
         Task<string> FindChannelByPlatformAndUserId(string url);
         Task<PaginationList<ChannelCrawlDto>> SearchAsync(ChannelSearchFilter paging);
         Task<object> CompareChannel(CompareDto dto);
+        void UpdateCache();
+        void UpdateChannelRequest();
     }
 }

@@ -13,17 +13,16 @@ using System.Threading.Tasks;
 
 namespace Business.Service.TransactionDepositService
 {
-    public class TransactionDepositService:BaseService, ITransactionDepositService
+    public class TransactionDepositService : ITransactionDepositService
     {
         private readonly ITransactionDepositRepository _transactionDepositRepository;
 
-        public TransactionDepositService(IHttpContextAccessor httpContextAccessor
-            , IUserRepository userRepository
-            , ITransactionDepositRepository transactionDepositRepository) : base(httpContextAccessor, userRepository)
+        public TransactionDepositService(
+             ITransactionDepositRepository transactionDepositRepository)
         {
             _transactionDepositRepository = transactionDepositRepository;
         }
 
-    
+
     }
 }

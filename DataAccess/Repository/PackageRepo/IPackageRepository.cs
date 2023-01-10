@@ -14,5 +14,6 @@ namespace Business.Repository.PackageRepo
     {
         Task<PaginationList<Package>> SearchPackageAsync(PakagePaging paging);
         Task<PackageDto> GetPlanOfPackage(int id);
+        Task<ICollection<PackageDto>> GetAll();
     }
 }

@@ -16,15 +16,14 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.OrganizationService
 {
-    public class OrganizationService : BaseService, IOrganizationService
+    public class OrganizationService : IOrganizationService
     {
         private readonly IOrganizationRepository _organizationRepository;
         private readonly string ClassName = typeof(Organization).Name;
         private readonly IChannelCrawlRepository _channelCrawlRepository;
-        public OrganizationService(IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository,
+        public OrganizationService(
             IOrganizationRepository organizationRepository,
-            IChannelCrawlRepository channelCrawlRepository) : base(httpContextAccessor, userRepository)
+            IChannelCrawlRepository channelCrawlRepository)
         {
             _organizationRepository = organizationRepository;
             _channelCrawlRepository = channelCrawlRepository;
@@ -46,11 +45,11 @@ namespace Business.Service.OrganizationService
 
         public async Task<List<OrganizationAllDto>> GetAll()
         {
-            var includes = new List<string>(){ "Brands","ChannelCrawls" };
-            var organizations = await _organizationRepository.GetAllAsync(x => x.Status == true , null, includes);
-            
+            var includes = new List<string>() { "Brands", "ChannelCrawls" };
+            var organizations = await _organizationRepository.GetAllAsync(x => x.Status == true, null, includes);
+
             var result = MapperConfig.GetMapper().Map<List<OrganizationAllDto>>(organizations.ToList());
-           
+
             return result;
         }
 
@@ -61,7 +60,7 @@ namespace Business.Service.OrganizationService
             {
                 includes.Add(nameof(Organization.Brands));
             }
-            var organization =  await _organizationRepository.Get(x => x.Id == id, includes);
+            var organization = await _organizationRepository.Get(x => x.Id == id, includes);
             return MapperConfig.GetMapper().Map<OrganizationDto>(organization);
         }
 
@@ -90,13 +89,14 @@ namespace Business.Service.OrganizationService
                 Items = items,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
         }
 
         public async Task<OrganizationDto> SearchByName(string name)
         {
-            var organization =  await _organizationRepository.Get(x => x.Name.Equals(name));
+            var organization = await _organizationRepository.Get(x => x.Name.Equals(name));
             return MapperConfig.GetMapper().Map<OrganizationDto>(organization);
         }
 

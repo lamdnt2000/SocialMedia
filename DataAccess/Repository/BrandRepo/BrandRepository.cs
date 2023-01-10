@@ -31,6 +31,7 @@ namespace Business.Repository.BrandRepo
             {
                 CurrentPage = currentPage,
                 PageSize = pageSize,
+                TotalItem = totalItem,
                 TotalPage = (int)totalPage,
                 Items = result
             };

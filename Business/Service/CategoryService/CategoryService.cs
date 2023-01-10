@@ -17,7 +17,7 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.CategoryService
 {
-    public class CategoryService : BaseService, ICategoryService
+    public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IPlatformRepository _platformRepository;
@@ -26,10 +26,9 @@ namespace Business.Service.CategoryService
         private readonly string ReferClassName = typeof(Platform).Name;
 
 
-        public CategoryService(IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository,
+        public CategoryService(
             ICategoryRepository categoryRepository,
-            IPlatformRepository platformRepository) : base(httpContextAccessor, userRepository)
+            IPlatformRepository platformRepository)
         {
             _categoryRepository = categoryRepository;
             _platformRepository = platformRepository;
@@ -53,7 +52,7 @@ namespace Business.Service.CategoryService
         {
 
             var category = await _categoryRepository.Get(x => x.Id == id);
-           
+
             return MapperConfig.GetMapper().Map<CategoryDto>(category);
         }
 
@@ -83,7 +82,7 @@ namespace Business.Service.CategoryService
             return platform != null;
         }
 
-        
+
 
         public async Task<CategoryDto> SearchByName(string name)
         {
@@ -102,7 +101,7 @@ namespace Business.Service.CategoryService
             {
                 throw new Exception(ReferClassName + " " + NOT_FOUND);
             }
-            
+
             var check = await SearchByName(dto.Name);
             if (check == null || id == check.Id)
             {
@@ -113,11 +112,11 @@ namespace Business.Service.CategoryService
             }
             else
             {
-                throw new Exception(DUPLICATED+ " " + ClassName);
+                throw new Exception(DUPLICATED + " " + ClassName);
             }
         }
 
-       
+
 
         public async Task<PaginationList<CategoryDto>> SearchAsync(CategoryPaging paging)
         {
@@ -128,11 +127,12 @@ namespace Business.Service.CategoryService
                 Items = items,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
         }
 
-       
+
     }
 
 }

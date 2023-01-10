@@ -29,6 +29,7 @@ namespace Business.Repository.LocationRepo
                 CurrentPage = currentPage,
                 PageSize = pageSize,
                 TotalPage = (int)totalPage,
+                TotalItem = totalItem,
                 Items = result
             };
         }

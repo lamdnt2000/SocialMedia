@@ -16,7 +16,7 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.PlanService
 {
-    public class PlanService : BaseService, IPlanService
+    public class PlanService : IPlanService
     {
         private readonly IPlanRepository _planRepository;
         private readonly IFeatureRepository _featureRepository;
@@ -24,11 +24,10 @@ namespace Business.Service.PlanService
         private string SubClassName = typeof(Package).Name;
         private string FeatureName = typeof(Feature).Name;
         private string ClassName = typeof(Plan).Name;
-        public PlanService(IHttpContextAccessor httpContextAccessor
-            , IUserRepository userRepository
-            , IPlanRepository planRepository
+        public PlanService(
+            IPlanRepository planRepository
             , IPackageRepository packageRepository
-            , IFeatureRepository featureRepository) : base(httpContextAccessor, userRepository)
+            , IFeatureRepository featureRepository)
         {
             _planRepository = planRepository;
             _packageRepository = packageRepository;
@@ -137,8 +136,8 @@ namespace Business.Service.PlanService
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
-            var checkName = await GetPlanByName(checkId.PackageId, plan.Name);
-            if (checkName != null)
+            var checkName = await _planRepository.Get(x => x.PackageId == checkId.PackageId && x.Id != planId && x.Name == plan.Name);
+            if (checkName != null )
             {
                 throw new Exception(ClassName + " " + DUPLICATED);
             }

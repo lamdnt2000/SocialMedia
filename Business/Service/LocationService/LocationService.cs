@@ -56,6 +56,7 @@ namespace Business.Service.LocationService
                 Items = items,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
         }

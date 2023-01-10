@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
 {
     [Route(ApiPath.PACKAGE_PATH)]
     [ApiController]
-    [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+
     public class PackageController : ControllerBase
     {
         private readonly IPackageService _packageService;
@@ -38,10 +38,11 @@ namespace WebAPI.Controllers
             _packageService = packageService;
             _featureService = featureService;
             _planService = planService;
-            
+
         }
 
         [HttpGet("{id}")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> GetPackageId(int id)
         {
             try
@@ -60,7 +61,9 @@ namespace WebAPI.Controllers
 
             }
         }
+
         [HttpGet]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> GetAll([FromQuery] PakagePaging paging)
         {
             try
@@ -82,10 +85,32 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpGet("all")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> GetAllPackage()
+        {
+            try
+            {
+                var result = await _packageService.GetAll();
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
 
-        
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
 
-        [HttpPost()]
+            }
+        }
+
+
+
+
+        [HttpPost]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> InsertPackage([FromForm] InsertPakageDto dto)
         {
             try
@@ -106,6 +131,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> UpdatePackage(int id, [FromForm] UpdatePakageDto dto)
         {
             try
@@ -131,6 +157,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> DeletePackageById(int id)
         {
             try
@@ -151,6 +178,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("{id}/features")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> InsertOrUpdateFeatures(int id, [Required][EnumDataType(typeof(EnumFeature))] EnumFeature feature)
         {
             try
@@ -175,6 +203,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}/features")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> GetFeatures(int id)
         {
             try
@@ -194,13 +223,35 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpPut("features/{id}")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
+        public async Task<IActionResult> UpdateFeature(int id, [Required][MaxLength(100)] string description)
+        {
+            try
+            {
+                var result = await _featureService.Update(id, description);
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, FAILED, e.Message);
+                }
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
         [HttpGet("features/recommend")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> RecommendFeture()
         {
             try
             {
-                var result =  _featureService.ValidFeature();
-                return JsonResponse(200, SUCCESS, result.Select(x=>x.Name));
+                var result = _featureService.ValidFeature();
+                return JsonResponse(200, SUCCESS, result.Select(x => x.Name));
             }
             catch (Exception e)
             {
@@ -215,6 +266,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("features/{id}")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> DeleteFeature(int id)
         {
             try
@@ -234,27 +286,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        /*[HttpPost("{id}/plans")]
-        public async Task<IActionResult> InsertPlans(int id, ICollection<InsertPlanDto> plans)
-        {
-            try
-            {
-                var result = await _planService.RangeInsertOrUpdate(id, plans);
-                return JsonResponse(200, SUCCESS, result);
-            }
-            catch (Exception e)
-            {
-
-                if (e.Message.Contains(NOT_FOUND))
-                {
-                    return JsonResponse(400, DELETE_FAILED, e.Message);
-                }
-                return JsonResponse(401, UNAUTHORIZE, e.Message);
-
-            }
-        }
-        */
         [HttpPost("{id}/plans")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> InsertPlan(int id, [Required] string planName)
         {
             try
@@ -279,6 +312,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}/plans")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> GetPlans(int id)
         {
             try
@@ -300,6 +334,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("plans/{id}")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> GetPlanById(int id)
         {
             try
@@ -320,6 +355,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("plans/{id}")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> UpdatePlan(int id, [FromBody] InsertPlanDto dto)
         {
             try
@@ -344,6 +380,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("plans/{id}")]
+        [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
         public async Task<IActionResult> DeletePlan(int id)
         {
             try

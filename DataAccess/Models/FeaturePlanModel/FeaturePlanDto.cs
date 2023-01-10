@@ -18,6 +18,8 @@ namespace DataAccess.Models.FeaturePlanModel
         public int FeatureType { get; set; }
         [ReadOnly(true)]
         public string FeatureName { get; set; }
+        [ReadOnly(true)]
+        public string FeatureDescription { get; set; }
         public int? Quota { get; set; } = 0;
         public bool Valid { get; set; } = true;
     }

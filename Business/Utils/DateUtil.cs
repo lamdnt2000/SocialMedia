@@ -46,7 +46,7 @@ namespace Business.Utils
         public static (DateTime, DateTime) GenerateDateInRange(int range)
         {
             DateTime now = DateTime.Now;
-            DateTime before = DateTime.Now.AddYears(-range);
+            DateTime before = DateTime.Now.AddMonths(-range);
             return (before, now);
         }
 

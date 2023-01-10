@@ -14,6 +14,6 @@ namespace Business.Service.UserService
         Task<User> GoogleSignIn(string TokenId);
         Task<bool> UpdateUserInformation(UpdateUserDto dto);
         Task<bool> UpdateUserPassword(UpdateUserPassworDto dto);
-        Task<UpdateUserDto> GetCurrentUserProfile();
+        Task<ProfileDto> GetCurrentUserProfile();
     }
 }

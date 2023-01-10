@@ -18,7 +18,7 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.FeatureService
 {
-    public class FeatureService:BaseService, IFeatureService
+    public class FeatureService: IFeatureService
     {
         private readonly IFeatureRepository _featureRepository;
         private readonly IPlanRepository _planRepository;
@@ -26,12 +26,10 @@ namespace Business.Service.FeatureService
         private readonly IFeaturePlanRepository _featurePlanRepository;
         private string ClassName = typeof(Feature).Name;
         private string SubClassName = typeof(Package).Name;
-        public FeatureService(IHttpContextAccessor httpContextAccessor
-            , IUserRepository userRepository
-            , IFeatureRepository featureRepository
+        public FeatureService(IFeatureRepository featureRepository
             , IPackageRepository packageRepository
             , IFeaturePlanRepository featurePlanRepository
-            , IPlanRepository planRepository) : base(httpContextAccessor, userRepository)
+            , IPlanRepository planRepository) 
         {
             _featureRepository = featureRepository;
             _packageRepository = packageRepository;
@@ -106,14 +104,16 @@ namespace Business.Service.FeatureService
             FeatureDto facebook = new FeatureDto() { Name="FACEBOOK", Description = "FACEBOOK", Type = EnumFeatureType.FEATURE, Status = true };
             FeatureDto tiktok = new FeatureDto() { Name="TIKTOK", Description = "TIKTOK", Type = EnumFeatureType.FEATURE, Status = true };
             FeatureDto dailySearch = new FeatureDto() { Name="DAILYSEARCH", Description = "DAILYSEARCH", Type = EnumFeatureType.QUANTITY, Status = true };
-            FeatureDto dailyRequest = new FeatureDto() { Name="DAILYREQUEST", Description = "DAILYREQUEST", Type = EnumFeatureType.QUANTITY, Status = true };
+            FeatureDto monthRequest = new FeatureDto() { Name="MONTHREQUEST", Description = "MONTHREQUEST", Type = EnumFeatureType.QUANTITY, Status = true };
             FeatureDto isCompare = new FeatureDto() { Name="COMPARE", Description = "COMPARE", Type = EnumFeatureType.FEATURE, Status = true };
+            FeatureDto isTopPost = new FeatureDto() { Name="TOPPOST", Description = "TOPPOST", Type = EnumFeatureType.FEATURE, Status = true };
             result.Add(youtube);
             result.Add(facebook);
             result.Add(tiktok);
             result.Add(dailySearch);
-            result.Add(dailyRequest);
+            result.Add(monthRequest);
             result.Add(isCompare);
+            result.Add(isTopPost);
             return result;
         }
 
@@ -132,6 +132,18 @@ namespace Business.Service.FeatureService
         private async Task<Feature> GetFeatureByName(int packageId, string name)
         {
             return await _featureRepository.Get(x => x.PackageId == packageId && x.Name == name);
+        }
+
+        public async Task<int> Update(int featureId, string description)
+        {
+            var feature = await _featureRepository.Get(x => x.Id == featureId);
+            if (feature == null)
+            {
+                throw new Exception(ClassName + " " + NOT_FOUND);
+            }
+            feature.Description = description;
+            await _featureRepository.Update(feature);
+            return feature.Id;
         }
     }
 }

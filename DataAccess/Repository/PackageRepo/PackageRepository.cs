@@ -23,6 +23,52 @@ namespace Business.Repository.PackageRepo
         {
         }
 
+        public async Task<ICollection<PackageDto>> GetAll()
+        {
+            return await context.Packages.Where(x => x.Status == true)
+               
+               .Select(x => new PackageDto()
+               {
+                   Id = x.Id,
+                   Status = x.Status,
+                   CreatedDate = x.CreatedDate.Value,
+                   UpdateDate = x.UpdateDate.Value,
+                   Name = x.Name,
+                   Description = x.Description,
+                   Plans = x.Plans.Where(x=>x.Status==true).Select(x => new PlanDto()
+                   {
+                       Id = x.Id,
+                       Name = x.Name,
+                       Description = x.Description,
+                       PackageId = x.PackageId,
+                       Status = x.Status,
+                       CreatedDate = x.CreatedDate.Value,
+                       UpdateDate = x.UpdateDate.Value,
+                       PlanPrices = x.PlanPrices.Select(x => new PriceDto()
+                       {
+                           Id = x.Id,
+                           PriceType = x.PriceType,
+                           Price = x.Price,
+                           Quantity = x.Quantity,
+                           PlanId = x.PlanId,
+                       }).ToList(),
+                       FeaturePlans = x.FeaturePlans.Select(x => new FeaturePlanDto()
+                       {
+                           FeatureId = x.FeatureId,
+                           PlanId = x.PlanId,
+                           Quota = x.Quota,
+                           Valid = x.Valid,
+                           FeatureType = x.Feature.Type,
+                           FeatureName = x.Feature.Name,
+                           FeatureDescription = x.Feature.Description,
+                       }).ToList()
+                   }).ToList(),
+
+
+               })
+               .ToListAsync();
+        }
+
         public async Task<PackageDto> GetPlanOfPackage(int id)
         {
             return await context.Packages.Where(x => x.Id == id)
@@ -57,6 +103,7 @@ namespace Business.Repository.PackageRepo
                             Quota = x.Quota,
                             Valid = x.Valid,
                             FeatureType = x.Feature.Type,
+                            FeatureName = x.Feature.Name
                         }).ToList()
                     }).ToList(),
 
@@ -77,6 +124,7 @@ namespace Business.Repository.PackageRepo
                 CurrentPage = currentPage,
                 PageSize = pageSize,
                 TotalPage = (int)totalPage,
+                TotalItem = totalItem,
                 Items = result
             };
         }

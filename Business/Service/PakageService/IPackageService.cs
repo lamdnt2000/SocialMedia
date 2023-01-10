@@ -13,6 +13,7 @@ namespace Business.Service.PakageService
         Task<int> Insert(InsertPakageDto dto);
         Task<int> Update(int id, UpdatePakageDto dto);
         Task<bool> Delete(int id);
+        Task<ICollection<PackageDto>> GetAll();
         Task<PackageDto> GetById(int id);
         Task<PackageDto> GetPackageInclude(int id);
         Task<PackageDto> GetPlansOfPackage(int id);

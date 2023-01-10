@@ -29,6 +29,7 @@ namespace Business.Repository.TransactionDepositRepo
             {
                 CurrentPage = currentPage,
                 PageSize = pageSize,
+                TotalItem = totalItem,
                 TotalPage = (int)totalPage,
                 Items = result
             };

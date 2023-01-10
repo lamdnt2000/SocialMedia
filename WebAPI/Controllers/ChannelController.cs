@@ -14,6 +14,7 @@ using Business.Utils;
 using AutoFilterer.Types;
 using Business.ScheduleService;
 using DataAccess.Models.ChannelCrawlModel.CompareModel;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace WebAPI.Controllers
 {
@@ -24,11 +25,13 @@ namespace WebAPI.Controllers
     {
         private readonly IChannelCrawlService _channelCrawlService;
         private readonly IScheduleSocial _scheduleSocial;
+        private readonly IDistributedCache _cache;
 
-        public ChannelController(IChannelCrawlService channelCrawlService, IScheduleSocial schedule)
+        public ChannelController(IChannelCrawlService channelCrawlService, IScheduleSocial schedule, IDistributedCache cache)
         {
             _channelCrawlService = channelCrawlService;
             _scheduleSocial = schedule;
+            _cache = cache;
         }
 
         [CustomAuth(RoleAuthorize.ROLE_ADMIN + "," + RoleAuthorize.ROLE_MEMBER)]
@@ -193,7 +196,12 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _channelCrawlService.Statistic(filter);
-                return JsonResponse(200, SUCCESS, result);
+                if (result != null)
+                {
+                    _channelCrawlService.UpdateCache();
+                    return JsonResponse(200, SUCCESS, result);
+                }
+                return JsonResponse(200, FAILED, "");
             }
             catch (Exception e)
             {
@@ -214,7 +222,12 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _channelCrawlService.StatisticTopPost(id);
-                return JsonResponse(200, SUCCESS, result);
+                if (result != null)
+                {
+                    _channelCrawlService.UpdateCache();
+                    return JsonResponse(200, SUCCESS, result);
+                }
+                return JsonResponse(200, FAILED, "");
             }
             catch (Exception e)
             {
@@ -243,16 +256,23 @@ namespace WebAPI.Controllers
                     var result = _scheduleSocial.ValidateUrl(url);
                     var jobId = BackgroundJob.Enqueue(() => _scheduleSocial.FetchChannelJobAsync(result.Item1, result.Item2, id));
                     BackgroundJob.ContinueJobWith(jobId, () => _scheduleSocial.CreateChannelJobAsync(result.Item1, result.Item2, id));
+                    _channelCrawlService.UpdateChannelRequest();
                     return JsonResponse(200, NOT_FOUND, "Waiting loading data");
                 }
                 else
                 {
-                    var dateRange = DateUtil.GenerateDateInRange(1);
+                    var dateRange = DateUtil.GenerateDateInRange(6);
                     ChannelFilter filter = new ChannelFilter() { Username = userId, CreatedTime = new Range<DateTime> { Min = dateRange.Item1, Max = dateRange.Item2} };
                     
                    
                     var statistic = await _channelCrawlService.Statistic(filter);
-                    return JsonResponse(200, SUCCESS, statistic);
+                    if (statistic != null)
+                    {
+                        _channelCrawlService.UpdateCache();
+                        return JsonResponse(200, SUCCESS, statistic);
+                    }
+                    return JsonResponse(200, FAILED, "");
+                    
                 }
             }
             catch (Exception e)
@@ -275,7 +295,13 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _channelCrawlService.CompareChannel(dto);
-                return JsonResponse(200, SUCCESS, result);
+                if (result != null)
+                {
+                    _channelCrawlService.UpdateCache();
+                    return JsonResponse(200, SUCCESS, result);
+                }
+                return JsonResponse(200, FAILED, result);
+
             }
             catch (Exception e)
             {

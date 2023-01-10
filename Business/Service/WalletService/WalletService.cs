@@ -7,6 +7,7 @@ using DataAccess.Models.Pagination;
 using DataAccess.Models.PaymentModel;
 using DataAccess.Models.TransectionDepositModel;
 using DataAccess.Models.WalletModel;
+using DataAccess.Repository.UserTypeRepo;
 using Hangfire.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualBasic;
@@ -28,8 +29,10 @@ namespace Business.Service.WalletService
 
         public WalletService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
+            IUserTypeRepository userTypeRepository,
             IWalletRepository walletRepository,
-            ITransactionDepositRepository transactionDepositRepository) : base(httpContextAccessor, userRepository)
+            ITransactionDepositRepository transactionDepositRepository) : 
+            base(httpContextAccessor, userRepository, userTypeRepository)
         {
             _walletRepository = walletRepository;
             _transactionDepositRepository = transactionDepositRepository;
@@ -255,6 +258,7 @@ namespace Business.Service.WalletService
                 Items = items,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
         }

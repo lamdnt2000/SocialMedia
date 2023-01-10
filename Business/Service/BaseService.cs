@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Business.Repository.UserRepo;
 using DataAccess.Entities;
+using DataAccess.Repository.UserTypeRepo;
 using Microsoft.AspNetCore.Http;
 using static DataAccess.Enum.EnumConst;
 
@@ -11,17 +12,20 @@ namespace Business.Service
     {
         protected readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        
-        protected BaseService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
+        private readonly IUserTypeRepository _userTypeRepository;
+        protected BaseService(IHttpContextAccessor httpContextAccessor
+            , IUserRepository userRepository
+            , IUserTypeRepository userTypeRepository)
         {
             _httpContextAccessor = httpContextAccessor;
             _userRepository = userRepository;
+            _userTypeRepository = userTypeRepository;
         }
 
         protected string GetUserRole()
         {
             var user = _httpContextAccessor.HttpContext?.Items["User"];
-            return user != null 
+            return user != null
                 ? user.GetType().GetProperty("role")?.GetValue(user, null)?.ToString()
                 : string.Empty;
         }
@@ -31,13 +35,13 @@ namespace Business.Service
             var user = _httpContextAccessor.HttpContext?.Items["User"];
             return user.GetType().GetProperty("id")?.GetValue(user, null).ToString();
         }
-        
+
         protected string GetUserEmail()
         {
             var user = _httpContextAccessor.HttpContext?.Items["User"];
             return user.GetType().GetProperty("email")?.GetValue(user, null).ToString();
         }
-        
+
         protected bool IsAdmin()
         {
             return GetUserRole().Equals(RoleEnum.ADMIN.ToString());
@@ -51,12 +55,30 @@ namespace Business.Service
         protected async Task<User> GetCurrentUser()
         {
             var userId = int.Parse(GetUserId());
-            return await _userRepository.Get(user => user.Id == userId, new List<string>() { "UserType"});
+            return await _userRepository.Get(user => user.Id == userId, new List<string>() { "UserType" });
         }
 
         protected int GetCurrentUserId()
         {
             return int.Parse(GetUserId());
-        } 
+        }
+
+        protected async Task<UserType> GetCurrentUserType()
+        {
+            var userId = GetCurrentUserId();
+            return await _userTypeRepository.Get(x => x.UserId == userId);
+        }
+
+        protected async Task<int> AddUserType(UserType userType)
+        {
+            return await _userTypeRepository.Insert(userType);
+        }
+
+        protected async Task<int> UpdateUserType(UserType userType)
+        {
+            return await _userTypeRepository.Update(userType);
+        }
+
+
     }
 }

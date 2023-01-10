@@ -8,6 +8,7 @@ using DataAccess.Models.ChannelCrawlModel;
 using DataAccess.Models.Pagination;
 using DataAccess.Models.PlatFormModel;
 using DataAccess.Models.WatchlistModel;
+using DataAccess.Repository.UserTypeRepo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,9 +26,13 @@ namespace Business.Service.WatchlistService
         private readonly string ClassName = typeof(Watchlist).Name;
         private readonly string ReferClassName = typeof(ChannelCrawl).Name;
         private readonly IChannelCrawlRepository _channelCrawlRepository;
-        public WatchlistService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository
-            , IWatchlistRepository watchlistRepository, IChannelCrawlRepository channelCrawlRepository) :
-            base(httpContextAccessor, userRepository)
+        public WatchlistService(
+            IHttpContextAccessor httpContextAccessor
+            , IUserRepository userRepository
+            , IUserTypeRepository userTypeRepository
+            , IWatchlistRepository watchlistRepository
+            , IChannelCrawlRepository channelCrawlRepository) :
+            base(httpContextAccessor, userRepository, userTypeRepository)
         {
             _watchlistRepository = watchlistRepository;
             _channelCrawlRepository = channelCrawlRepository;
@@ -75,6 +80,7 @@ namespace Business.Service.WatchlistService
                 Items = item,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
 

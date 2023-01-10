@@ -52,7 +52,13 @@ namespace WebAPI
                }));
 
             services.AddConfigureDependency();
-
+            services.AddDistributedMemoryCache();
+            services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString = Configuration.GetConnectionString("Caching");
+                options.SchemaName = "dbo";
+                options.TableName = "Cache";
+            });
             services.Configure<PaymentConfig>(Configuration.GetSection("Payment"));
             services.AddAuthentication();
             services.AddSignalR()
@@ -82,6 +88,7 @@ namespace WebAPI
                 option.SchedulePollingInterval = TimeSpan.FromSeconds(1);
             });
             services.AddControllers();
+            
             services.AddHttpContextAccessor();
             services.ConfigureFcm(Configuration);
             services.ConfigureCros();
@@ -126,6 +133,7 @@ namespace WebAPI
 
             //custom jwt auth middleware
             app.UseMiddleware<JWTMiddlewareConfig>();
+            app.UseMiddleware<RateLimitingMiddleware>();
             app.UseHangfireDashboard();
             app.UseEndpoints(endpoints =>
             {

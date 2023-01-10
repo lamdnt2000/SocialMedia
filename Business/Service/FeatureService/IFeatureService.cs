@@ -12,6 +12,7 @@ namespace Business.Service.FeatureService
     {
         Task<ICollection<int>> RangeInsertOrUpdate(int packageId, ICollection<FeatureDto> features);
         Task<ICollection<int>> Insert(int pacageId, EnumFeature feature);
+        Task<int> Update(int featureId, string description);
         Task<bool> Delete(int featureId);
         ICollection<FeatureDto> ValidFeature();
     }

@@ -10,16 +10,15 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.HashtagService
 {
-    public class HashtagService : BaseService, IHashtagService
+    public class HashtagService :  IHashtagService
     {
         private readonly IHashtagRepository _hashtagRepository;
 
         private readonly string ClassName = typeof(Hashtag).Name;
 
 
-        public HashtagService(IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository,
-            IHashtagRepository hashtagRepository) : base(httpContextAccessor, userRepository)
+        public HashtagService(
+            IHashtagRepository hashtagRepository)
         {
             _hashtagRepository = hashtagRepository;
         }

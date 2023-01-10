@@ -32,6 +32,7 @@ namespace Business.Repository.ReactionTypeRepo
                 CurrentPage = currentPage,
                 PageSize = pageSize,
                 TotalPage = (int)totalPage,
+                TotalItem = totalItem,
                 Items = result
             };
         }

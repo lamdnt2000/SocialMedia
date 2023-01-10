@@ -23,6 +23,7 @@ using DataAccess.Models.ReactionTypeModel;
 using DataAccess.Models.Role;
 using DataAccess.Models.SubscriptionModel;
 using DataAccess.Models.TransectionDepositModel;
+using DataAccess.Models.UserTypeModel;
 using DataAccess.Models.WalletModel;
 using DataAccess.Models.WatchlistModel;
 using System.Linq;
@@ -46,6 +47,8 @@ namespace Business.Utils
                 cfg.CreateMap<User, FacebookSignUpDto>().ReverseMap();
                 cfg.CreateMap<User, UpdateUserDto>().ReverseMap();
                 cfg.CreateMap<User, UpdateUserPassworDto>().ReverseMap();
+                cfg.CreateMap<User, ProfileDto>().ReverseMap();
+                cfg.CreateMap<UserType, UserTypeDto>().ReverseMap();
 
                 cfg.CreateMap<Organization, InsertOrganizationDto>().ReverseMap();
                 cfg.CreateMap<Organization, OrganizationAllDto>().ForMember(x => x.TotalChannels, o => o.MapFrom(x => x.ChannelCrawls.Count));

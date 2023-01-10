@@ -12,14 +12,13 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.PlatformService
 {
-    public class PlatformService : BaseService, IPlatformService
+    public class PlatformService : IPlatformService
     {
         private readonly IPlatformRepository _platformRepository;
         private readonly string ClassName = typeof(Platform).Name;
 
-        public PlatformService(IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository,
-            IPlatformRepository platformRepository) : base(httpContextAccessor, userRepository)
+        public PlatformService(
+            IPlatformRepository platformRepository)
         {
             _platformRepository = platformRepository;
         }
@@ -75,6 +74,7 @@ namespace Business.Service.PlatformService
                 Items = items,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
         }

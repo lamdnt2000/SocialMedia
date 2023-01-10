@@ -15,7 +15,7 @@ using DataAccess.Models.Pagination;
 
 namespace Business.Service.ReactionTypeService
 {
-    public class ReactionTypeService : BaseService, IReactionTypeService
+    public class ReactionTypeService : IReactionTypeService
     {
         private readonly IReactionTypeRepository _reactionTypeRepository;
         private readonly IPlatformRepository _platformRepository;
@@ -23,12 +23,11 @@ namespace Business.Service.ReactionTypeService
         private readonly string ClassName = typeof(Reactiontype).Name;
         private readonly string ReferClassName = typeof(Platform).Name;
 
-        public ReactionTypeService(IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository,
+        public ReactionTypeService(
             IReactionTypeRepository reactionTypeRepository,
-            IPlatformRepository platformRepository) : base(httpContextAccessor, userRepository)
+            IPlatformRepository platformRepository)
         {
-            _reactionTypeRepository =  reactionTypeRepository;
+            _reactionTypeRepository = reactionTypeRepository;
             _platformRepository = platformRepository;
         }
 
@@ -119,6 +118,7 @@ namespace Business.Service.ReactionTypeService
                 Items = items,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
         }

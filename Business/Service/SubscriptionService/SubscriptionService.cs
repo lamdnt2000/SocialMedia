@@ -25,20 +25,22 @@ namespace Business.Service.SubscriptionService
         private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly IPlanRepository _planRepository;
         private readonly IWalletRepository _walletRepository;
-        private readonly IUserTypeRepository _userTypeRepository;
+
         private readonly string ClassName = typeof(SubscriptionDto).Name;
         private readonly string PlanName = typeof(Plan).Name;
         private readonly string WalletName = typeof(Wallet).Name;
-        public SubscriptionService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository
+        public SubscriptionService(
+            IHttpContextAccessor httpContextAccessor
+           , IUserRepository userRepository
            , ISubscriptionRepository subscriptionRepository
            , IPlanRepository planRepository
            , IWalletRepository walletRepository
-           , IUserTypeRepository userTypeRepository) : base(httpContextAccessor, userRepository)
+           , IUserTypeRepository userTypeRepository) : base(httpContextAccessor, userRepository, userTypeRepository)
         {
             _subscriptionRepository = subscriptionRepository;
             _planRepository = planRepository;
             _walletRepository = walletRepository;
-            _userTypeRepository = userTypeRepository;
+          
         }
         public async Task<bool> Delete(int id)
         {
@@ -120,7 +122,7 @@ namespace Business.Service.SubscriptionService
                         PlanId = plan.Id,
                         Feature = await _planRepository.ConvertPlanFeatureToJson(dto.PlanId)
                     };
-                    await _userTypeRepository.Insert(userType);
+                    await AddUserType(userType);
                 }
                 else
                 {
@@ -136,7 +138,7 @@ namespace Business.Service.SubscriptionService
                         PlanId = plan.Id,
                         Feature = await _planRepository.ConvertPlanFeatureToJson(dto.PlanId)
                     };
-                    await _userTypeRepository.Update(userType);
+                    await UpdateUserType(userType);
                 }
             }
             return subscription.Id;
@@ -153,6 +155,7 @@ namespace Business.Service.SubscriptionService
                 Items = items,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
         }
@@ -169,10 +172,6 @@ namespace Business.Service.SubscriptionService
             }
             return result;
         }
-        protected async Task<UserType> GetCurrentUserType()
-        {
-            var userId = GetCurrentUserId();
-            return await _userTypeRepository.Get(x => x.UserId == userId);
-        }
+        
     }
 }

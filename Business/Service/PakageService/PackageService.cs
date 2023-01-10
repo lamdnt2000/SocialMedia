@@ -12,14 +12,13 @@ using static Business.Constants.ResponseMsg;
 
 namespace Business.Service.PakageService
 {
-    public class PackageService : BaseService, IPackageService
+    public class PackageService : IPackageService
     {
         private readonly IPackageRepository _packageRepository;
         private readonly string ClassName = typeof(Package).Name;
 
-        public PackageService(IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository,
-            IPackageRepository packageRepository) : base(httpContextAccessor, userRepository)
+        public PackageService(
+            IPackageRepository packageRepository)
         {
             _packageRepository = packageRepository;
         }
@@ -30,13 +29,18 @@ namespace Business.Service.PakageService
             if (platform != null)
             {
                 var result = await _packageRepository.Delete(id);
-                
+
                 return (result > 0);
             }
             else
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
+        }
+
+        public async Task<ICollection<PackageDto>> GetAll()
+        {
+            return await _packageRepository.GetAll();
         }
 
         public async Task<PackageDto> GetById(int id)
@@ -47,14 +51,14 @@ namespace Business.Service.PakageService
 
         public async Task<PackageDto> GetPackageInclude(int id)
         {
-            var package = await _packageRepository.Get(x => x.Id == id, new List<string>() { "Features"});
+            var package = await _packageRepository.Get(x => x.Id == id, new List<string>() { "Features" });
             return MapperConfig.GetMapper().Map<PackageDto>(package);
         }
 
         public async Task<PackageDto> GetPlansOfPackage(int id)
         {
             return await _packageRepository.GetPlanOfPackage(id);
-            
+
         }
 
         public async Task<int> Insert(InsertPakageDto dto)
@@ -82,6 +86,7 @@ namespace Business.Service.PakageService
                 Items = items,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
         }

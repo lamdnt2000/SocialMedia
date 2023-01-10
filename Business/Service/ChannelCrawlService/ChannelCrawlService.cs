@@ -19,19 +19,26 @@ using DataAccess.Models.ChannelCrawlModel.YoutubeStatistic;
 using DataAccess.Models.ChannelCrawlModel.TiktokStatistic;
 using DataAccess.Models.Pagination;
 using DataAccess.Models.ChannelCrawlModel.CompareModel;
+using DataAccess.Repository.UserTypeRepo;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Security.Cryptography;
 
 namespace Business.Service.ChannelCrawlService
 {
     public class ChannelCrawlService : BaseService, IChannelCrawlService
     {
         private readonly IChannelCrawlRepository _channelCrawlRepository;
-
+        private readonly IDistributedCache _cache;
         private string ClassName = typeof(ChannelCrawl).Name;
-        public ChannelCrawlService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository
-            , IChannelCrawlRepository channelCrawlRepository) : base(httpContextAccessor, userRepository)
+        public ChannelCrawlService(IHttpContextAccessor httpContextAccessor
+            , IUserRepository userRepository
+            , IUserTypeRepository userTypeRepository
+            , IChannelCrawlRepository channelCrawlRepository
+            , IDistributedCache cache) :
+            base(httpContextAccessor, userRepository, userTypeRepository)
         {
             _channelCrawlRepository = channelCrawlRepository;
-
+            _cache = cache;
         }
 
         public async Task<bool> Delete(int id)
@@ -606,6 +613,7 @@ namespace Business.Service.ChannelCrawlService
                 Items = items,
                 CurrentPage = result.CurrentPage,
                 PageSize = result.PageSize,
+                TotalItem = result.TotalItem,
                 TotalPage = result.TotalPage
             };
         }
@@ -771,6 +779,63 @@ namespace Business.Service.ChannelCrawlService
             }
 
             return records;
+        }
+
+        public async void UpdateCache()
+        {
+            int uid = GetCurrentUserId();
+            var result = await _cache.GetAsync(uid.ToString());
+
+            if (result == null)
+            {
+                var userType = await GetCurrentUserType();
+                var data = UpdateFeatureQuantity(userType.Feature, "DAILYSEARCH");
+                if (data != null)
+                {
+                    var options = new DistributedCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromDays(1));
+                    await _cache.SetAsync(uid.ToString(), SerializationUtil.ToByteArray(data), options);
+                }
+            }
+            var newCacheJson = UpdateFeatureQuantity(SerializationUtil.FromByteArray<string>(result), "DAILYSEARCH");
+            if (newCacheJson != null)
+            {
+                await _cache.SetAsync(uid.ToString(), SerializationUtil.ToByteArray(newCacheJson));
+            }
+
+        }
+
+        private string UpdateFeatureQuantity(string featureJson, string field)
+        {
+            var feature = SerializationUtil.FromString(featureJson);
+            if (feature.ContainsKey(field))
+            {
+                feature[field].Quota -= 1;
+                return SerializationUtil.ToString(feature);
+            }
+            return null;
+        }
+
+        public async void UpdateChannelRequest()
+        {
+            int uid = GetCurrentUserId();
+            var userType = await GetCurrentUserType();
+            var data = UpdateFeatureQuantity(userType.Feature, "MONTHREQUEST");
+            if (data != null)
+            {
+                var cache = await _cache.GetAsync(uid.ToString());
+                if (cache == null)
+                {
+                    var options = new DistributedCacheEntryOptions()
+           .SetSlidingExpiration(TimeSpan.FromDays(1));
+                    await _cache.SetAsync(uid.ToString(), SerializationUtil.ToByteArray(data), options);
+                }
+                else
+                {
+                    await _cache.SetAsync(uid.ToString(), SerializationUtil.ToByteArray(data));
+                }
+                
+            }
         }
     }
 }

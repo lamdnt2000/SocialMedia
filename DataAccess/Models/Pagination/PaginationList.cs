@@ -12,6 +12,7 @@ namespace DataAccess.Models.Pagination
 
         public int CurrentPage { get; set; }
         public int TotalPage { get; set; }
+        public int TotalItem { get; set; }
         public int PageSize { get; set; }
         public List<T> Items { get; set; }
     }

@@ -59,6 +59,8 @@ namespace API
     {
         public static void AddConfigureDependency(this IServiceCollection services)
         {
+
+
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IRoleService, RoleService>();
 

@@ -9,6 +9,7 @@ using User = DataAccess.Entities.User;
 using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
+using DataAccess.Repository.UserTypeRepo;
 
 namespace Business.Service.UserService
 {
@@ -16,7 +17,11 @@ namespace Business.Service.UserService
     {
 
 
-        public UserService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository) : base(httpContextAccessor, userRepository)
+        public UserService(
+            IHttpContextAccessor httpContextAccessor
+            , IUserRepository userRepository
+            , IUserTypeRepository userTypeRepository) : 
+            base(httpContextAccessor, userRepository, userTypeRepository)
         {
 
         }
@@ -261,10 +266,10 @@ namespace Business.Service.UserService
             }
         }
 
-        public async Task<UpdateUserDto> GetCurrentUserProfile()
+        public async Task<ProfileDto> GetCurrentUserProfile()
         {
             var user = await GetCurrentUser();
-            return MapperConfig.GetMapper().Map<UpdateUserDto>(user);
+            return MapperConfig.GetMapper().Map<ProfileDto>(user);
         }
     }
 }
