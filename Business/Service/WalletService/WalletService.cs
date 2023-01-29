@@ -195,7 +195,7 @@ namespace Business.Service.WalletService
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
-            string vnp_Returnurl = "http://localhost:3000/walletPayment"; //URL nhan ket qua tra ve 
+            string vnp_Returnurl = "https://socialmedia-40b42.web.app/walletPayment"; //URL nhan ket qua tra ve 
             string vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"; //URL thanh toan cua VNPAY 
             string vnp_TmnCode = "CJ7NZH13"; //Ma website
             string vnp_HashSecret = "ZGLZMVCIJSMIXMBSEDMMGNSZOHTNMRQL"; //Chuoi bi mat

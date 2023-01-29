@@ -14,5 +14,6 @@ namespace Business.Repository.SubscriptionRepo
     public interface ISubscriptionRepository : IGenericRepository<Subscription>
     {
         Task<PaginationList<Subscription>> SearchAsync(SubscriptionPaging paging);
+        Task<object> StatisticSubscription();
     }
 }

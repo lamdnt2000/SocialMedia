@@ -10,20 +10,24 @@ using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
 using DataAccess.Repository.UserTypeRepo;
-
+using DataAccess.Entities;
+using DataAccess.Repository.PlanRepo;
+using static Business.Constants.ResponseMsg;
 namespace Business.Service.UserService
 {
     public class UserService : BaseService, IUserService
     {
 
-
+        private readonly IPlanRepository _planRepository;
+        private readonly int FREE_TRIAL_PLAN_ID = 49;
         public UserService(
             IHttpContextAccessor httpContextAccessor
             , IUserRepository userRepository
-            , IUserTypeRepository userTypeRepository) : 
+            , IUserTypeRepository userTypeRepository
+            , IPlanRepository planRepository) : 
             base(httpContextAccessor, userRepository, userTypeRepository)
         {
-
+            _planRepository = planRepository;  
         }
 
         public bool CheckPassword(string inputPassword, string currentPassword)
@@ -56,6 +60,15 @@ namespace Business.Service.UserService
                         user.CreatedDate = DateTime.Now;
                         user.Provider = userRecord.ProviderId;
                         user.Password = hashPass;
+                        var userType = new UserType()
+                        {
+                            DateStart = DateTime.Now,
+                            DateEnd = DateTime.Now.AddMonths(1),
+                            Name = "Free Trial",
+                            Valid = true,
+                            Feature = await GetFreeTrialFeature(),
+                        };
+                        user.UserType = userType;
                         return await _userRepository.Insert(user);
                     }
                     else
@@ -221,6 +234,15 @@ namespace Business.Service.UserService
                 user.Status = (int)EnumConst.UserStatus.VERIFY;
                 user.RoleId = (int)EnumConst.RoleEnum.MEMBER;
                 user.Provider = "google.com";
+                var userType = new UserType()
+                {
+                    DateStart = DateTime.Now,
+                    DateEnd = DateTime.Now.AddMonths(1),
+                    Name = "Free Trial",
+                    Valid = true,
+                    Feature = await GetFreeTrialFeature(),
+                };
+                user.UserType = userType;
                 await _userRepository.Insert(user);
             }
             return user;
@@ -253,6 +275,10 @@ namespace Business.Service.UserService
         public async Task<bool> UpdateUserPassword(UpdateUserPassworDto dto)
         {
             var currentUser = await GetCurrentUser();
+            if (!dto.Password.Equals(dto.ConfirmPassword))
+            {
+                throw new Exception("Confirm Password " + NOT_MATCH);
+            }
             if (CheckPassword(dto.CurrentPassword, currentUser.Password))
             {
                 currentUser.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
@@ -262,14 +288,20 @@ namespace Business.Service.UserService
             }
             else
             {
-                throw new Exception("Old password not match");
+                throw new Exception("Old password "+NOT_MATCH);
             }
         }
 
         public async Task<ProfileDto> GetCurrentUserProfile()
         {
             var user = await GetCurrentUser();
+            
             return MapperConfig.GetMapper().Map<ProfileDto>(user);
+        }
+
+        private async Task<string> GetFreeTrialFeature()
+        {
+            return await _planRepository.ConvertPlanFeatureToJson(FREE_TRIAL_PLAN_ID);
         }
     }
 }

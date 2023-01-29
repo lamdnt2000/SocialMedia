@@ -36,5 +36,38 @@ namespace Business.Repository.SubscriptionRepo
                 Items = result
             };
         }
+
+        public async Task<object> StatisticSubscription()
+        {
+            var total = await context.Subscriptions.Where(x => x.Status == 1).SumAsync(s => s.Price);
+            var index = (int)DateTime.Now.DayOfWeek;
+            var now = DateTime.Now.AddDays(1);
+            var lastMonth = DateTime.Now.AddMonths(-1);
+            var currentWeek = DateTime.Now.AddDays((index == 0) ? -6 : -(index - 1));
+            var weekBefore = currentWeek.AddDays(-7);
+            var profitInWeek = await context.Subscriptions.Where(x => x.Status == 1 
+            && (x.CreatedDate>= currentWeek.Date && x.CreatedDate < now.Date)).SumAsync(s => s.Price);
+            var profitLastWeek = await context.Subscriptions.Where(x => x.Status == 1 
+            && (x.CreatedDate>= weekBefore.Date && x.CreatedDate < currentWeek.Date)).SumAsync(s => s.Price);
+            var historyLastMonth = await context.Subscriptions.Where(x => x.Status == 1
+            && (x.CreatedDate >= lastMonth.Date && x.CreatedDate < currentWeek.Date))
+                .GroupBy(x => x.CreatedDate.Value.Date)
+                .Select(x => new
+                {
+                    Key = x.Key,
+                    Total = x.Sum(x=>x.Price)
+                }).ToListAsync();
+            var isIncreate = profitInWeek > profitLastWeek;
+            var percent = (profitLastWeek == 0) ? 100 : Math.Round((float)Math.Abs(profitLastWeek - profitInWeek) / profitLastWeek * 100,2);
+            return new
+            {
+                Total = total,
+                ThisWeek = profitInWeek,
+                LastWeek = profitLastWeek,
+                IsIncreate = isIncreate,
+                Percent = percent,
+                History = historyLastMonth
+            };
+        }
     }
 }

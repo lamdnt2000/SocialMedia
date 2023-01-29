@@ -7,9 +7,11 @@ using DataAccess.Models.ChannelCrawlModel;
 using DataAccess.Models.Pagination;
 using DataAccess.Models.ReactionModel;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Z.BulkOperations;
 
@@ -35,7 +37,7 @@ namespace Business.Repository.ChannelCrawlRepo
                     entity.ChannelRecords.FirstOrDefault(x => x.ChannelId == entity.Id).Id = record.Id;
                 }
             }
-            
+
             await context.BulkMergeAsync(list, options =>
             {
                 options.IncludeGraph = true;
@@ -91,13 +93,13 @@ namespace Business.Repository.ChannelCrawlRepo
                 };
 
             });
-            
+
             return true;
         }
 
         public async Task<ChannelStatistic> FilterChannel(ChannelFilter filter)
         {
-
+            
             DateTime dateFrom = filter.CreatedTime.Min.Value;
             DateTime dateTo = filter.CreatedTime.Max.Value.AddDays(1);
             var channel = await context.ChannelCrawls.Where(c => (filter.Platform > 0 ? c.PlatformId == filter.Platform : true) && (c.Username == filter.Username || c.Cid == filter.Username))
@@ -115,7 +117,7 @@ namespace Business.Repository.ChannelCrawlRepo
                     PostCrawls = c.PostCrawls.Where(p => p.CreatedTime >= dateFrom && p.CreatedTime < dateTo).Select(p =>
                         new PostCrawl()
                         {
-                            Pid = p.Pid,                       
+                            Pid = p.Pid,
                             CreatedTime = p.CreatedTime,
                             PostType = p.PostType,
                             Reactions = p.Reactions.Select(r => new Reaction()
@@ -147,17 +149,20 @@ namespace Business.Repository.ChannelCrawlRepo
         }
         public async Task<List<ChannelStatistic>> FilterChannels(List<string> userIds, ChannelFilter filter)
         {
-
+            var checkValid = await context.ChannelCrawls.Where(c => c.Username == userIds[0] || c.Username == userIds[1]).CountAsync();
+            if (checkValid < 2)
+            {
+                return null;
+            }
             DateTime dateFrom = filter.CreatedTime.Min.Value;
             DateTime dateTo = filter.CreatedTime.Max.Value.AddDays(1);
             List<ChannelStatistic> channels = new List<ChannelStatistic>();
-            
+
             foreach (string userId in userIds)
             {
-                var channel = await context.ChannelCrawls
-                .Where(c => (filter.Platform > 0 ? c.PlatformId == filter.Platform : true) && c.Username== userId)
+                var channel = await context.ChannelCrawls.AsNoTrackingWithIdentityResolution()
+                .Where(c => c.PlatformId == filter.Platform && c.Username == userId)
                 .Select(c => new ChannelStatistic()
-
 
                 {
                     Cid = c.Cid,
@@ -170,13 +175,7 @@ namespace Business.Repository.ChannelCrawlRepo
                     PostCrawls = c.PostCrawls.Where(p => p.CreatedTime >= dateFrom && p.CreatedTime < dateTo).Select(p =>
                         new PostCrawl()
                         {
-                            Pid = p.Pid,
-                            Body = p.Body,
-                            Description = p.Description,
                             CreatedTime = p.CreatedTime,
-                            PostType = p.PostType,
-                            Status = p.Status,
-                            Title = p.Title,
                             Reactions = p.Reactions.Select(r => new Reaction()
                             {
                                 Count = r.Count,
@@ -199,9 +198,45 @@ namespace Business.Repository.ChannelCrawlRepo
                 }).FirstOrDefaultAsync();
                 channels.Add(channel);
             }
-            
-
             return channels;
+
+            /*return context.ChannelCrawls.AsNoTrackingWithIdentityResolution()
+                .Where(c => (c.PlatformId == filter.Platform && c.Username == userIds[0]) || (c.PlatformId == filter.Platform && c.Username == userIds[1]))
+                
+                .Select(c => new ChannelStatistic()
+
+                {
+                    Cid = c.Cid,
+                    Id = c.Id,
+                    Location = c.Location.Name,
+                    IsVerify = c.IsVerify,
+                    Name = c.Name,
+                    Organization = c.Organization.Name,
+                    Platform = c.Platform.Name,
+                    PostCrawls = c.PostCrawls.Where(p => p.CreatedTime >= dateFrom && p.CreatedTime < dateTo).Select(p =>
+                        new PostCrawl()
+                        {
+                            CreatedTime = p.CreatedTime,
+                            Reactions = p.Reactions.Select(r => new Reaction()
+                            {
+                                Count = r.Count,
+                                ReactionTypeId = r.ReactionTypeId,
+                                ReactionType = r.ReactionType,
+                            }).ToList()
+
+                        }).ToList(),
+                    Status = c.Status,
+                    UpdateDate = c.UpdateDate.Value,
+                    CreatedTime = c.CreatedTime.Value,
+                    Bio = c.Bio,
+                    AvatarUrl = c.AvatarUrl,
+                    BannerUrl = c.BannerUrl,
+                    Url = c.Url,
+                    PlatformId = c.PlatformId,
+                    Username = c.Username,
+                    ChannelRecords = c.ChannelRecords,
+                    Categories = c.ChannelCategories.Select(x => x.Category.Name).ToList()
+                }).AsEnumerable().ToList() ;*/
 
 
         }
@@ -237,11 +272,15 @@ namespace Business.Repository.ChannelCrawlRepo
             {
                 throw new Exception("Location not exist!");
             }
-            var test = await context.ChannelCrawls.FirstOrDefaultAsync(x => x.Cid == entity.Cid && (entity.Id != 0 ? x.Id != entity.Id : true));
-            if ((await context.ChannelCrawls.FirstOrDefaultAsync(x => x.Cid == entity.Cid && (entity.Id != 0 ? x.Id != entity.Id : true))) != null)
+            if (entity.Id == 0)
             {
-                throw new Exception("Duplicated channel");
+                if ((await context.ChannelCrawls.FirstOrDefaultAsync(x => x.PlatformId == entity.PlatformId && x.Cid == entity.Cid ) != null))
+                {
+                    throw new Exception("Duplicated channel");
+                }
             }
+    
+            
 
             return true;
         }
@@ -264,7 +303,7 @@ namespace Business.Repository.ChannelCrawlRepo
             };
         }
 
-        public async Task<Dictionary<string,object>> FilterTopPostFacebookChannel(int id)
+        public async Task<Dictionary<string, object>> FilterTopPostFacebookChannel(int id)
         {
 
             var topLike = await context.PostCrawls.Where(x => x.ChannelId == id)
@@ -322,14 +361,14 @@ namespace Business.Repository.ChannelCrawlRepo
                 .Select(c => new
                 {
                     Pid = c.Pid,
-                        Body = c.Body,
-                        CreatedDate = c.CreatedDate,
-                        UpdateDate = c.UpdateDate,
-                        Description = c.Description,
-                        CreatedTime = c.CreatedTime,
-                        PostType = c.PostType,
-                        Status = c.Status,
-                        Title = c.Title,
+                    Body = c.Body,
+                    CreatedDate = c.CreatedDate,
+                    UpdateDate = c.UpdateDate,
+                    Description = c.Description,
+                    CreatedTime = c.CreatedTime,
+                    PostType = c.PostType,
+                    Status = c.Status,
+                    Title = c.Title,
 
                     Reactions = c.Reactions
 
@@ -369,6 +408,7 @@ namespace Business.Repository.ChannelCrawlRepo
                     Reactions = c.Reactions
                     .Select(r => new TopPostReaction()
                     {
+                        
                         Count = r.Count,
                         ReactionName = r.ReactionType.Name
                     }).ToList()
@@ -553,11 +593,11 @@ namespace Business.Repository.ChannelCrawlRepo
 
         public async Task<object> FilterTopPost(int id)
         {
-            var channel =  await context.ChannelCrawls.Where(c => c.Id == id)
+            var channel = await context.ChannelCrawls.Where(c => c.Id == id)
                .Select(c => new ChannelStatistic()
                {
                    Id = c.Id,
-                   PlatformId = c.PlatformId, 
+                   PlatformId = c.PlatformId,
                })
                .FirstOrDefaultAsync();
             if (channel == null)
@@ -571,7 +611,7 @@ namespace Business.Repository.ChannelCrawlRepo
                     data = await FilterTopPostYoutubeChannel(id);
                     break;
                 case 2:
-                    data =await FilterTopPostFacebookChannel(id);
+                    data = await FilterTopPostFacebookChannel(id);
                     break;
                 case 3:
                     data = await FilterTopPostTiktokChannel(id);
@@ -583,6 +623,117 @@ namespace Business.Repository.ChannelCrawlRepo
             return new
             {
                 data
+            };
+        }
+
+        public async Task<object> StatisticChannel()
+        {
+            var now = DateTime.Now.AddDays(1);
+            var currentMonth = DateTime.Now.AddDays(-(DateTime.Now.Day - 1));
+            var lastMonth = currentMonth.AddMonths(-1);
+            var facebookCount = await context.ChannelCrawls.Where(c => c.PlatformId == 2).Select(c => c.PlatformId).CountAsync();
+            var youtubeCount = await context.ChannelCrawls.Where(c => c.PlatformId == 1).Select(c => c.PlatformId).CountAsync();
+            var tiktokCount = await context.ChannelCrawls.Where(c => c.PlatformId == 3).Select(c => c.PlatformId).CountAsync();
+            var facebookCurrentMonth = await context.ChannelCrawls.Where(c => c.PlatformId == 2
+                && c.CreatedDate >= currentMonth.Date && c.CreatedDate < now.Date)
+                .Select(c => c.PlatformId).CountAsync();
+            var facebookLastMonth = await context.ChannelCrawls.Where(c => c.PlatformId == 2
+                && c.CreatedDate >= lastMonth.Date && c.CreatedDate < currentMonth.Date)
+                .Select(c => c.PlatformId).CountAsync();
+            var facebookStatus = facebookCurrentMonth > facebookLastMonth;
+            var facebookPercent = (facebookLastMonth == 0) ? 100 : Math.Round((float)Math.Abs(facebookLastMonth - facebookCurrentMonth) / facebookLastMonth * 100, 2);
+            var youtubeCurrentMonth = await context.ChannelCrawls.Where(c => c.PlatformId == 1
+                && c.CreatedDate >= currentMonth.Date && c.CreatedDate < now.Date)
+                .Select(c => c.PlatformId).CountAsync();
+            var youtubeLastMonth = await context.ChannelCrawls.Where(c => c.PlatformId == 1
+                && c.CreatedDate >= lastMonth.Date && c.CreatedDate < currentMonth.Date)
+                .Select(c => c.PlatformId).CountAsync();
+            var youtubeStatus = youtubeCurrentMonth > youtubeLastMonth;
+            var youtubePercent = (youtubeLastMonth == 0) ? 100 : Math.Round((float)Math.Abs(youtubeLastMonth - youtubeCurrentMonth) / youtubeLastMonth * 100, 2);
+            var tiktokCurrentMonth = await context.ChannelCrawls.Where(c => c.PlatformId == 3
+                && c.CreatedDate >= currentMonth.Date && c.CreatedDate < now.Date)
+                .Select(c => c.PlatformId).CountAsync();
+            var tiktokLastMonth = await context.ChannelCrawls.Where(c => c.PlatformId == 3
+                && c.CreatedDate >= lastMonth.Date && c.CreatedDate < currentMonth.Date)
+                .Select(c => c.PlatformId).CountAsync();
+            var tiktokStatus = tiktokCurrentMonth > tiktokLastMonth;
+            var tiktokPercent = (tiktokLastMonth == 0) ? 100 : Math.Round((float)Math.Abs(tiktokLastMonth - tiktokCurrentMonth) / tiktokLastMonth * 100, 2);
+
+
+            return new
+            {
+                Facebook = new
+                {
+                    Count = facebookCount,
+                    ThisMonth = facebookCurrentMonth,
+                    LastMonth = facebookLastMonth,
+                    IsIncreate = facebookStatus,
+                    Percent = facebookPercent
+                },
+                Youtube = new
+                {
+                    Count = youtubeCount,
+                    ThisMonth = youtubeCurrentMonth,
+                    LastMonth = youtubeLastMonth,
+                    IsIncreate = youtubeStatus,
+                    Percent = youtubePercent
+                },
+                Tiktok = new
+                {
+                    Count = tiktokCount,
+                    ThisMonth = tiktokCurrentMonth,
+                    LastMonth = tiktokLastMonth,
+                    IsIncreate = tiktokStatus,
+                    Percent = tiktokPercent
+                },
+            };
+        }
+
+        public async Task<object> StatisticDashboard()
+        {
+            var now = DateTime.Now;
+            var lastWeek = DateTime.Now.AddMonths(-3);
+            var result = await context.ChannelCrawls.Where(c => c.CreatedDate >= lastWeek.Date && c.CreatedDate < now.Date).GroupBy(c => c.CreatedDate.Value.Date)
+                .Select(c => new
+                {
+                    Key = c.Key.Date,
+                    Count = c.Count()
+                }).ToListAsync();
+            return new
+            {
+                Total = result.Sum(x => x.Count),
+                History = result
+            };
+        }
+
+        public async Task<PaginationList<ChannelCrawl>> GetChannelSchedule(List<string> concurrentJobs, HangfireChannelFilter filter)
+        {
+            var totalItem = await context.ChannelCrawls.Where(x => !concurrentJobs.Contains(x.Username)).ApplyFilterWithoutPagination(filter).Select(x=>x.Id).CountAsync();
+            var currentPage = filter.Page;
+            var pageSize = filter.PerPage;
+            var totalPage = Math.Ceiling((decimal)totalItem / pageSize);
+            var result = context.ChannelCrawls.Where(x => !concurrentJobs.Contains(x.Username)).ApplyFilter(filter)
+                .Select(x=> new ChannelCrawl()
+                {
+                    Id = x.Id,
+                    Username = x.Username,
+                    Cid = x.Cid,
+                    CreatedDate = x.CreatedDate,
+                    UpdateDate = (x.UpdateDate.HasValue)?x.UpdateDate: x.CreatedDate,
+                    Url = x.Url,
+                    PlatformId = x.LocationId,
+                    Platform = new Platform() { Name = x.Platform.Name},
+                    Name = x.Name,
+                    ChannelRecords = null,
+                    ChannelCategories = null,
+                }).ToList();
+            return new PaginationList<ChannelCrawl>
+            {
+                CurrentPage = currentPage,
+                PageSize = pageSize,
+                TotalPage = (int)totalPage,
+                TotalItem = totalItem,
+                Items = result
             };
         }
     }

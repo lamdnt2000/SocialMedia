@@ -46,6 +46,7 @@ namespace DataAccess
         public virtual DbSet<Plan> Plans { get; set; }
         public virtual DbSet<PlanPrice> PlanPrices { get; set; }
         public virtual DbSet<UserType> UserTypes { get; set; }
+        public virtual DbSet<Notification> Notifications { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -259,12 +260,10 @@ namespace DataAccess
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.Property(e => e.AccessToken).IsUnicode(false);
-
+                
                 entity.Property(e => e.Email).IsUnicode(false);
 
-                entity.Property(e => e.FcmToken).IsUnicode(false);
-
+                
                 entity.Property(e => e.Password).IsUnicode(false);
 
                 entity.Property(e => e.Phone).IsUnicode(false);
@@ -322,6 +321,16 @@ namespace DataAccess
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_watchlist_user");
+            });
+
+            modelBuilder.Entity<Notification>(entity =>
+            {
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Notifications)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Notification_user");
             });
 
 

@@ -14,6 +14,7 @@ namespace Business.Service.WatchlistService
     {
         Task<int> Insert(InsertWatchlistDto dto);
         Task<bool> Delete(int channelId);
+       
         Task<PaginationList<ChannelCrawlDto>> SearchAsync(string name,int platformId, WatchlistPaging paging);
     }
 }

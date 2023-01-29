@@ -33,7 +33,7 @@ namespace Business.Schedule
         public static string UpdateRequest(string platform, string user, string handler, int id)
         {
             var result = "";
-            user = user.StartsWith("@") ? user.Substring(1) : user;
+            //user = user.StartsWith("@") ? user.Substring(1) : user;
             var command = JAR_CMD + " " + handler + " " + platform + " " + user + " " + id;
             using (var client = new SshClient("103.97.124.141", "administrator", "sasuke903"))
             {

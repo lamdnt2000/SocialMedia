@@ -52,15 +52,20 @@ using DataAccess.Repository.FeaturePlanRepo;
 using Business.Repository.SubscriptionRepo;
 using Business.Service.SubscriptionService;
 using DataAccess.Repository.UserTypeRepo;
+using Business.Service.DashboardService;
+using Business.SignalR;
+using Microsoft.AspNetCore.SignalR;
+using DataAccess.Repository.NotificationRepo;
+using Business.Service.NotificationService;
+using Business.Service.HangfireService;
 
 namespace API
 {
     public static class ServiceExtensions
     {
         public static void AddConfigureDependency(this IServiceCollection services)
-        {
-
-
+        { 
+            
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IRoleService, RoleService>();
 
@@ -123,6 +128,8 @@ namespace API
 
             services.AddScoped<IFeaturePlanRepository, FeaturePlanRepository>(); 
             services.AddScoped<IUserTypeRepository, UserTypeRepository>();
+            services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<IHangfireService, HangfireService>();
 
 
         }

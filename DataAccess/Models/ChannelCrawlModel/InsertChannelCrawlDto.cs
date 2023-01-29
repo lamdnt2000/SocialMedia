@@ -28,10 +28,8 @@ namespace DataAccess.Models.ChannelCrawlModel
         public string Name { get; set; }
         [Required]
         [MaxLength(255)]
-        public string Url { get; set; }
-        [Required]
+        public string Url { get; set; }   
         public string AvatarUrl { get; set; }
-        [Required]
         public string BannerUrl { get; set; }
         public int Status { get; set; }
         public bool IsVerify { get; set; }

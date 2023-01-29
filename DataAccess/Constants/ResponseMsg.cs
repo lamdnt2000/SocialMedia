@@ -16,6 +16,8 @@
         public const string NOT_EXIST = "not exist";
         public const string UNAUTHORIZE = "Unauthorize";
         public const string DUPLICATED = "Duplicated";
+        public const string NOT_MATCH = "Not Match";
+        public const string EXCUSED = "Excused";
       
 
     }

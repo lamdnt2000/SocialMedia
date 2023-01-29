@@ -22,6 +22,7 @@ using DataAccess.Models.ChannelCrawlModel.CompareModel;
 using DataAccess.Repository.UserTypeRepo;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Security.Cryptography;
+using Google.Apis.Util;
 
 namespace Business.Service.ChannelCrawlService
 {
@@ -210,10 +211,10 @@ namespace Business.Service.ChannelCrawlService
                         }
                         field.TotalPost += 1;
                     }
-                    field.AverageEngagementRate = Math.Round((float)(field.TotalReaction + field.TotalComment + field.TotalShare) / follower * 100, 4);
-                    field.AverageEngagementERPost = Math.Round((float)(field.AverageEngagementRate) / field.TotalPost, 4);
-                    field.AverageDailyEngagementRate = Math.Round((float)(field.TotalReaction) / follower * 100, 4);
-                    field.AverageDailyEngagementReaction = Math.Round((float)(field.TotalReaction + field.TotalComment) / follower * 100, 4);
+                    field.AverageEngagementRate = (follower == 0) ? 0 : Math.Round((float)(field.TotalReaction + field.TotalComment + field.TotalShare) / follower * 100, 4);
+                    field.AverageEngagementERPost = (field.TotalPost == 0) ? 0 : Math.Round((float)(field.AverageEngagementRate) / field.TotalPost, 4);
+                    field.AverageDailyEngagementRate = (follower == 0) ? 0 : Math.Round((float)(field.TotalReaction) / follower * 100, 4);
+                    field.AverageDailyEngagementReaction = (follower == 0) ? 0 : Math.Round((float)(field.TotalReaction + field.TotalComment) / follower * 100, 4);
 
 
                     statistics.Add(field);
@@ -273,9 +274,9 @@ namespace Business.Service.ChannelCrawlService
                         }
                         field.TotalPost += 1;
                     }
-                    field.AverageEngagementRateDayOfWeek = Math.Round((float)(field.TotalReaction + field.TotalComment + field.TotalShare) / follower * 100, 4);
-                    field.AverageEngagementERPostInDayOfWeek = Math.Round((float)(field.TotalReaction + field.TotalComment + field.TotalShare) / follower * 100, 4);
-                    field.AverageEngagementPostInDayOfWeek = Math.Round((float)(field.AverageEngagementRateDayOfWeek) / field.TotalPost, 4);
+                    field.AverageEngagementRateDayOfWeek = (follower == 0) ? 0 : Math.Round((float)(field.TotalReaction + field.TotalComment + field.TotalShare) / follower * 100, 4);
+                    field.AverageEngagementERPostInDayOfWeek = (follower == 0) ? 0 : Math.Round((float)(field.TotalReaction + field.TotalComment + field.TotalShare) / follower * 100, 4);
+                    field.AverageEngagementPostInDayOfWeek = (field.TotalPost == 0) ? 0 : Math.Round((float)(field.AverageEngagementRateDayOfWeek) / field.TotalPost, 4);
 
                     statisticsInWeek.Add(field);
 
@@ -301,13 +302,13 @@ namespace Business.Service.ChannelCrawlService
             double difWeak = DateUtil.DiffWeek(result.CreatedTime, DateTime.Now);
             ChannelRecordDto recordDto = result.ChannelRecords.Last();
             long? totalRecord = recordDto.TotalLike + recordDto.TotalShare + recordDto.TotalComment;
-            result.AveragePostInDay = Math.Round(recordDto.TotalPost / difDate, 2);
-            result.AveragePostInMonth = Math.Round(recordDto.TotalPost / difMonth, 2);
-            result.AveragePostInWeek = Math.Round(recordDto.TotalPost / difWeak, 2);
-            result.AverageEngagementReactionRateInPost = (double)(totalRecord / recordDto.TotalPost);
-            result.AverageEngagementLikeInPost = (double)(recordDto.TotalLike / recordDto.TotalPost);
-            result.AverageEngagementCommentRateInPost = (double)(recordDto.TotalComment / recordDto.TotalPost);
-            result.AverageEngagementShareRateInPost = (double)(recordDto.TotalShare / recordDto.TotalPost);
+            result.AveragePostInDay = Math.Round((float)recordDto.TotalPost / difDate, 3);
+            result.AveragePostInMonth = Math.Round((float)recordDto.TotalPost / difMonth, 3);
+            result.AveragePostInWeek = Math.Round((float)recordDto.TotalPost / difWeak, 3);
+            result.AverageEngagementReactionRateInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(totalRecord / recordDto.TotalPost),4);
+            result.AverageEngagementLikeInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalLike / recordDto.TotalPost),4);
+            result.AverageEngagementCommentRateInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalComment / recordDto.TotalPost),4);
+            result.AverageEngagementShareRateInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalShare / recordDto.TotalPost),4);
             return result;
         }
 
@@ -382,9 +383,9 @@ namespace Business.Service.ChannelCrawlService
                         }
                         field.TotalPost += 1;
                     }
-                    field.AverageEngagementRate = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView) / follower * 100, 4);
-                    field.AverageEngagementViewER = Math.Round((float)(field.TotalLike) / field.TotalView * 100, 4);
-                    field.AverageEngagementView = Math.Round((float)(field.AverageEngagementViewER) / field.TotalPost, 4);
+                    field.AverageEngagementRate = (follower == 0) ? 0 : Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView) / follower * 100, 4);
+                    field.AverageEngagementViewER = (field.TotalView == 0) ? 0 : Math.Round((float)(field.TotalLike) / field.TotalView * 100, 4);
+                    field.AverageEngagementView = (field.TotalPost == 0) ? 0 : Math.Round((float)(field.AverageEngagementViewER) / field.TotalPost, 4);
                     statistics.Add(field);
 
 
@@ -415,9 +416,9 @@ namespace Business.Service.ChannelCrawlService
                         }
                         field.TotalPost += 1;
                     }
-                    field.AverageEngagementRateDayOfWeek = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView) / follower * 100, 4);
-                    field.AverageEngagementERPostInDayOfWeek = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView) / follower * 100, 4);
-                    field.AverageEngagementPostInDayOfWeek = Math.Round((float)(field.AverageEngagementRateDayOfWeek) / field.TotalPost, 4);
+                    field.AverageEngagementRateDayOfWeek = (follower == 0) ? 0 : Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView) / follower * 100, 3);
+                    field.AverageEngagementERPostInDayOfWeek = (follower == 0) ? 0 : Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView) / follower * 100, 3);
+                    field.AverageEngagementPostInDayOfWeek = (field.TotalPost == 0) ? 0 : Math.Round((float)(field.AverageEngagementRateDayOfWeek) / field.TotalPost, 3);
 
                     statisticsInWeek.Add(field);
 
@@ -441,13 +442,13 @@ namespace Business.Service.ChannelCrawlService
             double difWeak = DateUtil.DiffWeek(result.CreatedTime, DateTime.Now);
             ChannelRecordDto recordDto = result.ChannelRecords.Last();
             long? totalRecord = recordDto.TotalLike + recordDto.TotalShare + recordDto.TotalComment;
-            result.AveragePostInDay = Math.Round(recordDto.TotalPost / difDate, 2);
-            result.AveragePostInMonth = Math.Round(recordDto.TotalPost / difMonth, 2);
-            result.AveragePostInWeek = Math.Round(recordDto.TotalPost / difWeak, 2);
+            result.AveragePostInDay = Math.Round((float)recordDto.TotalPost / difDate, 3);
+            result.AveragePostInMonth = Math.Round((float)recordDto.TotalPost / difMonth, 3);
+            result.AveragePostInWeek = Math.Round((float)recordDto.TotalPost / difWeak, 3);
 
-            result.AverageEngagementLikeInPost = (double)(recordDto.TotalLike / recordDto.TotalPost);
-            result.AverageEngagementCommentRateInPost = (double)(recordDto.TotalComment / recordDto.TotalPost);
-            result.AverageEngagementViewInPost = (double)(recordDto.TotalView / recordDto.TotalPost);
+            result.AverageEngagementLikeInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalLike / recordDto.TotalPost),3);
+            result.AverageEngagementCommentRateInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalComment / recordDto.TotalPost),3);
+            result.AverageEngagementViewInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalView / recordDto.TotalPost),3);
             return result;
         }
 
@@ -519,9 +520,9 @@ namespace Business.Service.ChannelCrawlService
                         }
                         field.TotalPost += 1;
                     }
-                    field.AverageEngagementRate = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView + field.TotalShare) / follower * 100, 4);
-                    field.AverageEngagementViewER = Math.Round((float)(field.TotalLike) / field.TotalView * 100, 4);
-                    field.AverageEngagementView = Math.Round((float)(field.AverageEngagementViewER) / field.TotalPost, 4);
+                    field.AverageEngagementRate = (follower == 0) ? 0 : Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView + field.TotalShare) / follower * 100, 4);
+                    field.AverageEngagementViewER = (field.TotalView == 0) ? 0 : Math.Round((float)(field.TotalLike) / field.TotalView * 100, 4);
+                    field.AverageEngagementView = (field.TotalPost == 0) ? 0 : Math.Round((float)(field.AverageEngagementViewER) / field.TotalPost, 4);
 
                     statistics.Add(field);
 
@@ -557,9 +558,9 @@ namespace Business.Service.ChannelCrawlService
                         }
                         field.TotalPost += 1;
                     }
-                    field.AverageEngagementRateInWeek = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView + field.TotalShare) / follower * 100, 4);
-                    field.AverageEngagementERPostInDayOfWeek = Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView + field.TotalShare) / follower * 100, 4);
-                    field.AverageEngagementPostInDayOfWeek = Math.Round((float)(field.AverageEngagementRateInWeek) / field.TotalPost, 4);
+                    field.AverageEngagementRateInWeek = (follower == 0) ? 0 : Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView + field.TotalShare) / follower * 100, 4);
+                    field.AverageEngagementERPostInDayOfWeek = (follower == 0) ? 0 : Math.Round((float)(field.TotalLike + field.TotalComment + field.TotalView + field.TotalShare) / follower * 100, 4);
+                    field.AverageEngagementPostInDayOfWeek = (field.TotalPost == 0) ? 0 : Math.Round((float)(field.AverageEngagementRateInWeek) / field.TotalPost, 4);
 
                     statisticsInWeek.Add(field);
 
@@ -572,27 +573,27 @@ namespace Business.Service.ChannelCrawlService
             double difWeak = DateUtil.DiffWeek(result.CreatedTime, DateTime.Now);
             ChannelRecordDto recordDto = result.ChannelRecords.Last();
             long? totalRecord = recordDto.TotalLike + recordDto.TotalShare + recordDto.TotalComment + recordDto.TotalView;
-            result.AveragePostInDay = Math.Round(recordDto.TotalPost / difDate, 2);
-            result.AveragePostInMonth = Math.Round(recordDto.TotalPost / difMonth, 2);
-            result.AveragePostInWeek = Math.Round(recordDto.TotalPost / difWeak, 2);
+            result.AveragePostInDay = Math.Round((float)recordDto.TotalPost / difDate, 2);
+            result.AveragePostInMonth = Math.Round((float)recordDto.TotalPost / difMonth, 2);
+            result.AveragePostInWeek = Math.Round((float)recordDto.TotalPost / difWeak, 2);
 
-            result.AverageEngagementLikeInPost = (double)(recordDto.TotalLike / recordDto.TotalPost);
-            result.AverageEngagementCommentRateInPost = (double)(recordDto.TotalComment / recordDto.TotalPost);
-            result.AverageEngagementViewInPost = (double)(recordDto.TotalView / recordDto.TotalPost);
-            result.AverageEngagementShareInPost = (double)(recordDto.TotalShare / recordDto.TotalPost);
+            result.AverageEngagementLikeInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalLike / recordDto.TotalPost),3);
+            result.AverageEngagementCommentRateInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalComment / recordDto.TotalPost),3);
+            result.AverageEngagementViewInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalView / recordDto.TotalPost),3);
+            result.AverageEngagementShareInPost = (recordDto.TotalPost == 0) ? 0 : Math.Round((float)(recordDto.TotalShare / recordDto.TotalPost),3);
             return result;
         }
 
         public async Task<string> FindChannelByPlatformAndUserId(string url)
         {
             var result = RegexPlatformAndUser(url);
-            if (result.Item1 == null)
+            if (result.Item1 == null && result.Item2 == null)
             {
-                throw new Exception("Invalid url");
+                throw new Exception(INVALID + " url");
             }
 
             int platformId = (int)Enum.Parse<PlatFormEnum>(result.Item1);
-            var channel = await _channelCrawlRepository.Get(x => x.PlatformId == platformId && (x.Cid == result.Item2 || x.Username == result.Item2));
+            var channel = await _channelCrawlRepository.Get(x => (x.PlatformId == platformId && x.Cid == result.Item2) || (x.PlatformId == platformId && x.Username == result.Item2));
             if (channel == null)
             {
 
@@ -638,13 +639,9 @@ namespace Business.Service.ChannelCrawlService
             ChannelFilter channelFilter = new ChannelFilter() { Platform = dto.Platform, CreatedTime = dto.CreatedTime };
             List<string> userIds = new List<string>() { dto.UserIdOne, dto.UserIdTwo };
             var result = await _channelCrawlRepository.FilterChannels(userIds, channelFilter);
-            if (result.Count == 0)
+            if (result == null)
             {
-                throw new Exception("No channel found on data. Please request view data first");
-            }
-            else if (result.Count == 1)
-            {
-                throw new Exception("Only " + result[0].Username + " channel found. Please request orther first to compare data");
+                throw new Exception(ClassName + " " + NOT_FOUND);
             }
             else
             {
@@ -793,7 +790,7 @@ namespace Business.Service.ChannelCrawlService
                 if (data != null)
                 {
                     var options = new DistributedCacheEntryOptions()
-            .SetSlidingExpiration(TimeSpan.FromDays(1));
+            .SetAbsoluteExpiration(TimeSpan.FromDays(1));
                     await _cache.SetAsync(uid.ToString(), SerializationUtil.ToByteArray(data), options);
                 }
             }
@@ -834,7 +831,7 @@ namespace Business.Service.ChannelCrawlService
                 {
                     await _cache.SetAsync(uid.ToString(), SerializationUtil.ToByteArray(data));
                 }
-                
+
             }
         }
     }

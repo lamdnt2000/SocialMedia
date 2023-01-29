@@ -12,6 +12,7 @@ namespace DataAccess.Entities
     {
         public User()
         {
+            Notifications = new HashSet<Notification>();
             Watchlists = new HashSet<Watchlist>();
         }
 
@@ -41,16 +42,8 @@ namespace DataAccess.Entities
         public string Phone { get; set; }
         [Column("status")]
         public int Status { get; set; }
-        [Column("last_login_at", TypeName = "datetime")]
-        public DateTime? LastLoginAt { get; set; }
         [Column("role_id")]
         public int RoleId { get; set; }
-        [Column("fcm_token")]
-        [StringLength(255)]
-        public string FcmToken { get; set; }
-        [Column("access_token")]
-        [StringLength(255)]
-        public string AccessToken { get; set; }
         [Required]
         [Column("provider")]
         [StringLength(15)]
@@ -65,5 +58,7 @@ namespace DataAccess.Entities
         public virtual Wallet Wallet { get; set; }
         [InverseProperty(nameof(Watchlist.User))]
         public virtual ICollection<Watchlist> Watchlists { get; set; }
+        [InverseProperty(nameof(Notification.User))]
+        public virtual ICollection<Notification> Notifications { get; set; }
     }
 }

@@ -15,5 +15,7 @@ namespace Business.Repository.WatchlistRepo
     public interface IWatchlistRepository: IGenericRepository<Watchlist>
     {
         Task<PaginationList<Watchlist>> SearchAsync(string name, int platformId, WatchlistPaging paging, int userId);
+        Task<object> MostWatchListChannel();
+        Task<object> PorfolioWatchListChannel(int uid);
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.ChannelCrawlModel
 {
-    public class ChannelFilter: FilterBase
+    public class ChannelFilter: PaginationFilterBase
     {
         [Required]
         public string Username { get; set; }

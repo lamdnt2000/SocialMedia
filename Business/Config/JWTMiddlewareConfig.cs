@@ -23,7 +23,7 @@ namespace Business.Config
             _configuration = configuration;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             //get token from header
             if (context.Request.Path.Value.StartsWith("/notification"))

@@ -13,5 +13,6 @@ namespace Business.Repository.TransactionDepositRepo
     public interface ITransactionDepositRepository : IGenericRepository<TransactionDeposit>
     {
         Task<PaginationList<TransactionDeposit>> SearchAsync(TransactionDepositPaging paging);
+        Task<object> StatisticDeposit();
     }
 }

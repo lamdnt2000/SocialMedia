@@ -21,6 +21,32 @@ namespace Business.Repository.WatchlistRepo
         {
         }
 
+        public async Task<object> MostWatchListChannel()
+        {
+            return context.Watchlists.Include(w => w.Channel).ThenInclude(c => c.Platform).ToList().GroupBy(x => x.ChannelId).Select(x => new
+            {
+                ChannelId = x.Key,
+                Channel = x.Select(x => new
+                {
+                    Name = x.Channel.Name,
+                    PlatformID = x.Channel.Platform.Name,
+                    Avatar = x.Channel.AvatarUrl
+                }).FirstOrDefault(),
+                Count = x.Count()
+            }).Take(5).ToList();
+        }
+
+        
+        public async Task<object> PorfolioWatchListChannel(int uid)
+        {
+            return context.Watchlists.Where(x=> x.UserId == uid).Include(w => w.Channel).ThenInclude(c => c.Platform).ToList().GroupBy(x => x.Channel.PlatformId).Select(x => new
+            {
+                PlatformId = x.Key,
+                PlatformName = x.Select(x=> x.Channel.Platform.Name).FirstOrDefault(),
+                Count = x.Count()
+            }).ToList();
+        }
+
         public async Task<PaginationList<Watchlist>> SearchAsync(string name, int platformId, WatchlistPaging paging, int userId)
         {
             var totalItem = await context.Watchlists.ApplyFilterWithoutPagination(paging).Where(x => x.UserId == userId && (name!=null? x.Channel.Name.ToLower().Contains(name): true) && x.Channel.PlatformId==platformId).CountAsync();

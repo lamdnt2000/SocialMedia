@@ -47,6 +47,7 @@ namespace Business.Utils
         {
             DateTime now = DateTime.Now;
             DateTime before = DateTime.Now.AddMonths(-range);
+            
             return (before, now);
         }
 
@@ -55,6 +56,12 @@ namespace Business.Utils
             
             return DateTime.Now.AddDays(range);
            
+        }
+
+        public static bool CompareMinute(DateTime min, DateTime max, int condition)
+        {
+            var minute = max.Subtract(min).TotalMinutes-7*60;
+            return minute > condition;
         }
     }
 }

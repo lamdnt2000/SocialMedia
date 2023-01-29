@@ -40,10 +40,10 @@ namespace DataAccess.Entities
         [Column("url")]
         [StringLength(255)]
         public string Url { get; set; }
-        [Required]
+        
         [Column("avatar_url")]
         public string AvatarUrl { get; set; }
-        [Required]
+        
         [Column("banner_url")]
         public string BannerUrl { get; set; }
         [Column("status")]

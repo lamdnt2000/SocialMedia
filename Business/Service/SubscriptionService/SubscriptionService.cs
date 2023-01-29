@@ -11,9 +11,11 @@ using DataAccess.Models.WalletModel;
 using DataAccess.Repository.PlanRepo;
 using DataAccess.Repository.UserTypeRepo;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static Business.Constants.ResponseMsg;
@@ -25,7 +27,7 @@ namespace Business.Service.SubscriptionService
         private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly IPlanRepository _planRepository;
         private readonly IWalletRepository _walletRepository;
-
+        private readonly IDistributedCache _cache;
         private readonly string ClassName = typeof(SubscriptionDto).Name;
         private readonly string PlanName = typeof(Plan).Name;
         private readonly string WalletName = typeof(Wallet).Name;
@@ -35,12 +37,14 @@ namespace Business.Service.SubscriptionService
            , ISubscriptionRepository subscriptionRepository
            , IPlanRepository planRepository
            , IWalletRepository walletRepository
-           , IUserTypeRepository userTypeRepository) : base(httpContextAccessor, userRepository, userTypeRepository)
+           , IUserTypeRepository userTypeRepository
+            , IDistributedCache cache) : base(httpContextAccessor, userRepository, userTypeRepository)
         {
             _subscriptionRepository = subscriptionRepository;
             _planRepository = planRepository;
             _walletRepository = walletRepository;
-          
+            _cache = cache;
+
         }
         public async Task<bool> Delete(int id)
         {
@@ -72,7 +76,7 @@ namespace Business.Service.SubscriptionService
                 throw new Exception("Price of plan " + INVALID);
             }
             Wallet wallet = await GetCurrentWallet();
-            if (wallet.Balance< price.Price)
+            if (wallet.Balance < price.Price)
             {
                 throw new Exception(WalletName + " " + NOT_ENOUGH + " balance");
             }
@@ -105,7 +109,7 @@ namespace Business.Service.SubscriptionService
                 subscription.Status = 1;
             }
             await _subscriptionRepository.Insert(subscription);
-            
+
             if (subscription.Status == 1)
             {
                 UserType userType = await GetCurrentUserType();
@@ -140,6 +144,10 @@ namespace Business.Service.SubscriptionService
                     };
                     await UpdateUserType(userType);
                 }
+                var dataCache = SerializationUtil.ToByteArray(userType.Feature);
+                var options = new DistributedCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromDays(1));
+                await _cache.SetAsync(wallet.UserId.ToString(), dataCache, options);
             }
             return subscription.Id;
         }
@@ -160,18 +168,18 @@ namespace Business.Service.SubscriptionService
             };
         }
 
-      
+
         private async Task<Wallet> GetCurrentWallet()
         {
             int userId = GetCurrentUserId();
 
-            var result = await _walletRepository.Get(x=> x.UserId == userId);
+            var result = await _walletRepository.Get(x => x.UserId == userId);
             if (result == null)
             {
                 throw new Exception(WalletName + " " + NOT_FOUND);
             }
             return result;
         }
-        
+
     }
 }

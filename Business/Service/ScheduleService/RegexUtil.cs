@@ -20,6 +20,7 @@ namespace Business.Schedule
 
         public static (string,string) RegexPlatformAndUser(string url)
         {
+            url = url.Trim();
             Regex rg = new Regex(PATTERN_VALID_URL);
             if (url.EndsWith("/"))
             {
@@ -27,26 +28,30 @@ namespace Business.Schedule
             }
             Match match = rg.Match(url);
             var result = match.Value;
+            if (result.Equals(""))
+            {
+                return (null, null);
+            }
             url = url.Replace(result, "");
             if (result.Contains("facebook"))
             {
                 rg = new Regex(VALID_FACEBOOK_USER, RegexOptions.IgnoreCase);
                 match = rg.Match(url);
-                return ("F",match.Groups[1].Value);
+                return ("FACEBOOK",match.Groups[1].Value);
                 
             }
             else if (result.Contains("tiktok"))
             {
                 rg = new Regex(VALID_TIKTOK_USER, RegexOptions.IgnoreCase);
                 match = rg.Match(url);
-                return ("T", match.Groups[1].Value);
+                return ("TIKTOK", match.Groups[1].Value);
             }
             else if (result.Contains("youtube"))
             {
                
                 rg = new Regex(VALID_YOUTUBE_USER, RegexOptions.IgnoreCase);
                 match = rg.Match(url);
-                return ("Y ", url.StartsWith("@")?"@" + match.Groups[1].Value : match.Groups[1].Value);
+                return ("YOUTUBE", url.StartsWith("@")?"@" + match.Groups[1].Value : match.Groups[1].Value);
             }
            
             return (null,null);

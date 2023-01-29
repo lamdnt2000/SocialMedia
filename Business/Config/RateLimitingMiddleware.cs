@@ -12,6 +12,8 @@ using DataAccess.Models.FeatureModel;
 using DataAccess.Models.FeaturePlanModel;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.AspNetCore.Routing;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Components.Routing;
 
 namespace Business.Config
 {
@@ -32,47 +34,60 @@ namespace Business.Config
 
         public async Task InvokeAsync(HttpContext context, IUserTypeRepository userTypeRepository)
         {
-            var currendId = context.User.Claims.First().Value;
+
+            var account = context.Items["User"];
+
+            if (account == null)
+            {
+                await _next(context);
+                return;
+            }
+            string role = account.GetType().GetProperty("role")?.GetValue(account, null)?.ToString();
+            if ("ADMIN".Equals(role))
+            {
+                await _next(context);
+                return;
+            }
+
             var path = context.Request.Path;
-            var router = context.GetRouteData();
-            var data = await GetCurrentFeatureCache(context, currendId, userTypeRepository);
             if (path.Value.Contains("/v1/channels"))
             {
+                var router = context.GetRouteData();
                 var action = router.Values["action"].ToString();
-                bool flag = false;
                 if (ValidAction.Contains(action))
                 {
+                    var currendId = context.User.Claims.First().Value;
 
+
+                    var data = await GetCurrentFeatureCache(context, currendId, userTypeRepository);
+
+                    bool flag = false;
                     if (action.Equals("StatisticChannelById"))
                     {
                         var platfromId = Convert.ToInt32(context.Request.Query["platform"].ToString());
-                        var quota = GetQuota(data, "DAILYSEARCH");
-                        if (quota > 0)
+
+                        switch (platfromId)
                         {
-                            switch (platfromId)
-                            {
-                                case 1:
-                                    flag = CheckValidField(data, "YOUTUBE");
-                                    break;
-                                case 2:
-                                    flag = CheckValidField(data, "FACEBOOK");
-                                    break;
-                                case 3:
-                                    flag = CheckValidField(data, "TIKTOK");
-                                    break;
-                                default:
-                                    break;
-                            }
+                            case 1:
+                                flag = CheckValidField(data, "YOUTUBE");
+                                break;
+                            case 2:
+                                flag = CheckValidField(data, "FACEBOOK");
+                                break;
+                            case 3:
+                                flag = CheckValidField(data, "TIKTOK");
+                                break;
+                            default:
+                                break;
                         }
+
 
 
                     }
                     else if (action.Equals("GetChannelByUrl"))
                     {
                         var url = context.Request.Query["url"].ToString();
-                        var quota = GetQuota(data, "MONTHREQUEST");
-
-                        if (quota > 0)
+                        if (CheckValidField(data, "MONTHREQUEST"))
                         {
                             if (url.IndexOf("youtube") > 0)
                             {
@@ -86,51 +101,66 @@ namespace Business.Config
                             {
                                 flag = CheckValidField(data, "TIKTOK");
                             }
+                            else
+                            {
+                                flag = true; 
+                            }
+
                         }
+
+
 
                     }
                     else if (action.Equals("CompareChannel"))
                     {
-                        var quota = GetQuota(data, "DAILYSEARCH");
-                        if (quota > 0)
+
+                        if (CheckValidField(data, "COMPARE"))
                         {
-                            if (CheckValidField(data, "COMPARE"))
+                            switch (Convert.ToInt32(context.Request.Query["platform"].ToString()))
                             {
-                                switch (Convert.ToInt32(context.Request.Query["platform"].ToString()))
-                                {
-                                    case 1:
-                                        flag = CheckValidField(data, "YOUTUBE");
-                                        break;
-                                    case 2:
-                                        flag = CheckValidField(data, "FACEBOOK");
-                                        break;
-                                    case 3:
-                                        flag = CheckValidField(data, "TIKTOK");
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            };
-                        }
+                                case 1:
+                                    flag = CheckValidField(data, "YOUTUBE");
+                                    break;
+                                case 2:
+                                    flag = CheckValidField(data, "FACEBOOK");
+                                    break;
+                                case 3:
+                                    flag = CheckValidField(data, "TIKTOK");
+                                    break;
+                                default:
+                                    break;
+                            }
+                        };
+
                     }
                     else if (action.Equals("StatisticTopPostChannelById"))
                     {
-                        var quota = GetQuota(data, "DAILYSEARCH");
-                        if (quota > 0)
-                        {
-                            flag = CheckValidField(data, "TOPPOST");
-                        }
+                        flag = CheckValidField(data, "TOPPOST");
+                    }
+                    if (flag)
+                    {
+                        await _next(context);
+
+                        return;
+                    }
+                    else
+                    {
+                        await context.Response.WriteAsJsonAsync(new { StatusCode = 429, Message = "Your quota reach Limit or feature not support." });
+
                     }
                 }
-                if (flag)
+                else
                 {
                     await _next(context);
-                    
                     return;
                 }
-                await context.Response.WriteAsJsonAsync(new { StatusCode = 429, Message = "Your quota reach Limit or feature not support." });
 
 
+            }
+            else
+            {
+                await _next(context);
+                return;
             }
             // read the LimitRequest attribute from the endpoint
 
@@ -154,12 +184,12 @@ namespace Business.Config
         private async Task<Dictionary<string, FeatureStatistic>> GetCurrentFeatureCache(HttpContext context, string uid, IUserTypeRepository userTypeRepository)
         {
             var result = await _cache.GetAsync(uid);
-    
+
             if (result == null)
             {
                 var data = await GetCurrentFeature(context, uid, userTypeRepository);
                 var options = new DistributedCacheEntryOptions()
-            .SetSlidingExpiration(TimeSpan.FromDays(1));
+            .SetAbsoluteExpiration(TimeSpan.FromDays(1));
                 await _cache.SetAsync(uid, data, options);
 
                 return SerializationUtil.FromString(SerializationUtil.FromByteArray<string>(data));
@@ -174,10 +204,6 @@ namespace Business.Config
             return (feature != null) ? feature.Valid : false;
         }
 
-        private int GetQuota(Dictionary<string, FeatureStatistic> data, string key)
-        {
-            var feature = data.GetValueOrDefault(key);
-            return (feature != null) ? feature.Quota : 0;
-        }
+
     }
 }

@@ -20,6 +20,8 @@ using DataAccess.Models.TransectionDepositModel;
 using Microsoft.AspNet.SignalR.Messaging;
 using Business.Service.SubscriptionService;
 using DataAccess.Models.SubscriptionModel;
+using Microsoft.AspNetCore.Authorization;
+using Business.Service.NotificationService;
 
 namespace WebAPI.Controllers
 {
@@ -31,27 +33,31 @@ namespace WebAPI.Controllers
         private readonly IAuthService _authService;
         private readonly IWalletService _walletService;
         private readonly ISubscriptionService _subscriptionService;
-        public UserController(IUserService userService, IAuthService authService, 
-            IOptions<FirebaseMetadata> firebaseMetadata, 
+        private readonly INotificationService _notificationService;
+        public UserController(IUserService userService, IAuthService authService,
+            IOptions<FirebaseMetadata> firebaseMetadata,
             IWalletService walletService,
             ITransactionDepositService transactionDepositService,
-            ISubscriptionService subscriptionService)
+            ISubscriptionService subscriptionService,
+            INotificationService notificationService)
         {
             _userService = userService;
             _authService = authService;
             _walletService = walletService;
             _subscriptionService = subscriptionService;
+            _notificationService = notificationService;
 
         }
 
         [HttpPost("signup")]
+        [AllowAnonymous]
         public async Task<IActionResult> SignUp([FromForm] InsertUserDTO dto)
         {
             try
             {
                 var result = await _userService.Insert(dto);
 
-                if (result == 1)
+                if (result > 0)
                 {
                     return JsonResponse(201, INSERT_SUCCESS, "Please verify your email");
                 }
@@ -69,6 +75,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Route("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginUserDTO loginUser)
         {
             try
@@ -80,7 +87,7 @@ namespace WebAPI.Controllers
 
                 var user = await _userService.GetUser(loginUser);
                 _authService.SetCurrentUser(user);
-                return JsonResponse(200, "Success", new { Token = _authService.CreateToken() ,FirstName = user.Firstname, LastName = user.Lastname, Role = user.Role.Name, Status = (user.Status==2)?true:false });
+                return JsonResponse(200, "Success", new { Token = _authService.CreateToken(), FirstName = user.Firstname, LastName = user.Lastname, Role = user.Role.Name, Status = (user.Status == 2) ? true : false });
 
             }
             catch (Exception e)
@@ -92,7 +99,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Route("loginGoogle")]
-        public async Task<IActionResult> LoginGoogle([FromForm]string TokenId)
+        public async Task<IActionResult> LoginGoogle([FromForm] string TokenId)
         {
             if (!ModelState.IsValid)
             {
@@ -124,8 +131,8 @@ namespace WebAPI.Controllers
             {
 
                 var user = await _userService.GetCurrentUserProfile();
-         
-                return JsonResponse(200, "Success",user);
+
+                return JsonResponse(200, "Success", user);
 
             }
             catch (Exception e)
@@ -155,7 +162,7 @@ namespace WebAPI.Controllers
             {
                 if (e.Message.Contains("Duplicated"))
                 {
-                    return JsonResponse(400, e.Message,"");
+                    return JsonResponse(400, e.Message, "");
                 }
                 return JsonResponse(401, "Not authenticate", e.Message);
             }
@@ -180,9 +187,9 @@ namespace WebAPI.Controllers
             }
             catch (Exception e)
             {
-                if (e.Message.Contains("password"))
+                if (e.Message.Contains(NOT_MATCH))
                 {
-                    return JsonResponse(400, "Bad request", e.Message);
+                    return JsonResponse(400, NOT_MATCH, e.Message);
                 }
                 return JsonResponse(401, "Not authenticate", e.Message);
             }
@@ -204,7 +211,7 @@ namespace WebAPI.Controllers
                 {
                     return JsonResponse(400, NOT_FOUND, e.Message);
                 }
-               
+
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
 
             }
@@ -212,7 +219,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("wallet/history")]
         [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
-        public async Task<IActionResult> GetHistoryWallet([FromQuery]TransactionDepositPaging paging)
+        public async Task<IActionResult> GetHistoryWallet([FromQuery] TransactionDepositPaging paging)
         {
             try
             {
@@ -231,10 +238,10 @@ namespace WebAPI.Controllers
 
             }
         }
-        
+
         [HttpGet("wallet/subscriptions")]
         [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
-        public async Task<IActionResult> GetHistorySubscription([FromQuery]SubscriptionPaging paging)
+        public async Task<IActionResult> GetHistorySubscription([FromQuery] SubscriptionPaging paging)
         {
             try
             {
@@ -247,6 +254,54 @@ namespace WebAPI.Controllers
                 if (e.Message.Contains(NOT_FOUND))
                 {
                     return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+        [HttpGet("notifications")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> GetNotifications()
+        {
+            try
+            {
+                var result = await _notificationService.GetAllNotifications();
+                return JsonResponse(200, SUCCESS, result);
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+
+                return JsonResponse(401, UNAUTHORIZE, e.Message);
+
+            }
+        }
+
+
+        [HttpPut("notifications/{id}")]
+        [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
+        public async Task<IActionResult> UpdateNotifications(int id)
+        {
+            try
+            {
+                await _notificationService.UpdateIsClickNotification(id);
+                return JsonResponse(200, SUCCESS, "");
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Contains(NOT_FOUND))
+                {
+                    return JsonResponse(400, NOT_FOUND, e.Message);
+                }
+                if (e.Message.Contains(INVALID))
+                {
+                    return JsonResponse(400, INVALID, e.Message);
                 }
 
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
@@ -279,7 +334,7 @@ namespace WebAPI.Controllers
 
             }
         }
-        
+
         [HttpPost("wallet/deposit")]
         [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
         public async Task<IActionResult> DepositMoney(PaymentDto dto)
@@ -301,7 +356,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        
+
         [HttpPost("wallet/verify")]
         [CustomAuth(RoleAuthorize.ROLE_MEMBER)]
         public async Task<IActionResult> UpdateBalanceAfterDeposit()

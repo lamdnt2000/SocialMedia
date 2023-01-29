@@ -19,8 +19,11 @@ namespace Business.Repository.ChannelCrawlRepo
         Task<Dictionary<string, object>> FilterTopPostFacebookChannel(int id);
         Task<Dictionary<string, object>> FilterTopPostTiktokChannel(int id);
         Task<Dictionary<string, object>> FilterTopPostYoutubeChannel(int id);
+        Task<PaginationList<ChannelCrawl>> GetChannelSchedule(List<string> concurrentJobs, HangfireChannelFilter filter);
         Task<bool> BulkInsertOrUpdate(ChannelCrawl entity);
         Task<PaginationList<ChannelCrawl>> SearchAsync(ChannelSearchFilter paging);
         Task<List<ChannelStatistic>> FilterChannels(List<string> userIds, ChannelFilter filter);
+        Task<object> StatisticChannel();
+        Task<object> StatisticDashboard();
     }
 }

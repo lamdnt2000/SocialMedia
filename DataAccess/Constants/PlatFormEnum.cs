@@ -8,8 +8,8 @@ namespace Business.Constants
 {
     public enum PlatFormEnum
     {
-        Y =1,
-        F,
-        T
+        YOUTUBE =1,
+        FACEBOOK,
+        TIKTOK
     }
 }
