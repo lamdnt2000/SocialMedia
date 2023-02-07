@@ -26,13 +26,13 @@ namespace DataAccess
         public virtual DbSet<ChannelCategory> ChannelCategories { get; set; }
         public virtual DbSet<ChannelCrawl> ChannelCrawls { get; set; }
         public virtual DbSet<ChannelRecord> ChannelRecords { get; set; }
-        public virtual DbSet<Hashtag> Hashtags { get; set; }
+        
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<Organization> Organizations { get; set; }
         public virtual DbSet<Package> Packages { get; set; }
         public virtual DbSet<Platform> Platforms { get; set; }
         public virtual DbSet<PostCrawl> PostCrawls { get; set; }
-        public virtual DbSet<PostHashtag> PostHashtags { get; set; }
+        
         public virtual DbSet<Reaction> Reactions { get; set; }
         public virtual DbSet<Reactiontype> Reactiontypes { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
@@ -136,16 +136,7 @@ namespace DataAccess
                     .HasConstraintName("FK_post_crawl_channel_crawl1");
             });
 
-            modelBuilder.Entity<PostHashtag>(entity =>
-            {
-                entity.HasKey(e => new { e.PostId, e.HashtagId });
-
-                entity.HasOne(d => d.Hashtag)
-                    .WithMany(p => p.PostHashtags)
-                    .HasForeignKey(d => d.HashtagId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_post_hashtag_hashtag");
-            });
+           
 
             modelBuilder.Entity<Reaction>(entity =>
             {

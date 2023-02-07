@@ -12,8 +12,10 @@ namespace DataAccess.Models.LoginUser
 
         public string Username { get; set; }
         [Required]
+        [MinLength(1),MaxLength(50)]
         public string Firstname { get; set; }
         [Required]
+        [MinLength(1), MaxLength(20)]
         public string Lastname { get; set; }
 
 

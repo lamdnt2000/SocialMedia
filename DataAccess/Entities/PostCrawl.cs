@@ -29,8 +29,7 @@ namespace DataAccess.Entities
         public string PostType { get; set; }
         [Column("status")]
         public bool Status { get; set; }
-        [Column("hashtag_id")]
-        public int? HashtagId { get; set; }
+        
         [Column("body")]
         public string Body { get; set; }
         [Column("channel_id")]

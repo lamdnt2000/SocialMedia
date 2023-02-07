@@ -40,7 +40,7 @@ namespace Business.Service.HangfireService
 
         public async Task<PaginationList<ChannelCrawlDto>> GetAllChannelSchedule(HangfireChannelFilter filter)
         {
-            var recurringJobs = _storeConnection.GetRecurringJobs().Select(x => x.Id).ToList();
+            var recurringJobs = _storeConnection.GetRecurringJobs().Where(x => x.Id!="Token").Select(x=> x.Id.Split(": ")[1]).ToList();
             var result =  await _channelCrawlRepository.GetChannelSchedule(recurringJobs, filter);
             var items = MapperConfig.GetMapper().Map<List<ChannelCrawlDto>>(result.Items);
             return new PaginationList<ChannelCrawlDto>
@@ -62,7 +62,7 @@ namespace Business.Service.HangfireService
                 x.CreatedAt,
                 x.LastExecution,
                 x.NextExecution
-            });
+            }).OrderByDescending(x => x.CreatedAt);
 
 
         }

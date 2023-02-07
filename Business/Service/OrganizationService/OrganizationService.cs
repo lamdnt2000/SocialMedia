@@ -31,11 +31,19 @@ namespace Business.Service.OrganizationService
 
         public async Task<bool> Delete(int id)
         {
-            var organization = await GetById(id);
+            var organization = await GetById(id,true);
             if (organization != null)
             {
-                var result = await _organizationRepository.Delete(id);
-                return (result > 0) ? true : false;
+                int countChannels = await _organizationRepository.CountChannel(id);
+                if (organization.Brands.Count == 0 && countChannels==0)
+                {
+                    var result = await _organizationRepository.Delete(id);
+                    return (result > 0) ? true : false;
+                }
+                else
+                {
+                    throw new Exception(ClassName + " " + DELETE_FAILED);
+                }
             }
             else
             {

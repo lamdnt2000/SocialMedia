@@ -120,6 +120,10 @@ namespace WebAPI.Controllers
                 {
                     return JsonResponse(400, DELETE_FAILED, e.Message);
                 }
+                else if (e.Message.Contains(DELETE_FAILED))
+                {
+                    return JsonResponse(400, DELETE_FAILED, e.Message);
+                }
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
 
             }

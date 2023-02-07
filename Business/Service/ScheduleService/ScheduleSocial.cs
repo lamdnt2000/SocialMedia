@@ -4,6 +4,7 @@ using Business.Service;
 using Business.Service.ScheduleService;
 using Business.SignalR;
 using DataAccess.Entities;
+using DataAccess.Enum;
 using DataAccess.Repository.NotificationRepo;
 using DataAccess.Repository.UserTypeRepo;
 using Google.Api.Gax;
@@ -51,6 +52,10 @@ namespace Business.ScheduleService
             UserId = id;
             User = user;
             var key = platfrom.Substring(0, 1) + ":" + items.Item2;
+            if (CacheFetchUrl.GetConnections(key).Contains(id))
+            {
+                throw new Exception("Channel already request. Wait notification");
+            }
             CacheFetchUrl.Add(key, id);
             if (CacheFetchUrl.GetConnections(key).Count() == 1)
             {
@@ -277,7 +282,7 @@ namespace Business.ScheduleService
                         platformId = 3;
                         break;
                 }
-                RecurringJob.AddOrUpdate(user, () => UpdateChannelJob(platformId, user, result), "0 0 * * 6");
+                RecurringJob.AddOrUpdate(((EnumPlatform)platformId).ToString() + ": " + user, () => UpdateChannelJob(platformId, user, result), "0 0 * * 6");
 
 
 

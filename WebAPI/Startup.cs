@@ -14,13 +14,13 @@ using HangfireBasicAuthenticationFilter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Runtime;
 using System.Text.Json.Serialization;
 using WebAPI.Config;
 
@@ -87,7 +87,9 @@ namespace WebAPI
                 options.SchemaName = "dbo";
                 options.TableName = "Cache";
             });
-            services.Configure<PaymentConfig>(Configuration.GetSection("Payment"));
+
+            services.AddSingleton(sp => Configuration.GetSection("Payment").Get<PaymentConfig>());
+            services.AddSingleton(sp => Configuration.GetSection("SSHConnection").Get<SSHConfig>());
             services.AddAuthentication();
             services.AddSignalR()
             .AddJsonProtocol(options =>
@@ -161,7 +163,7 @@ namespace WebAPI
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 //AppPath = "" //The path for the Back To Site link. Set to null in order to hide the Back To  Site link.
-                DashboardTitle = "My Website",
+                DashboardTitle = "Social Media Monitoring",
                 Authorization = new[]
                 {
                     new HangfireCustomBasicAuthenticationFilter{

@@ -34,8 +34,15 @@ namespace Business.Service.BrandService
             var brand = await GetById(id);
             if (brand != null)
             {
-                var result = await _brandRepository.Delete(id);
-                return (result > 0);
+                if ((await _brandRepository.CountChannel(id))==0)
+                {
+                    var result = await _brandRepository.Delete(id);
+                    return (result > 0);
+                }
+                else
+                {
+                    throw new Exception(ClassName + " "+ DELETE_FAILED);
+                }
             }
             else
             {

@@ -18,6 +18,7 @@ using DataAccess.Models.ChannelCrawlModel;
 using System.Collections.Generic;
 using DataAccess.Entities;
 using Firebase.Auth;
+using DataAccess.Enum;
 
 namespace WebAPI.Controllers
 {
@@ -105,7 +106,8 @@ namespace WebAPI.Controllers
                 }
                foreach (ChannelCrawl c in result)
                 {
-                    RecurringJob.AddOrUpdate(c.Username, () => _scheduleSocial.UpdateChannelJob(c.PlatformId, c.Username, c.Id), "0 0 * * 6");
+                    string key = ((EnumPlatform)c.PlatformId).ToString() + ": " + c.Username;
+                    RecurringJob.AddOrUpdate(key, () => _scheduleSocial.UpdateChannelJob(c.PlatformId, c.Username, c.Id), "0 0 * * 6");
                 }
                 return JsonResponse(200, SUCCESS, "");
 

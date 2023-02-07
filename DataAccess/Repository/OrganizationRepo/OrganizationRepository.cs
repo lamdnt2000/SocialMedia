@@ -18,6 +18,11 @@ namespace Business.Repository.OrganizationRepo
 
         }
 
+        public async Task<int> CountChannel(int orgId)
+        {
+            return await context.ChannelCrawls.Where(x => x.OrganizationId == orgId).CountAsync();
+        }
+
         public async Task<PaginationList<Organization>> SearchAsync(OrganizationPaging paging)
         {
             var totalItem = await context.Organizations.ApplyFilterWithoutPagination(paging).CountAsync();

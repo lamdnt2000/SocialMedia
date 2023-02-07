@@ -17,10 +17,12 @@ namespace DataAccess.Models.PriceModel
         [EnumDataType(typeof(EnumPlanPrice))]
         public int PriceType { get; set; }
         [Required]
+        [Range(0,10000000)]
         public double Price { get; set; }
         [Required]
         public int PlanId { get; set; }
         [Required]
+        [Range(1,10)]
         public int Quantity { get; set; }
     }
 }

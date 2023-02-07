@@ -36,5 +36,12 @@ namespace Business.Repository.BrandRepo
                 Items = result
             };
         }
+
+        public async Task<int> CountChannel(int id)
+        {
+            return await context.ChannelCrawls.Where(x => x.BrandId == id).CountAsync();
+        }
+
+         
     }
 }

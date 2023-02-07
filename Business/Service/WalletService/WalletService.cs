@@ -2,7 +2,9 @@
 using Business.Repository.UserRepo;
 using Business.Repository.WalletRepo;
 using Business.Utils;
+using CorePush.Apple;
 using DataAccess.Entities;
+using DataAccess.Models.ConfigModel;
 using DataAccess.Models.Pagination;
 using DataAccess.Models.PaymentModel;
 using DataAccess.Models.TransectionDepositModel;
@@ -24,18 +26,20 @@ namespace Business.Service.WalletService
     {
         private readonly IWalletRepository _walletRepository;
         private readonly ITransactionDepositRepository _transactionDepositRepository;
-
+        private readonly PaymentConfig _paymentConfig;
         private readonly string ClassName = typeof(Wallet).Name;
 
         public WalletService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
             IUserTypeRepository userTypeRepository,
             IWalletRepository walletRepository,
-            ITransactionDepositRepository transactionDepositRepository) : 
+            ITransactionDepositRepository transactionDepositRepository,
+            PaymentConfig paymentConfig) : 
             base(httpContextAccessor, userRepository, userTypeRepository)
         {
             _walletRepository = walletRepository;
             _transactionDepositRepository = transactionDepositRepository;
+            _paymentConfig = paymentConfig;
         }
 
         public async Task<bool> Delete(int userId)
@@ -99,7 +103,7 @@ namespace Business.Service.WalletService
             }
             if (vnpay != null)
             {
-                string vnp_HashSecret = "ZGLZMVCIJSMIXMBSEDMMGNSZOHTNMRQL"; //Chuoi bi mat
+                string vnp_HashSecret = _paymentConfig.HashSecret; //Chuoi bi mat
 
 
                 //vnp_TxnRef: Ma don hang merchant gui VNPAY tai command=pay    
@@ -195,10 +199,10 @@ namespace Business.Service.WalletService
             {
                 throw new Exception(ClassName + " " + NOT_FOUND);
             }
-            string vnp_Returnurl = "https://socialmedia-40b42.web.app/walletPayment"; //URL nhan ket qua tra ve 
-            string vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"; //URL thanh toan cua VNPAY 
-            string vnp_TmnCode = "CJ7NZH13"; //Ma website
-            string vnp_HashSecret = "ZGLZMVCIJSMIXMBSEDMMGNSZOHTNMRQL"; //Chuoi bi mat
+            string vnp_Returnurl = _paymentConfig.ReturnUrl ; //URL nhan ket qua tra ve 
+            string vnp_Url = _paymentConfig.VnpUrl; //URL thanh toan cua VNPAY 
+            string vnp_TmnCode = _paymentConfig.TmnCode; //Ma website
+            string vnp_HashSecret = _paymentConfig.HashSecret; //Chuoi bi mat
 
             //Get payment input
             OrderInfo order = new OrderInfo();

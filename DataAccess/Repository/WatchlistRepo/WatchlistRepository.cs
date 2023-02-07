@@ -33,7 +33,7 @@ namespace Business.Repository.WatchlistRepo
                     Avatar = x.Channel.AvatarUrl
                 }).FirstOrDefault(),
                 Count = x.Count()
-            }).Take(5).ToList();
+            }).OrderByDescending(x=>x.Count).Take(5).ToList();
         }
 
         

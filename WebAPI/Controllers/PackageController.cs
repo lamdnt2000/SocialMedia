@@ -179,7 +179,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("{id}/features")]
         [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-        public async Task<IActionResult> InsertOrUpdateFeatures(int id, [Required][EnumDataType(typeof(EnumFeature))] EnumFeature feature)
+        public async Task<IActionResult> InsertOrUpdateFeatures([Required] int id, [Required][EnumDataType(typeof(EnumFeature))] EnumFeature feature)
         {
             try
             {
@@ -288,7 +288,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("{id}/plans")]
         [CustomAuth(RoleAuthorize.ROLE_ADMIN)]
-        public async Task<IActionResult> InsertPlan(int id, [Required] string planName)
+        public async Task<IActionResult> InsertPlan([Required] int id, [Required] string planName)
         {
             try
             {

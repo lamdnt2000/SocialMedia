@@ -199,7 +199,7 @@ namespace WebAPI.Controllers
             catch (Exception e)
             {
 
-                if (e.Message.Contains(NOT_FOUND))
+                if (e.Message.Contains(NOT_FOUND)|| e.Message.Contains(DELETE_FAILED))
                 {
                     return JsonResponse(400, DELETE_FAILED, e.Message);
                 }

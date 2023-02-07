@@ -3,6 +3,7 @@ using AutoFilterer.Extensions;
 using Business.Repository.GenericRepo;
 using DataAccess;
 using DataAccess.Entities;
+using DataAccess.Enum;
 using DataAccess.Models.ChannelCrawlModel;
 using DataAccess.Models.Pagination;
 using DataAccess.Models.ReactionModel;
@@ -693,7 +694,7 @@ namespace Business.Repository.ChannelCrawlRepo
         {
             var now = DateTime.Now;
             var lastWeek = DateTime.Now.AddMonths(-3);
-            var result = await context.ChannelCrawls.Where(c => c.CreatedDate >= lastWeek.Date && c.CreatedDate < now.Date).GroupBy(c => c.CreatedDate.Value.Date)
+            var result = await context.ChannelCrawls.Where(c => c.CreatedDate >= lastWeek.Date && c.CreatedDate < now.Date.AddDays(1)).GroupBy(c => c.CreatedDate.Value.Date)
                 .Select(c => new
                 {
                     Key = c.Key.Date,

@@ -7,7 +7,7 @@ namespace DataAccess.Models.OrganizationModel
     {
         [ToLowerContainsComparison]
         public string Name { get; set; }
-        public bool Status { get; set; } = true;
+       
         
     }
 }

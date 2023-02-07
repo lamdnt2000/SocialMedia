@@ -1,19 +1,12 @@
-﻿using DataAccess.Entities;
-using DataAccess.Repository.UserTypeRepo;
+﻿using DataAccess.Repository.UserTypeRepo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Business.Utils;
-using DataAccess.Models.FeatureModel;
-using DataAccess.Models.FeaturePlanModel;
-using static System.Net.Mime.MediaTypeNames;
 using Microsoft.AspNetCore.Routing;
-using System.Security.Principal;
-using Microsoft.AspNetCore.Components.Routing;
 
 namespace Business.Config
 {
@@ -145,7 +138,8 @@ namespace Business.Config
                     }
                     else
                     {
-                        await context.Response.WriteAsJsonAsync(new { StatusCode = 429, Message = "Your quota reach Limit or feature not support." });
+                        context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                        await context.Response.WriteAsJsonAsync(new { StatusCode = StatusCodes.Status429TooManyRequests, Message = "Your quota reach Limit or feature not support." });
 
                     }
                 }
@@ -176,7 +170,8 @@ namespace Business.Config
             var userType = await userTypeRepository.Get(x => x.UserId == id);
             if (userType.DateEnd.CompareTo(DateTime.Now) == -1)
             {
-                await context.Response.WriteAsJsonAsync(new { StatusCode = 429, Message = "Plan Expries time. Please purchase new" });
+                context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                await context.Response.WriteAsJsonAsync(new { StatusCode = StatusCodes.Status429TooManyRequests, Message = "Plan Expries time. Please purchase new" });
             }
             return SerializationUtil.ToByteArray(userType.Feature);
         }

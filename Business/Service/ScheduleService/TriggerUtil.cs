@@ -9,15 +9,17 @@ namespace Business.Schedule
 {
     public class TriggerUtil
     {
+
         public static string JAR_CMD = "java -jar";
         public static string PARSER = "Parser.jar";
         public static string TOKEN = "Token.jar";
+ 
         public static string CreateRequest(string platform, string user, string handler)
         {
             var result = "";
            
             var command = JAR_CMD + " " + handler + " " + platform + " \"" + user +"\"";
-            using (var client = new SshClient("103.97.124.141", "administrator", "sasuke903"))
+            using (var client = new SshClient("ip", "user", "pass"))
             {
 
                 client.Connect();
@@ -35,7 +37,7 @@ namespace Business.Schedule
             var result = "";
             //user = user.StartsWith("@") ? user.Substring(1) : user;
             var command = JAR_CMD + " " + handler + " " + platform + " " + user + " " + id;
-            using (var client = new SshClient("103.97.124.141", "administrator", "sasuke903"))
+            using (var client = new SshClient("ip", "user", "pass"))
             {
 
                 client.Connect();
@@ -52,7 +54,7 @@ namespace Business.Schedule
         {
             var result = "";
             var command = JAR_CMD + " " + TOKEN;
-            using (var client = new SshClient("103.97.124.141", "administrator", "sasuke903"))
+            using (var client = new SshClient("ip", "user", "pass"))
             {
 
                 client.Connect();

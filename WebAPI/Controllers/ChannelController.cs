@@ -271,13 +271,13 @@ namespace WebAPI.Controllers
             catch (Exception e)
             {
 
-                if (e.Message.Contains(NOT_FOUND))
+                if (e.Message.Contains(NOT_FOUND) || e.Message.Contains(INVALID))
                 {
                     return JsonResponse(400, FAILED, e.Message);
                 }
-                if (e.Message.Contains(INVALID))
+                if (e.Message.Contains("already"))
                 {
-                    return JsonResponse(400, FAILED, e.Message);
+                    return JsonResponse(400, DUPLICATED, e.Message);
                 }
                 return JsonResponse(401, UNAUTHORIZE, e.Message);
 

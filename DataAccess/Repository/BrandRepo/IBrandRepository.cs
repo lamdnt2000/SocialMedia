@@ -14,5 +14,6 @@ namespace Business.Repository.BrandRepo
     public interface IBrandRepository : IGenericRepository<Brand>
     {
         Task<PaginationList<Brand>> SearchAsync(BrandPaging paging);
+        Task<int> CountChannel(int id);
     }
 }

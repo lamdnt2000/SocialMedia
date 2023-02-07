@@ -11,5 +11,6 @@ namespace DataAccess.Models.ConfigModel
         public string TmnCode { get; set; }
         public string HashSecret { get; set; }
         public string ReturnUrl { get; set; }
+        public string VnpUrl { get; set; }
     }
 }

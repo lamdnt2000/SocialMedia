@@ -76,9 +76,9 @@ namespace Business.Utils
                 cfg.CreateMap<Reaction, InsertReactionDto>().ReverseMap();
                 cfg.CreateMap<Reaction, UpdateReactionDto>().ReverseMap();
 
-                cfg.CreateMap<Hashtag, HashtagDto>().ReverseMap();
+                /*cfg.CreateMap<Hashtag, HashtagDto>().ReverseMap();
                 cfg.CreateMap<Hashtag, InsertHashtagDto>().ReverseMap();
-                cfg.CreateMap<Hashtag, UpdateHashtagDto>().ReverseMap();
+                cfg.CreateMap<Hashtag, UpdateHashtagDto>().ReverseMap();*/
 
 
                 cfg.CreateMap<Location, LocationDto>().ReverseMap();

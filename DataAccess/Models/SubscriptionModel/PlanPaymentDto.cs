@@ -12,6 +12,7 @@ namespace DataAccess.Models.SubscriptionModel
     {
         [Required]
         public int PlanId { get; set; }
+        [Required]
         [EnumDataType(typeof(EnumPlanPrice))]
         public int PriceType { get; set; }
         
